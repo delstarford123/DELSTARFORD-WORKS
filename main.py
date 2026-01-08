@@ -31,7 +31,8 @@ SENDER_PASSWORD = os.getenv("SENDER_PASSWORD")
 
 # ... The rest of your code (Firebase Init, Routes) stays exactly the same ...
 # --- FIREBASE INITIALIZATION ---
-# This check prevents errors if the app restarts automatically
+# This check pre
+# vents errors if the app restarts automatically
 if not firebase_admin._apps:
     try:
         cred = credentials.Certificate(SERVICE_ACCOUNT_KEY)

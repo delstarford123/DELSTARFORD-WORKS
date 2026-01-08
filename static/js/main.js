@@ -1,410 +1,249 @@
+/**
+ * main.js
+ * Consolidated logic for Delstarford Works
+ */
 
-// Initialize Firebase (Compat Version)
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
+// 1. INITIALIZE FIREBASE (Safety Check)
+if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+    // If config isn't loaded from HTML, this prevents a crash, 
+    // but relies on base.html having the config.
+    console.warn("Firebase config not found in main.js scope. Relying on base.html.");
 }
-const database = firebase.database();
+
 document.addEventListener('DOMContentLoaded', () => {
     console.log("Delstarford Works Engine Initialized...");
-    
-    // Existing initializers...
+
+    // A. Run Global UI Scripts
     initNavigation();
     initScrollAnimations();
-    if (document.getElementById('totalPrice')) initPriceEstimator();
-    if (document.getElementById('project-status')) initDashboard();
-    if (document.getElementById('requestForm')) initContactForm(); // Custom Solutions Form
-    
-    // --- ADD THIS LINE ---
-    if (document.getElementById('contactForm')) initGeneralContactForm(); // General Contact Form
-});
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("Delstarford Works Engine Initialized...");
-    
-    // Initialize specific modules based on current page
-    initNavigation();
-    initScrollAnimations(); // Added new animation initializer
 
-    // Only run these if the elements exist on the page
+    // B. Run Page-Specific Scripts (Only if elements exist)
     if (document.getElementById('totalPrice')) initPriceEstimator();
     if (document.getElementById('project-status')) initDashboard();
     if (document.getElementById('requestForm')) initContactForm();
-});
-// AUTH LISTENER
-    firebase.auth().onAuthStateChanged((user) => {
-        const securityScreen = document.getElementById('security-screen');
-        const mainDashboard = document.getElementById('main-dashboard');
+    if (document.getElementById('contactForm')) initGeneralContactForm();
+
+    // C. AUTHENTICATION LOGIC (The Fix for the Loop)
+    if (typeof firebase !== 'undefined') {
+        const auth = firebase.auth();
         
-        // 1. Get the current URL path
-        const currentPath = window.location.pathname;
+        auth.onAuthStateChanged((user) => {
+            const securityScreen = document.getElementById('security-screen');
+            const mainDashboard = document.getElementById('main-dashboard');
+            const currentPath = window.location.pathname;
 
-        if (user) {
-            // --- USER IS LOGGED IN ---
-            console.log("Access Granted: " + user.email);
-            
-            // Hide loading screen, show dashboard (if on dashboard page)
-            if (securityScreen) securityScreen.style.display = 'none';
-            if (mainDashboard) mainDashboard.style.display = 'flex';
-            
-            // Initialize Dashboard Data
-            initRealDashboard(user);
+            // Define which pages REQUIRE login
+            const protectedPages = ['/dashboard', '/admin', '/ai-lab-secure'];
 
-        } else {
-            // --- USER IS NOT LOGGED IN ---
-            
-            // DEFINE YOUR PRIVATE PAGES HERE
-            // These are the only pages that require a password
-            const protectedPages = [
-                '/dashboard', 
-                '/admin', 
-                '/account',
-                '/ai-lab'
-            ];
-
-            // Check if the user is currently on a protected page
-            // We use 'includes' so it catches '/dashboard' and '/dashboard.html'
+            // Check if current page is protected
             const isProtected = protectedPages.some(page => currentPath.includes(page));
 
-            if (isProtected) {
-                console.log("Protected Area. Redirecting to Login...");
-                // Save where they were trying to go so we can return them later (optional)
-                sessionStorage.setItem('redirectAfterLogin', currentPath);
-                window.location.href = "/login";
-            } else {
-                // If on Public pages (Home, About, Contact, Login), DO NOTHING.
-                // Just hide the security spinner if it exists
+            if (user) {
+                // --- USER IS LOGGED IN ---
+                console.log("User Logged In:", user.email);
+
+                // 1. If on Login page, send them to Dashboard (Quality of Life)
+                if (currentPath === '/login') {
+                    window.location.href = "/dashboard";
+                    return;
+                }
+
+                // 2. Unlock Dashboard UI
                 if (securityScreen) securityScreen.style.display = 'none';
+                if (mainDashboard) mainDashboard.style.display = 'flex';
+
+                // 3. Load Data
+                initRealDashboard(user);
+
+            } else {
+                // --- USER IS NOT LOGGED IN ---
+                console.log("Guest User");
+
+                if (isProtected) {
+                    // 1. If on a protected page, kick them out
+                    console.log("Restricted Area. Redirecting to Login.");
+                    sessionStorage.setItem('redirectAfterLogin', currentPath);
+                    window.location.href = "/login";
+                } else {
+                    // 2. If on Public page (Home, Login, etc), DO NOTHING.
+                    // Just hide the loader so they can see the page
+                    if (securityScreen) securityScreen.style.display = 'none';
+                }
             }
-        }
-    });
-// 2. NAVIGATION & UI EFFECTS
+        });
+    }
+});
+
+
+/* =========================================
+   HELPER FUNCTIONS
+   ========================================= */
+
+// Navigation Scroll Effect
 function initNavigation() {
-    const navbar = document.querySelector('.navbar');
+    const navbar = document.querySelector('.navbar') || document.querySelector('.site-header');
     if (navbar) {
         window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                navbar.classList.add('navbar-scrolled');
-            } else {
-                navbar.classList.remove('navbar-scrolled');
-            }
+            if (window.scrollY > 50) navbar.classList.add('navbar-scrolled', 'scrolled');
+            else navbar.classList.remove('navbar-scrolled', 'scrolled');
         });
     }
 }
 
-// 3. SCROLL ANIMATIONS (The "Fade In" Effect)
+// Fade-in Animations
 function initScrollAnimations() {
-    const observerOptions = {
-        threshold: 0.1, // Trigger when 10% of element is visible
-        rootMargin: "0px 0px -50px 0px"
-    };
-
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('visible');
-                observer.unobserve(entry.target); // Only animate once
+                observer.unobserve(entry.target);
             }
         });
-    }, observerOptions);
+    }, { threshold: 0.1 });
 
-    // Watch all elements with the class 'scroll-trigger'
-    document.querySelectorAll('.scroll-trigger, .hero-content').forEach(el => {
-        observer.observe(el);
-    });
+    document.querySelectorAll('.scroll-trigger, .hero-content').forEach(el => observer.observe(el));
 }
 
-// 4. AI PRICE ESTIMATOR (Logic for Custom Solutions)
-function initPriceEstimator() {
-    const inputs = ['modelType', 'dataSize', 'complexity'];
-    
-    // Add event listeners to all estimator inputs
-    inputs.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            const eventType = el.type === 'range' ? 'input' : 'change';
-            el.addEventListener(eventType, updatePrice);
-        }
-    });
-
-    // Handle radio buttons for complexity
-    document.querySelectorAll('input[name="complexity"]').forEach(radio => {
-        radio.addEventListener('change', updatePrice);
-    });
-
-    // Initial calculation
-    updatePrice();
-}
-
-async function updatePrice() {
-    // Check if elements exist before reading values
-    const modelEl = document.getElementById('modelType');
-    const dataSizeEl = document.getElementById('dataSize');
-    const complexityEl = document.querySelector('input[name="complexity"]:checked');
-
-    if (!modelEl || !dataSizeEl || !complexityEl) return;
-
-    const modelType = modelEl.value;
-    const dataSize = dataSizeEl.value;
-    const complexity = complexityEl.value;
-
-    // Update UI labels
-    const sizeLabel = document.getElementById('sizeLabel');
-    if (sizeLabel) sizeLabel.innerText = Number(dataSize).toLocaleString();
-
-    try {
-        const response = await fetch('/calculate-estimate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ modelType, dataSize, complexity })
-        });
-        
-        const data = await response.json();
-        const priceEl = document.getElementById('totalPrice');
-        if (priceEl) {
-            priceEl.innerText = `${data.currency} ${data.estimate.toLocaleString()}`;
-        }
-    } catch (err) {
-        console.error("Estimation failed:", err);
-    }
-}
-
-// 5. REAL-TIME DASHBOARD SYNC
-function initDashboard() {
-    const userId = "user_123"; // Mock ID for now
-
-    // Listen for Project Status
-    database.ref(`active_projects/${userId}`).on('value', (snapshot) => {
-        const data = snapshot.val();
-        const statusEl = document.getElementById('project-status');
-        if (statusEl && data) {
-            statusEl.innerText = data.status;
-            // Add a class for color coding (e.g., status-completed, status-in-progress)
-            const statusClass = `status-${data.status.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
-            statusEl.className = statusClass;
-        }
-    });
-
-    // Listen for Activity Feed
-    const feedDiv = document.getElementById('activity-feed');
-    if (feedDiv) {
-        database.ref(`users/${userId}/activity`).limitToLast(5).on('child_added', (snapshot) => {
-            const activity = snapshot.val();
-            const item = document.createElement('div');
-            item.className = 'feed-item fade-in';
-            item.innerHTML = `<strong>${activity.time || 'Just now'}:</strong> ${activity.message}`;
-            feedDiv.prepend(item); // Newest items first
-        });
-    }
-}
-
-// 6. FORM SUBMISSIONS & FIREBASE LEADS
-function initContactForm() {
-    const form = document.getElementById('requestForm');
-    if (!form) return;
-
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const btn = form.querySelector('button');
-        const originalText = btn.innerText;
-        
-        btn.innerText = "Sending...";
-        btn.disabled = true;
-
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
-
-        try {
-            // 1. Save to Firebase (Instant Admin Access)
-            await database.ref('leads/service_requests').push({
-                ...data,
-                timestamp: Date.now(),
-                source: "Website Form"
-            });
-
-            // 2. Trigger Python Backend (Email Sending)
-            const response = await fetch('/custom', { method: 'POST', body: formData });
-            const result = await response.json();
-
-            alert(result.message || "Success! Delstarford Works has received your request.");
-            form.reset();
-        } catch (err) {
-            console.error(err);
-            alert("Connection error. Please check your internet and try again.");
-        } finally {
-            btn.innerText = originalText;
-            btn.disabled = false;
-        }
-    });
-}
-
-// 7. GLOBAL UTILITIES
-function submitToFirebase() {
-    const priceEl = document.getElementById('totalPrice');
-    const modelEl = document.getElementById('modelType');
-
-    if (!priceEl || !modelEl) return;
-
-    const finalPrice = priceEl.innerText;
-    const model = modelEl.value;
-    
-    // Save the lead with the calculated price
-    const requestRef = database.ref('leads/ai_requests').push();
-    requestRef.set({
-        client_name: "Interested Prospect", 
-        model_type: model,
-        estimated_price: finalPrice,
-        timestamp: Date.now(),
-        status: "Contact Pending"
-    }).then(() => {
-        alert("Your quote has been saved. Delstarford Works will contact you within 24 hours.");
-    });
-}
-// 8. GENERAL CONTACT PAGE LOGIC
-function initGeneralContactForm() {
-    const form = document.getElementById('contactForm');
-    if (!form) return;
-
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault(); // Stop page reload
-        
-        // UI Feedback
-        const btn = document.getElementById('sendBtn') || form.querySelector('button');
-        const originalText = btn.innerText;
-        btn.innerText = "Sending...";
-        btn.disabled = true;
-
-        const formData = new FormData(form);
-
-        try {
-            // Send data to Python Backend
-            const response = await fetch('/submit-contact', {
-                method: 'POST',
-                body: formData
-            });
-            
-            const result = await response.json();
-            
-            if (response.ok) {
-                alert("Message Sent! Check your email for confirmation.");
-                form.reset(); // Clear the form
-            } else {
-                alert("Error: " + (result.message || "Failed to send message."));
-            }
-        } catch (error) {
-            console.error('Connection Error:', error);
-            alert("Failed to connect to server. Please check your internet.");
-        } finally {
-            // Reset Button
-            btn.innerText = originalText;
-            btn.disabled = false;
-        }
-    });
-}
-/**
- * main.js
- * Handles Dashboard Authentication and Realtime Data
- */
-
-document.addEventListener('DOMContentLoaded', () => {
-    // AUTH LISTENER: This is the Gatekeeper
-    // Ensure firebase is initialized in your base.html before this runs
-    if (typeof firebase === 'undefined') {
-        console.error("Firebase is not initialized!");
-        return;
-    }
-
-    firebase.auth().onAuthStateChanged((user) => {
-        const securityScreen = document.getElementById('security-screen');
-        const mainDashboard = document.getElementById('main-dashboard');
-
-        if (user) {
-            // 1. User IS logged in -> Show Dashboard
-            console.log("Access Granted: " + user.email);
-            
-            if (securityScreen) securityScreen.style.display = 'none';
-            if (mainDashboard) mainDashboard.style.display = 'flex';
-            
-            // 2. Initialize Data
-            initRealDashboard(user);
-        } else {
-            // 3. User is NOT logged in -> Kick them out
-            console.log("Access Denied. Redirecting...");
-            // Optional: Add a small delay so they see the spinner briefly
-            window.location.href = "/login"; 
-        }
-    });
-});
-
-/**
- * Populates the dashboard with user data
- */
+// Dashboard Data Population
 function initRealDashboard(user) {
+    if (!document.getElementById('project-status-text')) return; // Exit if not on dashboard
+
     const db = firebase.database();
     const uid = user.uid;
 
-    // --- 1. POPULATE PROFILE ---
-    document.getElementById('display-name').innerText = user.displayName || "Member";
-    document.getElementById('display-email').innerText = user.email;
+    // Profile
+    const nameEl = document.getElementById('display-name');
+    const emailEl = document.getElementById('display-email');
+    if(nameEl) nameEl.innerText = user.displayName || "Member";
+    if(emailEl) emailEl.innerText = user.email;
 
-    // Handle Profile Image
-    if (user.photoURL) {
-        const avatarCircle = document.querySelector('.avatar-circle');
-        if (avatarCircle) {
-            avatarCircle.innerHTML = `<img src="${user.photoURL}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
-            avatarCircle.style.background = 'transparent';
-        }
-    }
-
-    // --- 2. FETCH PROJECTS ---
+    // Projects
     db.ref(`active_projects/${uid}`).on('value', (s) => {
         const d = s.val();
         const statusText = document.getElementById('project-status-text');
         const progressBar = document.getElementById('project-progress');
-
-        if (statusText) statusText.innerText = d ? (d.status || "Active") : "No Projects";
-        if (progressBar) progressBar.style.width = d ? (d.progress + "%") : "0%";
+        
+        if(statusText) statusText.innerText = d ? (d.status || "Active") : "No Projects";
+        if(progressBar) progressBar.style.width = d ? (d.progress + "%") : "0%";
     });
 
-    // --- 3. FETCH LICENSES ---
+    // Licenses
     db.ref(`users/${uid}/licenses`).on('value', s => {
-        const licenseCount = document.getElementById('license-count');
-        if (licenseCount) licenseCount.innerText = s.numChildren() || 0;
+        const el = document.getElementById('license-count');
+        if(el) el.innerText = s.numChildren() || 0;
     });
 
-    // --- 4. FETCH ACTIVITY LOG ---
+    // Activity
     db.ref(`users/${uid}/activity`).limitToLast(5).on('value', (s) => {
         const rows = document.getElementById('activity-rows');
         if (!rows) return;
-
         rows.innerHTML = "";
-        
         if (!s.exists()) {
             rows.innerHTML = `<tr><td colspan="3" class="text-center">No recent activity.</td></tr>`;
             return;
         }
-        
-        // Convert object to array and reverse to show newest first
         const acts = [];
-        s.forEach(c => acts.unshift(c.val())); 
-
+        s.forEach(c => acts.unshift(c.val()));
         acts.forEach(a => {
-            rows.innerHTML += `
-                <tr>
-                    <td class="font-mono text-sm">${a.time || "Just now"}</td>
-                    <td>${a.message}</td>
-                    <td><span class="status-dot online"></span> Done</td>
-                </tr>`;
+            rows.innerHTML += `<tr><td class="text-sm">${a.time || "Just now"}</td><td>${a.message}</td><td><span class="status-dot online"></span> Done</td></tr>`;
         });
     });
 }
 
-/**
- * Global Logout Function
- * Attached to window so the HTML onclick="..." can find it
- */
+// Contact Form (Service Request)
+function initContactForm() {
+    const form = document.getElementById('requestForm');
+    if(!form) return;
+    
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        const spinner = document.getElementById('btnSpinner');
+        const msg = document.getElementById('formMessage');
+        const btnText = btn.querySelector('span');
+
+        if(btn.disabled) return;
+        
+        btn.disabled = true;
+        if(btnText) btnText.textContent = "Processing...";
+        if(spinner) spinner.style.display = 'block';
+        if(msg) msg.textContent = "";
+
+        const formData = new FormData(form);
+        try {
+            // Save to Firebase first
+            if(firebase.auth().currentUser) {
+                const uid = firebase.auth().currentUser.uid;
+                firebase.database().ref(`leads/${uid}`).push(Object.fromEntries(formData));
+            }
+
+            // Send Email via Python
+            const response = await fetch('/custom', { method: 'POST', body: formData });
+            if (!response.ok) throw new Error('Network error');
+            
+            const result = await response.json();
+            if(msg) {
+                msg.textContent = result.message || "Request Sent!";
+                msg.className = "form-message success";
+            }
+            form.reset();
+        } catch (error) {
+            console.error(error);
+            if(msg) {
+                msg.textContent = "Error sending request. Please try again.";
+                msg.className = "form-message error";
+            }
+            btn.disabled = false; // Allow retry
+            if(btnText) btnText.textContent = "Send Request";
+        } finally {
+            if(spinner) spinner.style.display = 'none';
+            if(btn.disabled && btnText) btnText.textContent = "Sent";
+        }
+    });
+}
+
+// Price Estimator Logic
+function initPriceEstimator() {
+    // Re-attach listeners to ensure they work
+    const els = ['modelType', 'dataSize', 'complexity'];
+    els.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.addEventListener(el.type === 'range' ? 'input' : 'change', calculateTotal);
+    });
+    
+    document.querySelectorAll('input[name="complexity"]').forEach(r => {
+        r.addEventListener('change', calculateTotal);
+    });
+    
+    // Run once
+    calculateTotal();
+}
+
+function calculateTotal() {
+    const typeEl = document.getElementById('modelType');
+    const sizeEl = document.getElementById('dataSize');
+    const compEl = document.querySelector('input[name="complexity"]:checked');
+    
+    if(!typeEl || !sizeEl || !compEl) return;
+
+    const size = parseInt(sizeEl.value);
+    const type = typeEl.value;
+    const complexity = compEl.value;
+
+    document.getElementById('sizeDisplay').innerText = size.toLocaleString() + " Records";
+
+    // Pricing Model
+    const base = { 'tabular': 45000, 'vision': 120000, 'nlp': 95000, 'bio': 180000 };
+    let total = base[type] + (size * 0.85);
+    if(complexity === 'advanced') total *= 1.6;
+
+    total = Math.ceil(total / 100) * 100;
+    document.getElementById('totalPrice').innerText = "KSH " + total.toLocaleString();
+}
+
+// Global Logout
 window.handleLogout = function() {
     firebase.auth().signOut().then(() => {
         window.location.href = "/login";
-    }).catch((error) => {
-        console.error("Logout failed", error);
     });
 };

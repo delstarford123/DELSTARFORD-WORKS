@@ -105,9 +105,11 @@ def send_email_notification(to_email, subject, body):
 def home():
     return render_template('home.html')
 
+
 @app.route('/services')
 def services():
     return render_template('services.html')
+
 
 @app.route('/ai-lab')
 def ai_lab():

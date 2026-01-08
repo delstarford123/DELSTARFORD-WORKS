@@ -105,51 +105,111 @@ function initScrollAnimations() {
 }
 
 // Dashboard Data Population
+// Dashboard Data Population (with Auto-Setup for New Users)
 function initRealDashboard(user) {
-    if (!document.getElementById('project-status-text')) return; // Exit if not on dashboard
+    if (!document.getElementById('project-status-text')) return;
 
     const db = firebase.database();
     const uid = user.uid;
 
-    // Profile
+    // 1. PROFILE NAME FIX
+    // New email logins often have a null 'displayName'. We fix this by using the email prefix.
     const nameEl = document.getElementById('display-name');
     const emailEl = document.getElementById('display-email');
-    if(nameEl) nameEl.innerText = user.displayName || "Member";
+    
+    // Extract "delstarford" from "delstarford@gmail.com" if display name is missing
+    const fallbackName = user.email.split('@')[0]; 
+    const finalName = user.displayName || fallbackName.charAt(0).toUpperCase() + fallbackName.slice(1);
+
+    if(nameEl) nameEl.innerText = finalName;
     if(emailEl) emailEl.innerText = user.email;
 
+    // 2. CHECK & CREATE DEFAULT DATA (The "Empty Dashboard" Fix)
+    const userRef = db.ref(`users/${uid}`);
+    
+    userRef.once('value', (snapshot) => {
+        if (!snapshot.exists()) {
+            console.log("New user detected! Initializing database...");
+            // Create default data so the dashboard isn't empty
+            userRef.set({
+                profile: {
+                    name: finalName,
+                    email: user.email,
+                    joined: new Date().toISOString()
+                },
+                activity: {
+                    welcome_msg: {
+                        message: "🎉 Welcome to Delstarford Works! Your account is active.",
+                        time: new Date().toLocaleString()
+                    }
+                },
+                licenses: {
+                    starter_pack: "Free Tier" // Give them 1 fake license to look good
+                }
+            });
+            
+            // Also set a default project status
+            db.ref(`active_projects/${uid}`).set({
+                status: "Pending Setup",
+                progress: 10,
+                name: "Onboarding"
+            });
+        }
+    });
+
+    // 3. LISTEN FOR LIVE DATA (Existing Logic)
+    
     // Projects
     db.ref(`active_projects/${uid}`).on('value', (s) => {
         const d = s.val();
         const statusText = document.getElementById('project-status-text');
         const progressBar = document.getElementById('project-progress');
         
-        if(statusText) statusText.innerText = d ? (d.status || "Active") : "No Projects";
+        // Handle null data gracefully
+        if(statusText) statusText.innerText = d ? (d.status || "Active") : "No Active Projects";
         if(progressBar) progressBar.style.width = d ? (d.progress + "%") : "0%";
+        
+        // Color coding based on status
+        if (statusText && d) {
+            statusText.className = "font-bold " + (d.status === "Completed" ? "text-green-600" : "text-blue-600");
+        }
     });
 
     // Licenses
     db.ref(`users/${uid}/licenses`).on('value', s => {
         const el = document.getElementById('license-count');
-        if(el) el.innerText = s.numChildren() || 0;
+        // Count the keys in the object
+        if(el) el.innerText = s.exists() ? Object.keys(s.val()).length : 0;
     });
 
-    // Activity
+    // Activity Feed
     db.ref(`users/${uid}/activity`).limitToLast(5).on('value', (s) => {
         const rows = document.getElementById('activity-rows');
         if (!rows) return;
-        rows.innerHTML = "";
+        
+        rows.innerHTML = ""; // Clear existing rows
+        
         if (!s.exists()) {
-            rows.innerHTML = `<tr><td colspan="3" class="text-center">No recent activity.</td></tr>`;
+            rows.innerHTML = `<tr><td colspan="3" class="text-center text-gray-500 py-4">No recent activity.</td></tr>`;
             return;
         }
+        
+        // Firebase objects are not arrays, we must convert them
         const acts = [];
-        s.forEach(c => acts.unshift(c.val()));
+        s.forEach(c => {
+            acts.unshift(c.val()); // Add to start of array (newest first)
+        });
+
         acts.forEach(a => {
-            rows.innerHTML += `<tr><td class="text-sm">${a.time || "Just now"}</td><td>${a.message}</td><td><span class="status-dot online"></span> Done</td></tr>`;
+            rows.innerHTML += `
+                <tr class="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition">
+                    <td class="py-3 text-xs font-mono text-gray-500">${a.time || "Just now"}</td>
+                    <td class="py-3 text-sm font-medium text-gray-800">${a.message}</td>
+                    <td class="py-3"><span class="h-2 w-2 rounded-full bg-green-500 inline-block mr-2"></span> Done</td>
+                </tr>`;
         });
     });
 }
-
 // Contact Form (Service Request)
 function initContactForm() {
     const form = document.getElementById('requestForm');

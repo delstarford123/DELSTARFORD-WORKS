@@ -210,6 +210,7 @@ function initRealDashboard(user) {
         });
     });
 }
+
 // Contact Form (Service Request)
 function initContactForm() {
     const form = document.getElementById('requestForm');
@@ -238,7 +239,11 @@ function initContactForm() {
             }
 
             // Send Email via Python
-            const response = await fetch('/custom', { method: 'POST', body: formData });
+            // Ensure it hits the root domain
+const response = await fetch(window.location.origin + '/custom', { 
+    method: 'POST', 
+    body: formData 
+});
             if (!response.ok) throw new Error('Network error');
             
             const result = await response.json();
@@ -300,7 +305,27 @@ function calculateTotal() {
     total = Math.ceil(total / 100) * 100;
     document.getElementById('totalPrice').innerText = "KSH " + total.toLocaleString();
 }
+/**
+ * Global Logout Function
+ * 1. Signs out of Firebase
+ * 2. Redirects user to the Login page
+ */
+window.handleLogout = function() {
+    if (typeof firebase === 'undefined') return;
 
+    firebase.auth().signOut()
+        .then(() => {
+            console.log("User signed out.");
+            // Optional: Clear session storage if you used it
+            sessionStorage.clear();
+            // Redirect immediately
+            window.location.href = "/login";
+        })
+        .catch((error) => {
+            console.error("Logout Error:", error);
+            alert("Error signing out. Please try again.");
+        });
+};
 // Global Logout
 window.handleLogout = function() {
     firebase.auth().signOut().then(() => {

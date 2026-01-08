@@ -1193,3 +1193,28 @@ body {
     .dash-topbar { flex-direction: column; align-items: flex-start; gap: 15px; }
     .topbar-right { width: 100%; justify-content: space-between; }
 }
+.btn-logout {
+    background-color: #fee2e2; /* Light Red */
+    color: #991b1b; /* Dark Red */
+    border: 1px solid #fecaca;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn-logout:hover {
+    background-color: #ef4444; /* Bright Red */
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2);
+}
+
+.btn-logout:active {
+    transform: translateY(0);
+}

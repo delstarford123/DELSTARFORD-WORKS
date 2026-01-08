@@ -22,11 +22,17 @@ app = Flask(__name__)
 # Now we get the values using os.getenv()
 SERVICE_ACCOUNT_KEY = os.getenv("SERVICE_ACCOUNT_KEY")
 DATABASE_URL = os.getenv("DATABASE_URL")
+
+# --- EMAIL CONFIGURATION ---
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 465
 SENDER_EMAIL = os.getenv("SENDER_EMAIL")
 SENDER_PASSWORD = os.getenv("SENDER_PASSWORD")
 
+# ... The rest of your code (Firebase Init, Routes) stays exactly the same ...
+# --- FIREBASE INITIALIZATION ---
+# This check pre
+# vents errors if the app restarts automatically
 if not firebase_admin._apps:
     try:
         cred = credentials.Certificate(SERVICE_ACCOUNT_KEY)
@@ -70,118 +76,32 @@ AI_MODELS = [
     {"id": 5, "name": "Digital Assistant", "category": "Productivity", "price": "KSh 25,000", "tech": "Voice API", "desc": "Personal assistant for scheduling, reminders, and task management."},
 ]
 
-
-# --- PAGE ROUTES ---
-import os
-import smtplib
-import ssl
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from flask import jsonify, request
-
-# ... existing imports ...
-
-def send_email_notification(recipient_email, subject, body):
-    """
-    Robust email sender using Gmail TLS (Port 587)
-    Matches keys: SENDER_EMAIL and SENDER_PASSWORD
-    """
-    # 1. Load Credentials (matching your .env names)
-    sender_email = os.environ.get('SENDER_EMAIL')
-    sender_password = os.environ.get('SENDER_PASSWORD')
-    smtp_server = os.environ.get('SMTP_SERVER', 'smtp.gmail.com')
-    smtp_port = 587  # Standard TLS port for Gmail
-
-    if not sender_email or not sender_password:
-        print("CRITICAL: 'SENDER_EMAIL' or 'SENDER_PASSWORD' missing in environment.")
-        return False
-
+# --- HELPER FUNCTION TO SEND EMAIL ---
+def send_email_notification(to_email, subject, body):
     try:
-        # 2. Create the email
+        # Create a secure SSL context
+        context = ssl.create_default_context()
+
+        # Create the email message
         msg = MIMEMultipart()
-        msg['From'] = sender_email
-        msg['To'] = recipient_email
+        msg['From'] = SENDER_EMAIL
+        msg['To'] = to_email
         msg['Subject'] = subject
         msg.attach(MIMEText(body, 'plain'))
 
-        # 3. Connect securely using TLS (The fix for SystemExit error)
-        context = ssl.create_default_context()
-        print(f"Connecting to {smtp_server}:{smtp_port}...")
-        
-        # 
-        
-        with smtplib.SMTP(smtp_server, smtp_port) as server:
-            server.ehlo()  # Identify ourselves
-            server.starttls(context=context) # Upgrade connection to secure
-            server.ehlo()  # Re-identify as encrypted
+        # Connect to Gmail Server and Send
+        with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT, context=context) as server:
+            server.login(SENDER_EMAIL, SENDER_PASSWORD)
+            server.sendmail(SENDER_EMAIL, to_email, msg.as_string())
             
-            print("Logging in...")
-            server.login(sender_email, sender_password)
-            
-            print(f"Sending email to {recipient_email}...")
-            server.send_message(msg)
-            
-        print("Email sent successfully!")
+        print(f"Email sent successfully to {to_email}")
         return True
-
     except Exception as e:
-        print(f"EMAIL ERROR: {e}")
+        print(f"Failed to send email: {e}")
         return False
 
-@app.route('/custom', methods=['POST'])
-def custom_solution():
-    try:
-        # 1. Capture Data
-        # Support both JSON (if using fetch/axios) and Form Data (standard submit)
-        data = request.form if request.form else request.json
-        
-        name = data.get('name')
-        email = data.get('email')
-        service = data.get('service')
-        
-        print(f"New Lead: {email} requesting {service}")
+# --- PAGE ROUTES ---
 
-        # 2. Prepare Emails
-        admin_subject = f"New Request: {service} from {name}"
-        admin_body = f"""
-        New Project Lead:
-        -----------------
-        Name: {name}
-        Email: {email}
-        Service: {service}
-        Budget: {data.get('budget')}
-        Timeline: {data.get('timeline')}
-        
-        Details:
-        {data.get('details')}
-        """
-        
-        user_subject = "We received your request - Delstarford Works"
-        user_body = f"""
-        Hi {name},
-
-        Thank you for contacting Delstarford Works. We have received your request regarding "{service}".
-        
-        Our team is reviewing your details and will contact you within 24 hours.
-
-        Best,
-        Delstarford Works Team
-        """
-
-        # 3. Send Emails
-        # Send to Admin (You)
-        admin_email = os.environ.get('SENDER_EMAIL') 
-        
-        if send_email_notification(admin_email, admin_subject, admin_body):
-            # Send confirmation to User
-            send_email_notification(email, user_subject, user_body)
-            return jsonify({"success": True, "message": "Request sent successfully!"}), 200
-        else:
-            return jsonify({"success": False, "message": "Server email configuration failed. Check logs."}), 500
-
-    except Exception as e:
-        print(f"ROUTE ERROR: {e}")
-        return jsonify({"success": False, "message": f"Internal Server Error: {str(e)}"}), 500
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -225,13 +145,67 @@ def case_study():
 @app.route('/login')
 def login():
     return render_template('login.html')
-
 @app.route('/estimator')
 def estimator():
     return render_template('price_estimator.html')
 @app.route('/register')
 def register():
     return render_template('register.html')
+@app.route('/custom', methods=['GET', 'POST'])
+def custom_solution():
+    if request.method == 'POST':
+        # 1. Get Data from Form
+        user_email = request.form.get('email')
+        service = request.form.get('service')
+        details = request.form.get('details')
+        
+        print(f"New Lead: {user_email} requesting {service}")
+
+        # 2. EMAIL 1: Send Notification to YOU (Admin)
+        admin_subject = f"New Client Request: {service}"
+        admin_body = f"""
+        New Lead Received!
+        
+        Client Email: {user_email}
+        Service Requested: {service}
+        Project Details:
+        {details}
+        
+        Login to Firebase Console to view more.
+        """
+        send_email_notification(SENDER_EMAIL, admin_subject, admin_body)
+
+        # 3. EMAIL 2: Send Confirmation to USER
+        user_subject = "Request Received - Delstarford Works"
+        user_body = f"""
+        Hello,
+        
+        Thank you for contacting Delstarford Works.
+        
+        We have received your request for: {service}.
+        Our team of engineers is reviewing your requirements ("{details}") and will contact you shortly with a project roadmap and quote.
+        
+        Best Regards,
+        Delstarford Isaiah
+        CEO, Delstarford Works
+        """
+        send_email_notification(user_email, user_subject, user_body)
+        
+        # 4. Save to Firebase (Backup)
+        try:
+            ref = db.reference('leads/service_requests')
+            ref.push({
+                'email': user_email,
+                'service': service,
+                'details': details,
+                'timestamp': str(datetime.datetime.now())
+            })
+        except Exception as e:
+            print(f"Database Error: {e}")
+
+        return jsonify({"status": "success", "message": "Request sent! Check your email for confirmation."})
+    
+    return render_template('custom.html')
 
 @app.route('/calculate-estimate', methods=['POST'])
 def calculate_estimate():

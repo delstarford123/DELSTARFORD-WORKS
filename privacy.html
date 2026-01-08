@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="privacy-header">
+    <div class="container">
+        <h1>Privacy Policy</h1>
+        <p>Your trust is the foundation of our innovation.</p>
+        <span class="last-updated">Last Updated: January 8, 2026</span>
+    </div>
+</div>
+
+<div class="container privacy-content-wrapper">
+    <div class="privacy-card">
+        
+        <section>
+            <h3>1. Introduction</h3>
+            <p>Welcome to <strong>Delstarford Works</strong> ("we," "our," or "us"). We are committed to protecting your personal information and your right to privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website, use our AI Lab, or engage our agricultural technologies.</p>
+            <p>By accessing or using our services, you signify that you have read, understood, and agree to our collection, storage, use, and disclosure of your personal information as described in this Privacy Policy.</p>
+        </section>
+
+        <section>
+            <h3>2. Information We Collect</h3>
+            <p>We collect information that identifies, relates to, describes, references, is capable of being associated with, or could reasonably be linked, directly or indirectly, with a particular consumer or device.</p>
+            <ul>
+                <li><strong>Personal Identifiers:</strong> Name, email address, phone number, and postal address (for our Kakamega office coordination).</li>
+                <li><strong>Account Data:</strong> Passwords (encrypted via Firebase), login timestamps, and usage logs.</li>
+                <li><strong>Project Data:</strong> Information you provide regarding custom AI models, biotechnology requirements, or farm data logs uploaded to our systems.</li>
+                <li><strong>Financial Data:</strong> We do not store credit card information directly. Payment processing is handled by third-party providers (e.g., M-Pesa, Stripe).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>3. How We Use Your Information</h3>
+            <p>We use the data we collect to engineer better solutions for you:</p>
+            <ul>
+                <li>To provide and manage your access to the <strong>Delstarford Dashboard</strong>.</li>
+                <li>To train and improve our custom AI models (only using anonymized data).</li>
+                <li>To respond to your service requests and provide technical support.</li>
+                <li>To send administrative information, such as security alerts or policy updates.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>4. Data Storage and Security</h3>
+            <p>We utilize industry-standard security measures to protect your data. Our backend is hosted on secure cloud infrastructure (Render) and our database utilizes Google Firebase's real-time encryption standards.</p>
+            <p>However, please note that no electronic transmission over the Internet or information storage technology can be guaranteed to be 100% secure, so we cannot promise or guarantee that hackers, cybercriminals, or other unauthorized third parties will not be able to defeat our security.</p>
+        </section>
+
+        <section>
+            <h3>5. Sharing Your Information</h3>
+            <p>We <strong>never</strong> sell your personal data. We may share information only in the following situations:</p>
+            <ul>
+                <li><strong>Service Providers:</strong> With third-party vendors who perform services for us (e.g., email delivery, hosting).</li>
+                <li><strong>Legal Obligations:</strong> If required to do so by law or in response to valid requests by public authorities (e.g., a court or a government agency).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>6. Your Rights</h3>
+            <p>Depending on your location, you have the right to:</p>
+            <ul>
+                <li>Request access to the personal data we hold about you.</li>
+                <li>Request corrections to any inaccurate data.</li>
+                <li>Request deletion of your account and associated data ("Right to be Forgotten").</li>
+            </ul>
+            <p>To exercise these rights, please contact us using the information below.</p>
+        </section>
+
+        <section>
+            <h3>7. Contact Us</h3>
+            <p>If you have questions or comments about this policy, you may email us at:</p>
+            <div class="contact-box">
+                <p><strong>Email:</strong> <a href="mailto:delstarfordisaiah@gmail.com">delstarfordisaiah@gmail.com</a></p>
+                <p><strong>Phone:</strong> +254 707 605 751</p>
+                <p><strong>Address:</strong> Kakamega, Kenya</p>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<style>
+    /* Page Specific Styles */
+    .privacy-header {
+        background: #0f172a;
+        color: white;
+        padding: 80px 0 60px;
+        text-align: center;
+    }
+    
+    .privacy-header h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 10px;
+        background: linear-gradient(to right, #4ade80, #3b82f6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .last-updated {
+        display: inline-block;
+        margin-top: 20px;
+        font-size: 0.9rem;
+        color: #94a3b8;
+        background: rgba(255,255,255,0.1);
+        padding: 5px 15px;
+        border-radius: 20px;
+    }
+
+    .privacy-content-wrapper {
+        margin-top: -40px; /* Pull up into header */
+        padding-bottom: 80px;
+        position: relative;
+        z-index: 10;
+    }
+
+    .privacy-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1);
+        padding: 50px;
+        border: 1px solid #e2e8f0;
+    }
+
+    section {
+        margin-bottom: 40px;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 40px;
+    }
+
+    section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    h3 {
+        font-size: 1.5rem;
+        color: #1e293b;
+        margin-bottom: 20px;
+        font-weight: 700;
+    }
+
+    p, li {
+        font-size: 1rem;
+        color: #475569;
+        line-height: 1.7;
+        margin-bottom: 15px;
+    }
+
+    ul {
+        padding-left: 20px;
+        margin-bottom: 20px;
+    }
+
+    li {
+        margin-bottom: 10px;
+    }
+
+    .contact-box {
+        background: #f8fafc;
+        padding: 20px;
+        border-radius: 10px;
+        border-left: 4px solid #2563eb;
+    }
+
+    .contact-box p {
+        margin-bottom: 5px;
+    }
+
+    .contact-box a {
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+        .privacy-card {
+            padding: 30px;
+        }
+        .privacy-header h1 {
+            font-size: 2.2rem;
+        }
+    }
+</style>
+
+{% endblock %}

@@ -143,9 +143,15 @@ def case_study():
 def login():
     return render_template('login.html')
 from flask import render_template
-
+@app.route('/')
+def home():
+    return render_template('base.html') 
+    # OR create a dedicated index.html and use that:
+    # return render_template('index.html')
 # ... your other imports and app definition ...
-
+@app.route('/')
+def home():
+    return "<h1>Delstarford Works is Live!</h1><a href='/custom'>Go to Request Form</a>"
 @app.route('/estimator')
 def estimator():
     """

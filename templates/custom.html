@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="contact-page-wrapper">
+    <div class="contact-container">
+        
+        <div class="contact-info">
+            <h2>Let's Engineer the Future</h2>
+            <p class="subtitle">Whether you need a custom AI model, a biotech solution, or an agricultural management system, we build robust, scalable technology tailored to your needs.</p>
+
+            <div class="info-items">
+                <div class="info-item">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <h4>Precision Engineering</h4>
+                        <p>Solutions built on data-driven architectures.</p>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <div>
+                        <h4>Secure & Scalable</h4>
+                        <p>Enterprise-grade security standards.</p>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <h4>Rapid Deployment</h4>
+                        <p>From prototype to production in record time.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-direct">
+                <p><i class="fas fa-envelope"></i> delstarfordisaiah@gmail.com</p>
+                <p><i class="fas fa-map-marker-alt"></i> Kakamega, Kenya</p>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <form id="requestForm">
+                <h3>Project Request</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" name="name" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" name="email" placeholder="john@company.com" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Service Category</label>
+                    <select name="service" required>
+                        <option value="" disabled selected>Select a Service...</option>
+                        <optgroup label="Artificial Intelligence">
+                            <option value="custom_ai">Custom AI Model Development</option>
+                            <option value="computer_vision">Computer Vision (Medical/Agri)</option>
+                            <option value="nlp">Natural Language Processing</option>
+                        </optgroup>
+                        <optgroup label="Biotechnology">
+                            <option value="genetic_analysis">Biotech Genetic Analysis</option>
+                            <option value="insemination">Artificial Insemination Program</option>
+                        </optgroup>
+                        <optgroup label="Web Systems">
+                            <option value="dashboard">Custom Dashboard System</option>
+                            <option value="api">API Development</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Estimated Budget</label>
+                        <select name="budget">
+                            <option value="standard">Standard (KSH 30k - 100k)</option>
+                            <option value="pro">Professional (KSH 100k - 500k)</option>
+                            <option value="enterprise">Enterprise (KSH 500k+)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Timeline</label>
+                        <select name="timeline">
+                            <option value="urgent">Urgent (< 1 Month)</option>
+                            <option value="flexible">Flexible (1-3 Months)</option>
+                            <option value="longterm">Long Term (3+ Months)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Project Details</label>
+                    <textarea name="details" rows="5" placeholder="Describe your objectives, target audience, and any specific technical requirements..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    <span>Send Request</span>
+                    <div class="spinner" id="btnSpinner"></div>
+                </button>
+                
+                <p id="formMessage" class="form-message"></p>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .contact-page-wrapper {
+        min-height: 90vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 20px;
+        background-color: #f1f5f9;
+    }
+
+    .contact-container {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        background: white;
+        max-width: 1100px;
+        width: 100%;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    /* Left Side */
+    .contact-info {
+        background: #0f172a;
+        color: white;
+        padding: 50px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .contact-info h2 { font-size: 2rem; margin-bottom: 15px; color: white; }
+    .subtitle { color: #94a3b8; line-height: 1.6; margin-bottom: 40px; }
+    
+    .info-items { display: flex; flex-direction: column; gap: 30px; }
+    .info-item { display: flex; gap: 15px; align-items: flex-start; }
+    .info-item i { color: #3b82f6; font-size: 1.2rem; margin-top: 4px; }
+    .info-item h4 { margin: 0 0 5px 0; font-size: 1rem; }
+    .info-item p { margin: 0; color: #cbd5e1; font-size: 0.9rem; }
+
+    .contact-direct { margin-top: 50px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 25px; }
+    .contact-direct p { display: flex; align-items: center; gap: 10px; color: #cbd5e1; margin: 10px 0; }
+
+    /* Right Side (Form) */
+    .form-section { padding: 50px; }
+    .form-section h3 { margin: 0 0 30px 0; color: #0f172a; font-size: 1.5rem; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-size: 0.9rem; font-weight: 600; color: #334155; margin-bottom: 8px; }
+    
+    input, select, textarea {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 0.95rem;
+        background: #f8fafc;
+        transition: 0.3s;
+    }
+    input:focus, select:focus, textarea:focus {
+        outline: none;
+        border-color: #3b82f6;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .btn-submit {
+        background: #2563eb;
+        color: white;
+        width: 100%;
+        padding: 15px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex; justify-content: center; align-items: center; gap: 10px;
+        transition: 0.3s;
+    }
+    .btn-submit:hover { background: #1d4ed8; }
+    .btn-submit:disabled { background: #94a3b8; cursor: not-allowed; }
+
+    .spinner {
+        width: 20px; height: 20px;
+        border: 3px solid rgba(255,255,255,0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+        display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .form-message { margin-top: 15px; font-size: 0.9rem; text-align: center; font-weight: 600; }
+    .form-message.success { color: #10b981; }
+    .form-message.error { color: #ef4444; }
+
+    @media (max-width: 850px) {
+        .contact-container { grid-template-columns: 1fr; }
+        .form-row { grid-template-columns: 1fr; }
+        .contact-info { padding: 40px 30px; }
+        .form-section { padding: 40px 30px; }
+    }
+</style>
+
+<script>
+    document.getElementById('requestForm').onsubmit = async (e) => {
+        e.preventDefault();
+        
+        const btn = document.getElementById('submitBtn');
+        const spinner = document.getElementById('btnSpinner');
+        const btnText = btn.querySelector('span');
+        const msg = document.getElementById('formMessage');
+        
+        // 1. SAFETY CHECK: If already processing, stop here.
+        if (btn.disabled) return;
+
+        // 2. DISABLE BUTTON IMMEDIATELY (Prevents Triple Submit)
+        btn.disabled = true;
+        btnText.textContent = "Processing...";
+        spinner.style.display = 'block';
+        msg.textContent = "";
+        
+        const formData = new FormData(e.target);
+        
+        try {
+            const response = await fetch('/custom', { method: 'POST', body: formData });
+            
+            if (!response.ok) throw new Error('Network error');
+            
+            const result = await response.json();
+            
+            // 3. Success
+            msg.textContent = result.message || "Request sent successfully!";
+            msg.className = "form-message success";
+            e.target.reset(); 
+            
+            // OPTIONAL: Keep button disabled on success to prevent duplicate leads
+            // If you want them to be able to submit another, remove the next line.
+            // btn.disabled = false; 
+            
+        } catch (error) {
+            // 4. Error
+            console.error(error);
+            msg.textContent = "Error sending request. Please try again.";
+            msg.className = "form-message error";
+            
+            // Re-enable button ONLY on error so they can fix it
+            btn.disabled = false;
+        } finally {
+            // 5. Cleanup
+            spinner.style.display = 'none';
+            if (!btn.disabled) {
+                btnText.textContent = "Send Request";
+            } else {
+                btnText.textContent = "Sent";
+            }
+        }
+    };
+</script>
+
+{% endblock %}

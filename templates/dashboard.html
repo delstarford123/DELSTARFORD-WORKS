@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div id="security-screen" class="auth-overlay">
+    <div class="spinner"></div>
+    <h3>Verifying Identity...</h3>
+</div>
+
+<div class="dashboard-layout" id="main-dashboard" style="display: none; opacity: 0; transition: opacity 0.5s ease;">
+    
+    <aside class="dash-sidebar">
+        <div class="user-profile-card">
+            <div class="avatar-circle">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="profile-text">
+                <h3 id="display-name">Loading...</h3>
+                <p id="display-email">verifying...</p>
+                <span class="badge-pro">PRO MEMBER</span>
+            </div>
+        </div>
+
+        <nav class="dash-menu">
+            <p class="menu-label">Analytics</p>
+            <a href="#overview" class="menu-item active"><i class="fas fa-th-large"></i> Overview</a>
+            <a href="/ai-lab" class="menu-item"><i class="fas fa-microchip"></i> My AI Models</a>
+            
+            <p class="menu-label">Management</p>
+            <a href="/services" class="menu-item"><i class="fas fa-server"></i> Active Services</a>
+            <a href="/billing" class="menu-item"><i class="fas fa-credit-card"></i> Billing</a>
+
+            <div class="menu-spacer"></div>
+            <button onclick="handleLogout()" class="menu-item logout"><i class="fas fa-sign-out-alt"></i> Terminate Session</button>
+        </nav>
+    </aside>
+
+    <main class="dash-content">
+        <header class="dash-topbar">
+            <div class="topbar-left">
+                <h1>Command Center</h1>
+                <div class="status-chip success">
+                    <span class="dot pulse"></span> System Operational
+                </div>
+            </div>
+            <div class="topbar-right">
+                <button class="icon-btn"><i class="far fa-bell"></i><span class="notif-badge"></span></button>
+                <a href="/custom" class="btn-primary-small"><i class="fas fa-plus"></i> New Project</a>
+            </div>
+        </header>
+
+        <div class="dash-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="icon-box blue"><i class="fas fa-code-branch"></i></div>
+                    <span class="trend-indicator up">+12% <i class="fas fa-arrow-up"></i></span>
+                </div>
+                <div class="stat-info">
+                    <h2 id="project-count">--</h2>
+                    <p class="label">Active Projects</p>
+                    <div class="mini-progress">
+                        <div class="fill" id="project-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="icon-box purple"><i class="fas fa-bolt"></i></div>
+                </div>
+                <div class="stat-info">
+                    <h2>84%</h2>
+                    <p class="label">API Limit Usage</p>
+                    <div class="mini-progress warning">
+                        <div class="fill" style="width: 84%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="icon-box green"><i class="fas fa-envelope"></i></div>
+                </div>
+                <div class="stat-info">
+                    <h2 id="msg-count">0</h2>
+                    <p class="label">Unread Messages</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="dash-split-section">
+            
+            <section class="chart-panel card-std">
+                <div class="panel-header">
+                    <h3>Resource Analytics</h3>
+                    <select class="time-select">
+                        <option>Last 7 Days</option>
+                        <option>Last 30 Days</option>
+                    </select>
+                </div>
+                <div class="chart-container" style="position: relative; height: 250px;">
+                    <canvas id="usageChart"></canvas>
+                </div>
+            </section>
+
+            <section class="quick-actions card-std">
+                <div class="panel-header">
+                    <h3>Quick Actions</h3>
+                </div>
+                <div class="action-grid">
+                    <button class="action-btn"><i class="fas fa-rocket"></i> Deploy</button>
+                    <button class="action-btn"><i class="fas fa-user-plus"></i> Invite</button>
+                    <button class="action-btn"><i class="fas fa-file-alt"></i> Docs</button>
+                    <button class="action-btn"><i class="fas fa-headset"></i> Support</button>
+                </div>
+            </section>
+        </div>
+
+        <section class="activity-panel card-std">
+            <div class="panel-header">
+                <h3>Live Activity Log</h3>
+                <button class="btn-text">View All</button>
+            </div>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Event</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activity-rows">
+                        <tr><td colspan="3" class="text-center">Initializing secure stream...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+
+<style>
+    /* Security Overlay */
+    .auth-overlay { position: fixed; inset: 0; background: #f8fafc; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .auth-overlay h3 { margin-top: 20px; color: #334155; font-family: sans-serif; }
+    .spinner { border: 4px solid #e2e8f0; border-left-color: #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    /* Layout Tweaks */
+    .dash-split-section { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 24px; }
+    @media(max-width: 900px) { .dash-split-section { grid-template-columns: 1fr; } }
+    
+    .card-std { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; }
+    .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .panel-header h3 { font-size: 1.1rem; color: #1e293b; font-weight: 600; margin: 0; }
+    
+    /* Stats Improvements */
+    .stat-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; }
+    .stat-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+    .stat-info h2 { font-size: 2rem; margin: 0; color: #0f172a; }
+    .mini-progress { height: 6px; background: #f1f5f9; border-radius: 10px; margin-top: 10px; overflow: hidden; }
+    .mini-progress .fill { height: 100%; background: #3b82f6; border-radius: 10px; }
+    .mini-progress.warning .fill { background: #f59e0b; }
+    
+    /* Quick Actions */
+    .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .action-btn { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px; cursor: pointer; color: #475569; font-weight: 500; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+    .action-btn:hover { background: #eff6ff; border-color: #bfdbfe; color: #2563eb; }
+    
+    /* Topbar Chips */
+    .status-chip { background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; }
+    .badge-pro { background: #1e293b; color: #fbbf24; font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; font-weight: bold; margin-top: 5px; display: inline-block; }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="/path/to/your/main.js"></script>
+
+<script>
+    // Initialize Chart (Put this inside your main.js init function normally)
+    // This is just to demonstrate the visual
+    document.addEventListener('DOMContentLoaded', () => {
+        const ctx = document.getElementById('usageChart');
+        if(ctx) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'API Calls',
+                        data: [12, 19, 3, 5, 2, 3, 15],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { 
+                        y: { display: false, grid: {display: false} },
+                        x: { grid: {display: false} }
+                    }
+                }
+            });
+        }
+    });
+</script>
+
+{% endblock %}

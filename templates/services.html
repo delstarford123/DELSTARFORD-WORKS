@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<section class="services-hero">
+    <div class="container">
+        <h1>Global Solutions, <span class="highlight">Kenyan Roots.</span></h1>
+        <p>Expertise in Artificial Intelligence, Fullstack Engineering, and Advanced Agricultural Biotechnology.</p>
+    </div>
+</section>
+
+<section class="services-container container">
+    <div class="service-row" id="ai-engineering">
+        <div class="service-text">
+            <div class="service-icon">01</div>
+            <h2>AI & Machine Learning</h2>
+            <p>We build specialized models for complex environments. From predictive pharmacology (DexaGen AI) to real-time disease detection in crops.</p>
+            <ul>
+                <li>Custom Neural Network Development</li>
+                <li>Predictive Analytics for Healthcare</li>
+                <li>Computer Vision for Mosquito Surveillance</li>
+            </ul>
+            <a href="/custom" class="btn-outline">Request AI Model</a>
+        </div>
+        <div class="service-image-box">
+             
+        </div>
+    </div>
+
+    <div class="service-row reverse" id="web-dev">
+        <div class="service-image-box">
+             
+        </div>
+        <div class="service-text">
+            <div class="service-icon">02</div>
+            <h2>Fullstack Web Ecosystems</h2>
+            <p>Scalable, secure, and professional web platforms. We don't just build sites; we build business engines with integrated banking and search tools.</p>
+            <ul>
+                <li>Enterprise SaaS Platforms</li>
+                <li>Financial Systems (IIG Smart Farmers)</li>
+                <li>API Development & Integration</li>
+            </ul>
+            <a href="/custom" class="btn-outline">Build My Platform</a>
+        </div>
+    </div>
+
+    <div class="service-row" id="agri-biotech">
+        <div class="service-text">
+            <div class="service-icon">03</div>
+            <h2>Agricultural Biotechnology</h2>
+            <p>Advancing food security through science. We provide technical expertise in genetic optimization and precision livestock management.</p>
+            <ul>
+                <li>Professional Artificial Insemination (AI)</li>
+                <li>Genetic Sequence Analysis</li>
+                <li>Precision Farming Consultation</li>
+            </ul>
+            <a href="/contact" class="btn-outline">Consult an Expert</a>
+        </div>
+        <div class="service-image-box">
+             
+        </div>
+    </div>
+
+    <div class="service-row reverse" id="bioinformatics">
+        <div class="service-image-box">
+             
+        </div>
+        <div class="service-text">
+            <div class="service-icon">04</div>
+            <h2>Bioinformatics</h2>
+            <p>Combining biology with big data. We automate genetic structure analysis and sequence drawing using Python-based NCBI integrations.</p>
+            <ul>
+                <li>Genetic Structure Mapping</li>
+                <li>Automated Sequence Analysis</li>
+                <li>Drug Interaction Prediction</li>
+            </ul>
+            <a href="/ai-lab" class="btn-outline">Explore Biotech AI</a>
+        </div>
+    </div>
+</section>
+
+<section class="process-section">
+    <div class="container text-center">
+        <h2>Our Workflow</h2>
+        <div class="process-grid">
+            <div class="step">
+                <div class="step-num">1</div>
+                <h4>Analyze</h4>
+                <p>We study your specific biological or technical challenge.</p>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <h4>Engineer</h4>
+                <p>Our labs in Kakamega develop the custom code or genetic strategy.</p>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <h4>Deploy</h4>
+                <p>We implement the solution on-site or via the Delstarford Cloud.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    /* Service Layout Styles */
+    .services-hero { padding: 100px 0; background: #fff; text-align: center; }
+    .services-hero h1 { font-size: 3.5rem; margin-bottom: 20px; color: #0f172a; }
+    
+    .service-row { display: flex; align-items: center; gap: 80px; padding: 100px 0; border-bottom: 1px solid #e2e8f0; }
+    .service-row.reverse { flex-direction: row-reverse; }
+    .service-text { flex: 1; }
+    .service-image-box { flex: 1; background: #f8fafc; border-radius: 30px; height: 350px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid #e2e8f0; }
+    
+    .service-icon { font-size: 1.2rem; font-weight: bold; color: #2563eb; margin-bottom: 20px; font-family: 'Courier New', monospace; }
+    .service-text h2 { font-size: 2.5rem; margin-bottom: 20px; color: #1e293b; }
+    .service-text p { font-size: 1.1rem; color: #64748b; line-height: 1.7; margin-bottom: 25px; }
+    .service-text ul { list-style: none; padding: 0; margin-bottom: 30px; }
+    .service-text li { margin-bottom: 12px; color: #475569; padding-left: 25px; position: relative; }
+    .service-text li::before { content: "→"; position: absolute; left: 0; color: #2563eb; font-weight: bold; }
+
+    .btn-outline { display: inline-block; padding: 12px 30px; border: 2px solid #0f172a; border-radius: 8px; font-weight: bold; text-decoration: none; color: #0f172a; transition: 0.3s; }
+    .btn-outline:hover { background: #0f172a; color: white; }
+
+    /* Process Section */
+    .process-section { background: #0f172a; color: white; padding: 100px 0; margin-top: 50px; }
+    .process-section h2 { margin-bottom: 60px; font-size: 2.5rem; }
+    .process-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+    .step-num { width: 50px; height: 50px; border: 2px solid #2563eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-weight: bold; color: #2563eb; }
+    .step h4 { font-size: 1.5rem; margin-bottom: 15px; }
+    .step p { color: #94a3b8; font-size: 0.95rem; }
+
+    @media (max-width: 768px) {
+        .service-row, .service-row.reverse { flex-direction: column; gap: 40px; padding: 60px 0; }
+        .services-hero h1 { font-size: 2.5rem; }
+        .process-grid { grid-template-columns: 1fr; }
+    }
+</style>
+
+{% endblock %}

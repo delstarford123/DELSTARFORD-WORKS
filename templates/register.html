@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<section class="auth-section" style="min-height: 85vh; display: flex; align-items: center; justify-content: center; background: #f8fafc; padding: 40px 20px;">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h2>Initialize Account</h2>
+            <p>Join the network to access AI models and tools.</p>
+        </div>
+
+        <form id="registerForm" class="advanced-form">
+            
+            <div class="form-group" style="text-align: center; margin-bottom: 25px;">
+                <label style="display: block; margin-bottom: 10px;">Passport Photo</label>
+                
+                <div onclick="document.getElementById('reg-photo').click()" style="width: 100px; height: 100px; margin: 0 auto; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; border: 2px dashed #94a3b8; position: relative;">
+                    
+                    <img id="photo-preview" src="" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                    
+                    <div id="photo-placeholder" style="text-align: center; color: #64748b;">
+                        <i class="fas fa-camera" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+                
+                <input type="file" id="reg-photo" accept="image/*" style="display: none;" onchange="previewImage(this)">
+                <p style="font-size: 0.8rem; color: #64748b; margin-top: 5px;">Click to upload (Max 500KB)</p>
+            </div>
+
+            <div class="form-group">
+                <label>Full Name</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="reg-name" placeholder="John Doe" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Email Address</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="reg-email" placeholder="name@example.com" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Create Password</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="reg-password" placeholder="Min. 6 characters" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary w-full" id="regBtn">
+                Create Account
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Already have an ID? <a href="/login">Log In</a></p>
+        </div>
+    </div>
+</section>
+
+<script>
+    // 1. Image Preview Logic
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            
+            // Check file size (Limit to ~500KB to prevent DB lag)
+            if (input.files[0].size > 500000) {
+                alert("File is too large! Please upload an image under 500KB.");
+                input.value = ""; // Clear input
+                return;
+            }
+
+            reader.onload = function(e) {
+                document.getElementById('photo-preview').src = e.target.result;
+                document.getElementById('photo-preview').style.display = 'block';
+                document.getElementById('photo-placeholder').style.display = 'none';
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // 2. Registration Logic
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const name = document.getElementById('reg-name').value;
+        const email = document.getElementById('reg-email').value;
+        const password = document.getElementById('reg-password').value;
+        const photoInput = document.getElementById('reg-photo');
+        const btn = document.getElementById('regBtn');
+
+        try {
+            btn.innerText = "Processing...";
+            btn.disabled = true;
+
+            // Helper: Convert Image to Base64 String
+            let photoURL = "";
+            if (photoInput.files[0]) {
+                photoURL = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = error => reject(error);
+                    reader.readAsDataURL(photoInput.files[0]);
+                });
+            } else {
+                // Use a default avatar if they didn't upload one
+                photoURL = "https://ui-avatars.com/api/?name=" + name + "&background=random";
+            }
+
+            // A. Create Auth User
+            const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+            const user = userCredential.user;
+
+            // B. Update Auth Profile (so it's available immediately in session)
+            await user.updateProfile({ 
+                displayName: name,
+                photoURL: photoURL 
+            });
+
+            // C. Save to Database (including the photo string)
+            await firebase.database().ref('users/' + user.uid).set({
+                name: name,
+                email: email,
+                photo: photoURL, // Saved here to retrieve later
+                role: 'member',
+                joined_at: new Date().toISOString()
+            });
+
+            // D. Redirect
+            window.location.href = "/dashboard";
+            
+        } catch (error) {
+            console.error(error);
+            alert("Registration Failed: " + error.message);
+            btn.innerText = "Create Account";
+            btn.disabled = false;
+        }
+    });
+</script>
+
+{% endblock %}

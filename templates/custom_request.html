@@ -1,0 +1,58 @@
+<div class="estimator-box">
+    <h3>Instant AI Project Estimator</h3>
+    <p>Get a rough idea of the cost for your custom Delstarford Works model.</p>
+
+    <div class="input-group">
+        <label>Type of Intelligence</label>
+        <select id="modelType" onchange="updatePrice()">
+            <option value="tabular">Tabular Data (Financial/Sales)</option>
+            <option value="vision">Computer Vision (Healthcare/Agri-Scan)</option>
+            <option value="nlp">Natural Language (Chatbots/Translation)</option>
+            <option value="bio" selected>Bioinformatics (Genetic Analysis)</option>
+        </select>
+    </div>
+
+    <div class="input-group">
+        <label>Data Volume: <span id="sizeLabel">50,000</span> Records</label>
+        <input type="range" id="dataSize" min="1000" max="1000000" step="1000" value="50000" oninput="updatePrice()">
+    </div>
+
+    <div class="input-group">
+        <label>Complexity</label>
+        <div class="radio-group">
+            <input type="radio" name="complexity" value="standard" checked onclick="updatePrice()"> Standard
+            <input type="radio" name="complexity" value="advanced" onclick="updatePrice()"> Advanced
+        </div>
+    </div>
+
+    <div class="price-display">
+        <span>Estimated Investment:</span>
+        <h2 id="totalPrice">KSH 0.00</h2>
+    </div>
+
+    <button class="btn-primary w-100" onclick="submitToFirebase()">Lock in this Quote</button>
+</div>
+
+<script>
+async function updatePrice() {
+    const payload = {
+        modelType: document.getElementById('modelType').value,
+        dataSize: document.getElementById('dataSize').value,
+        complexity: document.querySelector('input[name="complexity"]:checked').value
+    };
+
+    document.getElementById('sizeLabel').innerText = Number(payload.dataSize).toLocaleString();
+
+    const response = await fetch('/calculate-estimate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+    
+    const data = await response.json();
+    document.getElementById('totalPrice').innerText = `KSH ${data.estimate.toLocaleString()}`;
+}
+
+// Initial call
+updatePrice();
+</script>

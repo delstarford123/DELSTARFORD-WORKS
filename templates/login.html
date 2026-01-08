@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<section class="auth-section" style="min-height: 80vh; display: flex; align-items: center; justify-content: center; background: #f8fafc;">
+    <div class="auth-card">
+        <div class="auth-header">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="DW Logo" class="auth-logo">
+            <h2>Welcome Back</h2>
+            <p>Enter your credentials to access the terminal.</p>
+        </div>
+
+        <form id="loginForm" class="advanced-form">
+            <div class="form-group">
+                <label>Email Address</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="login-email" placeholder="name@example.com" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="login-password" placeholder="••••••••" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary w-full" id="loginBtn">
+                Secure Login <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p>New to Delstarford Works? <a href="/register">Create an Account</a></p>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        const btn = document.getElementById('loginBtn');
+
+        try {
+            btn.innerText = "Authenticating...";
+            btn.disabled = true;
+
+            // Firebase Login
+            await firebase.auth().signInWithEmailAndPassword(email, password);
+            
+            // Success
+            window.location.href = "/dashboard";
+            
+        } catch (error) {
+            console.error(error);
+            alert("Access Denied: " + error.message);
+            btn.innerText = "Secure Login";
+            btn.disabled = false;
+        }
+    });
+</script>
+
+<style>
+    .auth-card {
+        background: white;
+        padding: 40px;
+        border-radius: 24px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        border: 1px solid #e2e8f0;
+        width: 100%;
+        max-width: 450px;
+    }
+    .auth-header { text-align: center; margin-bottom: 30px; }
+    .auth-logo { height: 60px; margin-bottom: 15px; }
+    .auth-header h2 { font-size: 1.8rem; color: #0f172a; margin: 0; }
+    .auth-header p { color: #64748b; font-size: 0.95rem; }
+    .auth-footer { text-align: center; margin-top: 25px; font-size: 0.9rem; color: #64748b; }
+    .auth-footer a { color: #2563eb; font-weight: 600; text-decoration: none; }
+</style>
+
+{% endblock %}

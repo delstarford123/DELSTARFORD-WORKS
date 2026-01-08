@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<section class="case-hero">
+    <div class="container">
+        <span class="case-badge">Biotech / AI</span>
+        <h1>DexaGen AI: Neuro-Symbolic Pharmacological Engine</h1>
+        <p class="case-subtitle">How we reduced drug interaction testing time by 40% using Generative AI and DeepChem.</p>
+        
+        <div class="case-meta">
+            <div class="meta-item">
+                <i class="fas fa-user"></i>
+                <span>Client: MMUST Research</span>
+            </div>
+            <div class="meta-item">
+                <i class="fas fa-calendar"></i>
+                <span>Duration: 6 Months</span>
+            </div>
+            <div class="meta-item">
+                <i class="fas fa-code-branch"></i>
+                <span>Tech: Python, TensorFlow, WebGL</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container py-50">
+    <div class="case-grid">
+        
+        <div class="case-content">
+            <h2>The Challenge</h2>
+            <p>Traditional drug discovery is slow and expensive. Researchers at MMUST needed a way to predict <strong>Drug-Drug Interactions (DDIs)</strong> without running thousands of physical wet-lab tests.</p>
+            
+            <h2>The Solution</h2>
+            <p>We built <strong>DexaGen AI</strong>, a web-based platform that uses:</p>
+            <ul class="case-list">
+                <li><strong>Graph Neural Networks (GNNs)</strong> to analyze molecular structures.</li>
+                <li><strong>3D Visualization</strong> (using 3Dmol.js) to show binding pockets in real-time.</li>
+                <li><strong>Generative AI</strong> to suggest safer molecular variations.</li>
+            </ul>
+
+            <div class="code-preview">
+                <div class="window-header">
+                    <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+                    <span class="filename">prediction_engine.py</span>
+                </div>
+                <pre>
+def predict_interaction(molecule_a, molecule_b):
+    # Load pre-trained GNN model
+    embedding_a = model.encode(molecule_a)
+    embedding_b = model.encode(molecule_b)
+    
+    risk_score = cosine_similarity(embedding_a, embedding_b)
+    return "High Risk" if risk_score > 0.85 else "Safe"</pre>
+            </div>
+
+            <h2>The Impact</h2>
+            <div class="impact-stats">
+                <div class="impact-card">
+                    <h3>40%</h3>
+                    <p>Faster Testing</p>
+                </div>
+                <div class="impact-card">
+                    <h3>98.5%</h3>
+                    <p>Prediction Accuracy</p>
+                </div>
+            </div>
+        </div>
+
+        <aside class="case-sidebar">
+            <div class="sidebar-box">
+                <h4>Project Gallery</h4>
+                <div class="gallery-grid">
+                    <div class="gallery-item" style="background: #e2e8f0; height: 150px;"></div>
+                    <div class="gallery-item" style="background: #cbd5e1; height: 150px;"></div>
+                </div>
+                <p class="caption">System Interface & 3D Modeling</p>
+            </div>
+
+            <div class="sidebar-box callout">
+                <h4>Need a similar solution?</h4>
+                <p>We can adapt DexaGen's core engine for agriculture or chemical manufacturing.</p>
+                <a href="/custom" class="btn-primary w-full">Request Proposal</a>
+            </div>
+        </aside>
+
+    </div>
+</section>
+
+<section class="next-project">
+    <div class="container">
+        <p>Next Case Study</p>
+        <a href="#"><h3>Smart Health AI: Malaria Prediction &rarr;</h3></a>
+    </div>
+</section>
+
+{% endblock %}

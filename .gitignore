@@ -1,0 +1,17 @@
+# --- Security: Never push these ---
+.env
+service acount key.json
+
+# --- Python System Files ---
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# --- Ignored Data Files ---
+*.json
+
+# --- Exceptions (Files we WANT to keep) ---
+!package.json
+# Add any other json files you want to keep here, e.g.:
+# !manifest.json

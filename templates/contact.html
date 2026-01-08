@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<section class="contact-hero">
+    <div class="container text-center">
+        <span class="hero-badge">24/7 Support</span>
+        <h1>Let's Start a Conversation</h1>
+        <p>Whether you need a custom AI model, a biotech consultation, or support for the Smart Farmers platform, our team in Kakamega is ready.</p>
+    </div>
+</section>
+
+<section class="container py-50">
+    <div class="contact-grid-advanced">
+        
+        <div class="contact-details">
+            <div class="detail-card">
+                <div class="icon-circle email-icon"><i class="fas fa-envelope"></i></div>
+                <div>
+                    <h3>Email Us</h3>
+                    <p>For official quotes & inquiries</p>
+                    <a href="mailto:delstarfordisaiah@gmail.com" class="link-item">delstarfordisaiah@gmail.com</a>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <div class="icon-circle whatsapp-icon"><i class="fab fa-whatsapp"></i></div>
+                <div>
+                    <h3>WhatsApp Direct</h3>
+                    <p>Instant chat for urgent support</p>
+                    <a href="https://wa.me/254707605751" target="_blank" class="link-item">+254 707 605 751</a>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <div class="icon-circle loc-icon"><i class="fas fa-map-marker-alt"></i></div>
+                <div>
+                    <h3>Visit HQ</h3>
+                    <p>Innovation Hub</p>
+                    <span class="link-item">Near MMUST, Kakamega, Kenya</span>
+                </div>
+            </div>
+
+            <div class="map-wrapper">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.691745426749!2d34.76566631457199!3d0.283333399870567!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x17803e4d0c2e9b3d%3A0x6734763375000000!2sMasinde%20Muliro%20University%20of%20Science%20and%20Technology!5e0!3m2!1sen!2ske!4v1625000000000!5m2!1sen!2ske" 
+                    width="100%" height="250" style="border:0;" allowfullscreen="" loading="lazy">
+                </iframe>
+            </div>
+        </div>
+
+        <div class="contact-form-wrapper">
+            <div class="form-header">
+                <h3>Send a Message</h3>
+                <p>We usually reply within 2 hours.</p>
+            </div>
+            
+            <form id="contactForm" class="advanced-form">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user"></i>
+                        <input type="text" name="name" placeholder="e.g. kevin" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" name="email" placeholder="kevin@gmail.com" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Service Category</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-list"></i>
+                        <select name="subject">
+                            <option value="General Inquiry">General Inquiry</option>
+                            <option value="AI Model Request">AI Model Request</option>
+                            <option value="Agri-Biotech Service">Agri-Biotech Service</option>
+                            <option value="Support Issue">Technical Support</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Message</label>
+                    <div class="input-wrapper top-align">
+                        <i class="fas fa-comment-alt"></i>
+                        <textarea name="message" rows="5" placeholder="Tell us about your project or issue..." required></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary w-full" id="sendBtn">
+                    <span>Send Message</span>
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<section class="faq-section">
+    <div class="container">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-grid">
+            <div class="faq-item">
+                <h4><i class="fas fa-robot"></i> Can I buy an AI model directly?</h4>
+                <p>Yes. Visit our <a href="/ai-lab">AI Lab</a> to purchase pre-built models instantly. For custom neural networks, use the form above.</p>
+            </div>
+            <div class="faq-item">
+                <h4><i class="fas fa-dna"></i> Do you offer on-site Biotech?</h4>
+                <p>Yes. Our Artificial Insemination and genetic analysis services are available for farms across Western Kenya.</p>
+            </div>
+            <div class="faq-item">
+                <h4><i class="fas fa-code"></i> How secure are your web systems?</h4>
+                <p>We use enterprise-grade encryption (SSL) and Firebase Security Rules to protect all financial and personal data.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

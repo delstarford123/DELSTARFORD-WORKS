@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<section class="hero-section" style="padding: 80px 20px; background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);">
+    <div class="hero-content">
+        <span class="hero-badge">Delstarford AI Lab</span>
+        <h1>Marketplace of <span class="highlight">Intelligence</span></h1>
+        <p>Production-ready models for Agriculture, Biotech, and Fintech. Proven algorithms deployed to your server in less than 24 hours.</p>
+    </div>
+</section>
+
+<section class="container py-50">
+    <div class="grid-filter" style="text-align: center; margin-bottom: 50px;">
+        <p style="color: #64748b; font-size: 0.95rem; font-weight: 500;">
+            Showing <strong>{{ models|length }}</strong> Enterprise Solutions
+        </p>
+    </div>
+
+    <div class="model-grid">
+        {% for model in models %}
+        <div class="model-card scroll-trigger">
+            <div class="card-header">
+                <span class="category-tag">{{ model.category }}</span>
+                <span class="price-tag">{{ model.price }}</span>
+            </div>
+            
+            <h3>{{ model.name }}</h3>
+            <p class="desc">{{ model.desc }}</p>
+            
+            <div class="tech-stack">
+                <i class="fas fa-microchip" style="margin-right: 8px;"></i> 
+                {{ model.tech }}
+            </div>
+
+            <div class="card-actions">
+                <a href="/custom" class="btn-buy">Purchase License</a>
+                <button class="btn-demo" onclick="alert('Demo request for {{ model.name }} has been logged. Our team will contact you.')">
+                    View Demo
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<div style="position: fixed; bottom: 30px; left: 30px; z-index: 100;">
+    <button onclick="toggleAudio()" id="audioControl" class="btn-primary" style="border-radius: 50px; padding: 12px 25px; font-size: 0.85rem; box-shadow: 0 4px 15px rgba(37,99,235,0.3);">
+        🔊 Listen to Overview
+    </button>
+</div>
+
+<script>
+    let isSpeaking = false;
+    const synth = window.speechSynthesis;
+
+    function toggleAudio() {
+        const btn = document.getElementById('audioControl');
+        
+        if (synth.speaking) {
+            // Stop speaking
+            synth.cancel();
+            isSpeaking = false;
+            btn.innerHTML = "🔊 Listen to Overview";
+            btn.style.background = "#2563eb"; // Reset color
+        } else {
+            // Start speaking
+            isSpeaking = true;
+            btn.innerHTML = "🔇 Stop Listening";
+            btn.style.background = "#ef4444"; // Red for stop
+            speakProjects();
+        }
+    }
+
+    function speakProjects() {
+        const btn = document.getElementById('audioControl');
+        
+        // Intro Text
+        let textToRead = "Welcome to the Delstarford AI Lab. Here are our available enterprise solutions. ";
+        
+        // Read Cards (Limit to first 5 for better UX)
+        const cards = document.querySelectorAll('.model-card');
+        cards.forEach((card, index) => {
+            if(index < 5) { 
+                const title = card.querySelector('h3')?.innerText;
+                const price = card.querySelector('.price-tag')?.innerText;
+                // Add a natural pause in the text
+                textToRead += `Solution: ${title}. Price: ${price}. `;
+            }
+        });
+        
+        textToRead += "Please browse the page to see the full catalog.";
+        
+        const utterance = new SpeechSynthesisUtterance(textToRead);
+        utterance.rate = 1; 
+        utterance.pitch = 1;
+
+        // Reset button when speech finishes naturally
+        utterance.onend = function() {
+            isSpeaking = false;
+            btn.innerHTML = "🔊 Listen to Overview";
+            btn.style.background = "#2563eb";
+        };
+        
+        synth.speak(utterance);
+    }
+</script>
+
+{% endblock %}

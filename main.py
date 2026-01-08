@@ -23,6 +23,8 @@ app = Flask(__name__)
 SERVICE_ACCOUNT_KEY = os.getenv("SERVICE_ACCOUNT_KEY")
 DATABASE_URL = os.getenv("DATABASE_URL")
 
+
+
 # --- EMAIL CONFIGURATION ---
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 465

@@ -29,7 +29,53 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('project-status')) initDashboard();
     if (document.getElementById('requestForm')) initContactForm();
 });
+// AUTH LISTENER
+    firebase.auth().onAuthStateChanged((user) => {
+        const securityScreen = document.getElementById('security-screen');
+        const mainDashboard = document.getElementById('main-dashboard');
+        
+        // 1. Get the current URL path
+        const currentPath = window.location.pathname;
 
+        if (user) {
+            // --- USER IS LOGGED IN ---
+            console.log("Access Granted: " + user.email);
+            
+            // Hide loading screen, show dashboard (if on dashboard page)
+            if (securityScreen) securityScreen.style.display = 'none';
+            if (mainDashboard) mainDashboard.style.display = 'flex';
+            
+            // Initialize Dashboard Data
+            initRealDashboard(user);
+
+        } else {
+            // --- USER IS NOT LOGGED IN ---
+            
+            // DEFINE YOUR PRIVATE PAGES HERE
+            // These are the only pages that require a password
+            const protectedPages = [
+                '/dashboard', 
+                '/admin', 
+                '/account',
+                '/ai-lab'
+            ];
+
+            // Check if the user is currently on a protected page
+            // We use 'includes' so it catches '/dashboard' and '/dashboard.html'
+            const isProtected = protectedPages.some(page => currentPath.includes(page));
+
+            if (isProtected) {
+                console.log("Protected Area. Redirecting to Login...");
+                // Save where they were trying to go so we can return them later (optional)
+                sessionStorage.setItem('redirectAfterLogin', currentPath);
+                window.location.href = "/login";
+            } else {
+                // If on Public pages (Home, About, Contact, Login), DO NOTHING.
+                // Just hide the security spinner if it exists
+                if (securityScreen) securityScreen.style.display = 'none';
+            }
+        }
+    });
 // 2. NAVIGATION & UI EFFECTS
 function initNavigation() {
     const navbar = document.querySelector('.navbar');

@@ -200,7 +200,7 @@ def register():
 @app.route('/estimator')
 def estimator():
     # If your estimator is inside custom.html, redirect there
-    return render_template('custom.html')
+    return render_template('custom_request.html')
 
 # --- MAIN LOGIC ROUTE (Email + Form + Estimator) ---
 @app.route('/custom', methods=['GET', 'POST'])

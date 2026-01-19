@@ -2,7 +2,8 @@ import os
 import datetime
 import smtplib
 import ssl
-import random 
+import threading  # For background emails
+import random     # For ticket IDs
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from flask import Flask, render_template, request, jsonify
@@ -15,7 +16,7 @@ import firebase_admin
 from firebase_admin import credentials, db
 
 # --- LOAD SECRETS ---
-load_dotenv()  # This loads the variables from .env
+load_dotenv()
 
 # --- CONFIGURATION ---
 app = Flask(__name__)
@@ -44,7 +45,7 @@ if not firebase_admin._apps:
     except Exception as e:
         print(f"Error Initializing Firebase: {e}")
 
-# --- AI MODELS DATA (For ai_lab.html) ---
+# --- AI MODELS DATA ---
 AI_MODELS = [
     {"id": 1, "name": "DexaGen AI", "category": "Pharmacology", "price": "KSh 85,000", "tech": "DeepChem, WebGL", "desc": "Neuro-Symbolic engine simulating 3D drug interactions and molecular analysis."},
     {"id": 19, "name": "SMART HEALTH AI", "category": "Healthcare", "price": "KSh 95,000", "tech": "Scikit-learn, IoT", "desc": "Predicts malaria-prone regions via mosquito species tracking."},
@@ -56,19 +57,24 @@ AI_MODELS = [
     {"id": 8, "name": "Eco-Ride", "category": "Environment", "price": "KSh 50,000", "tech": "React Native", "desc": "Carbon footprint tracking app."},
 ]
 
-# --- HELPER FUNCTION: SEND HTML EMAIL ---
-def send_email_html(to_email, subject, html_content):
+# --- BACKGROUND EMAIL FUNCTION ---
+def send_email_background(to_email, subject, html_content):
     """
-    Sends an HTML email using Gmail SMTP (TLS Port 587).
+    This function runs in a separate thread.
+    It handles the slow connection to Gmail.
     """
-    if not SENDER_EMAIL or not SENDER_PASSWORD:
-        print("Error: Email credentials missing.")
-        return False
+    # Re-fetch env vars inside thread to be safe
+    email_user = os.getenv("SENDER_EMAIL")
+    email_pass = os.getenv("SENDER_PASSWORD")
+    
+    if not email_user or not email_pass:
+        print("Error: Email credentials missing in background thread.")
+        return
 
     try:
         # Create the email structure
         msg = MIMEMultipart('alternative')
-        msg['From'] = SENDER_EMAIL
+        msg['From'] = email_user
         msg['To'] = to_email
         msg['Subject'] = subject
 
@@ -76,18 +82,26 @@ def send_email_html(to_email, subject, html_content):
         part = MIMEText(html_content, 'html')
         msg.attach(part)
 
-        # Secure connection
+        # Secure connection with explicit timeout (60 seconds)
         context = ssl.create_default_context()
-        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT, timeout=60) as server:
             server.starttls(context=context) # Secure the connection
-            server.login(SENDER_EMAIL, SENDER_PASSWORD)
+            server.login(email_user, email_pass)
             server.send_message(msg)
             
-        print(f"Email sent successfully to {to_email}")
-        return True
+        print(f"Background Email sent successfully to {to_email}")
     except Exception as e:
-        print(f"Failed to send email: {e}")
-        return False
+        print(f"Failed to send background email: {e}")
+
+# --- MAIN EMAIL WRAPPER ---
+def send_email_html(to_email, subject, html_content):
+    """
+    Starts the email sending in a background thread and returns immediately.
+    This prevents the 'Worker Timeout' error.
+    """
+    thread = threading.Thread(target=send_email_background, args=(to_email, subject, html_content))
+    thread.start()
+    return True
 
 # --- PAGE ROUTES ---
 
@@ -114,6 +128,33 @@ def contact():
 @app.route('/location')
 def location():
     return render_template('location.html')
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+@app.route('/privacy')
+def privacy():
+    return render_template('privacy.html')
+
+@app.route('/case-study')
+def case_study():
+    return render_template('case_study.html')
+
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+@app.route('/register')
+def register():
+    return render_template('register.html')
+
+@app.route('/estimator')
+def estimator():
+    # If your estimator is inside custom.html, redirect there
+    return render_template('custom.html')
+
+# --- SUPPORT TICKET SYSTEM ---
 @app.route('/support')
 def support():
     return render_template('support.html')
@@ -144,7 +185,7 @@ def submit_ticket():
             # Notice we use 'db_key' (no hash) for the path
             ref = db.reference(f'support_tickets/{db_key}')
             ref.set({
-                'ticket_id': display_ticket_id, # We save the pretty ID inside the data
+                'ticket_id': display_ticket_id, 
                 'status': 'Open',
                 'name': name,
                 'email': email,
@@ -157,7 +198,7 @@ def submit_ticket():
         except Exception as e:
             print(f"DB Error: {e}")
 
-        # 4. Send Emails (Use display_ticket_id so it looks nice)
+        # 4. Send Emails (Uses Background Threading)
         
         # Admin Email
         admin_html = render_template('email_ticket_admin.html', 
@@ -177,44 +218,13 @@ def submit_ticket():
 
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
-@app.route('/about')
-def about():
-    return render_template('about.html')
-
-@app.route('/privacy')
-def privacy():
-    return render_template('privacy.html')
-
-@app.route('/case-study')
-def case_study():
-    return render_template('case_study.html')
-
-@app.route('/login')
-def login():
-    return render_template('login.html')
-
-@app.route('/register')
-def register():
-    return render_template('register.html')
-
-@app.route('/estimator')
-def estimator():
-    # If your estimator is inside custom.html, redirect there
-    return render_template('custom_request.html')
 
 # --- MAIN LOGIC ROUTE (Email + Form + Estimator) ---
 @app.route('/custom', methods=['GET', 'POST'])
 def custom_solution():
-    """
-    Handles Project Requests:
-    1. GET: Shows custom.html (your form).
-    2. POST: Processes form, sends HTML emails, saves to Firebase.
-    """
-    # GET: Show the form page
     if request.method == 'GET':
         return render_template('custom.html') 
     
-    # POST: Process the submission
     if request.method == 'POST':
         try:
             # 1. Get Data from Form
@@ -229,8 +239,6 @@ def custom_solution():
             print(f"New Lead: {email} requesting {service}")
 
             # 2. GENERATE HTML EMAIL CONTENT
-            # (Requires email_admin.html and email_client.html in /templates)
-            
             admin_html = render_template('email_admin.html', 
                                          name=name, email=email, service=service, 
                                          budget=budget, timeline=timeline, details=details)
@@ -238,14 +246,11 @@ def custom_solution():
             client_html = render_template('email_client.html', 
                                           name=name, service=service)
 
-            # 3. SEND EMAILS
-            # Send to Admin (You)
+            # 3. SEND EMAILS (Now instant thanks to threading)
             send_email_html(SENDER_EMAIL, f"New Lead: {service} from {name}", admin_html)
-            
-            # Send to Client (Confirmation)
             send_email_html(email, "We received your request - Delstarford Works", client_html)
             
-            # 4. Save to Firebase (Backup)
+            # 4. Save to Firebase
             try:
                 ref = db.reference('leads/service_requests')
                 ref.push({
@@ -258,7 +263,7 @@ def custom_solution():
                     'timestamp': str(datetime.datetime.now())
                 })
             except Exception as e:
-                print(f"Database Error (Non-critical): {e}")
+                print(f"Database Error: {e}")
 
             return jsonify({"success": True, "message": "Request sent! Check your email for confirmation."}), 200
 
@@ -266,18 +271,12 @@ def custom_solution():
             print(f"Server Error: {e}")
             return jsonify({"success": False, "message": "Server error occurred."}), 500
 
-# --- ESTIMATOR LOGIC ROUTE ---
+# --- ESTIMATOR LOGIC ---
 @app.route('/calculate-estimate', methods=['POST'])
 def calculate_estimate():
-    """
-    Calculates the cost of an AI project based on data size and complexity.
-    Called by JS in custom.html
-    """
     try:
         data = request.json
-        
         BASE_PRICE = 15000  
-        
         model_type = data.get('modelType')
         try:
             data_size = int(data.get('dataSize', 0))
@@ -286,20 +285,9 @@ def calculate_estimate():
             
         complexity = data.get('complexity', 'standard')
         
-        multipliers = {
-            'standard': 1.0,
-            'advanced': 2.5,
-            'enterprise': 5.0
-        }
+        multipliers = {'standard': 1.0, 'advanced': 2.5, 'enterprise': 5.0}
+        model_adds = {'tabular': 5000, 'vision': 25000, 'nlp': 15000, 'bio': 30000}
         
-        model_adds = {
-            'tabular': 5000,
-            'vision': 25000,
-            'nlp': 15000,
-            'bio': 30000
-        }
-        
-        # Calculation Logic
         data_rate = (data_size / 1000) * 50
         subtotal = (BASE_PRICE + model_adds.get(model_type, 0)) * multipliers.get(complexity, 1.0)
         total_estimate = subtotal + data_rate
@@ -307,18 +295,13 @@ def calculate_estimate():
         return jsonify({
             "estimate": round(total_estimate, 2),
             "currency": "KSH",
-            "breakdown": {
-                "setup": subtotal,
-                "data_processing": data_rate
-            }
+            "breakdown": {"setup": subtotal, "data_processing": data_rate}
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
-# --- DASHBOARD DATA ROUTE ---
 @app.route('/dashboard-data')
 def get_dashboard_data():
-    """API for the JS dashboard to consume live data."""
     user_id = 'user_123' 
     try:
         ref = db.reference(f'active_projects/{user_id}')

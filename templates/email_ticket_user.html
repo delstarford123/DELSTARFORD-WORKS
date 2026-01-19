@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: sans-serif; background: #f1f5f9; padding: 20px;">
+    <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden;">
+        <div style="background: #0f172a; padding: 20px; text-align: center; color: white;">
+            <h2>Support Ticket Created</h2>
+        </div>
+        <div style="padding: 30px;">
+            <p>Hi {{ name }},</p>
+            <p>We have received your support request. A ticket has been created with the following ID:</p>
+            
+            <div style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; border-radius: 5px; margin: 20px 0;">
+                {{ ticket_id }}
+            </div>
+
+            <p><strong>Subject:</strong> {{ subject }}</p>
+            <p>Our engineering team usually replies within 24 hours.</p>
+            <p>Best,<br>Delstarford Support Team</p>
+        </div>
+    </div>
+</body>
+</html>

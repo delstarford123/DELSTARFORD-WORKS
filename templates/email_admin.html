@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: sans-serif; background-color: #f1f5f9; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .header { background: #0f172a; padding: 20px; color: white; text-align: center; }
+        .content { padding: 30px; }
+        .data-row { border-bottom: 1px solid #e2e8f0; padding: 10px 0; display: flex; }
+        .label { font-weight: bold; width: 120px; color: #64748b; }
+        .value { color: #0f172a; font-weight: 600; flex: 1; }
+        .details-box { background: #f8fafc; padding: 15px; border-radius: 5px; margin-top: 10px; border: 1px solid #e2e8f0; }
+        .badge { background: #10b981; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>🚀 New Project Lead</h2>
+        </div>
+        <div class="content">
+            <p>You have received a new request from the website.</p>
+            
+            <div class="data-row">
+                <span class="label">Client Name:</span>
+                <span class="value">{{ name }}</span>
+            </div>
+            <div class="data-row">
+                <span class="label">Email:</span>
+                <span class="value"><a href="mailto:{{ email }}">{{ email }}</a></span>
+            </div>
+            <div class="data-row">
+                <span class="label">Service:</span>
+                <span class="value">{{ service }}</span>
+            </div>
+            <div class="data-row">
+                <span class="label">Budget:</span>
+                <span class="value">{{ budget }}</span>
+            </div>
+            <div class="data-row">
+                <span class="label">Timeline:</span>
+                <span class="value">{{ timeline }}</span>
+            </div>
+
+            <p style="margin-top: 20px; font-weight: bold;">Project Description:</p>
+            <div class="details-box">
+                {{ details }}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

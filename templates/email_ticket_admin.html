@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: sans-serif; padding: 20px;">
+    <h2 style="color: #ef4444;">New Support Ticket: {{ priority|upper }}</h2>
+    <p><strong>Ticket ID:</strong> {{ ticket_id }}</p>
+    <p><strong>User:</strong> {{ name }} ({{ email }})</p>
+    <p><strong>Category:</strong> {{ category }}</p>
+    <hr>
+    <p><strong>Subject:</strong> {{ subject }}</p>
+    <div style="background: #f8fafc; padding: 15px; border: 1px solid #e2e8f0;">
+        {{ message }}
+    </div>
+</body>
+</html>

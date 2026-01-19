@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Request Received</title>
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f1f5f9; }
+        .wrapper { width: 100%; table-layout: fixed; background-color: #f1f5f9; padding-bottom: 40px; }
+        .main-table { background-color: #ffffff; margin: 0 auto; width: 100%; max-width: 600px; border-spacing: 0; font-family: sans-serif; color: #334155; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-radius: 8px; overflow: hidden; }
+        .header { background-color: #0f172a; padding: 30px; text-align: center; }
+        .logo { font-size: 24px; font-weight: bold; color: #ffffff; text-decoration: none; }
+        .content { padding: 40px 30px; }
+        .btn { background-color: #2563eb; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block; margin-top: 20px; }
+        .footer { background-color: #f8fafc; padding: 20px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <table class="main-table" role="presentation">
+            <tr>
+                <td class="header">
+                    <a href="#" class="logo">DELSTARFORD WORKS</a>
+                    <div style="color: #94a3b8; font-size: 12px; margin-top: 5px;">WHERE BIOLOGY MEETS TECHNOLOGY</div>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="content">
+                    <h2 style="color: #0f172a; margin-top: 0;">Hello {{ name }},</h2>
+                    <p style="font-size: 16px; line-height: 1.6;">Thank you for contacting <strong>Delstarford Works</strong>. We have successfully received your project request regarding <strong>{{ service }}</strong>.</p>
+                    
+                    <div style="background-color: #f1f9fe; border-left: 4px solid #2563eb; padding: 15px; margin: 20px 0;">
+                        <p style="margin: 0; font-weight: bold;">Next Steps:</p>
+                        <p style="margin: 5px 0 0;">Our team of engineers is reviewing your requirements. We will contact you within 24 hours to discuss the technical roadmap.</p>
+                    </div>
+
+                    <p>If you have additional details to add, please reply directly to this email.</p>
+
+                    <center>
+                        <a href="https://delstarford-works.onrender.com" class="btn">Visit Our Website</a>
+                    </center>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="footer">
+                    <p>&copy; 2026 Delstarford Works. All rights reserved.</p>
+                    <p>Kakamega, Kenya | +254 707 605 751</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

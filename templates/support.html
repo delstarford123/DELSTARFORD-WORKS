@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="contact-page-wrapper">
+    <div class="contact-container">
+        
+        <div class="contact-info">
+            <div>
+                <h2>Support Center</h2>
+                <p class="subtitle">Experiencing an issue? Submit a ticket below and our engineering team will resolve it.</p>
+            </div>
+
+            <div class="info-items">
+                <div class="info-item">
+                    <i class="fas fa-ticket-alt"></i>
+                    <div>
+                        <h4>Ticket System</h4>
+                        <p>Tracked via unique ID.</p>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-bolt"></i>
+                    <div>
+                        <h4>Fast Response</h4>
+                        <p>Critical bugs resolved < 24hrs.</p>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-book"></i>
+                    <div>
+                        <h4>Documentation</h4>
+                        <p>Check our <a href="#" style="color: #3b82f6;">Knowledge Base</a> first.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-direct">
+                <p><strong>Technical Emergency?</strong></p>
+                <p><i class="fas fa-phone-alt"></i> +254 707 605 751</p>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <form id="supportForm">
+                <h3>Submit a Ticket</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Your Name</label>
+                        <input type="text" name="name" required placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" name="email" required placeholder="john@example.com">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Issue Category</label>
+                        <select name="category" required>
+                            <option value="technical">Technical Bug / Error</option>
+                            <option value="billing">Billing & Payments</option>
+                            <option value="account">Account Access</option>
+                            <option value="feature">Feature Request</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Priority Level</label>
+                        <select name="priority" required>
+                            <option value="low">Low (General Question)</option>
+                            <option value="medium" selected>Medium (Standard)</option>
+                            <option value="high">High (Urgent Issue)</option>
+                            <option value="critical">Critical (System Down)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Subject</label>
+                    <input type="text" name="subject" required placeholder="e.g., Unable to upload dataset">
+                </div>
+
+                <div class="form-group">
+                    <label>Description of Issue</label>
+                    <textarea name="message" rows="5" required placeholder="Please describe what happened, steps to reproduce, or any error messages..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    <span>Submit Ticket</span>
+                    <div class="spinner" id="btnSpinner"></div>
+                </button>
+                
+                <p id="formMessage" class="form-message"></p>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Ensure these match your contact page styles */
+    .contact-page-wrapper { min-height: 90vh; display: flex; align-items: center; justify-content: center; padding: 60px 20px; background-color: #f1f5f9; }
+    .contact-container { display: grid; grid-template-columns: 1fr 1.5fr; background: white; max-width: 1100px; width: 100%; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.08); overflow: hidden; }
+    .contact-info { background: #0f172a; color: white; padding: 50px; display: flex; flex-direction: column; justify-content: space-between; }
+    .form-section { padding: 50px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: #334155; }
+    input, select, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; }
+    .btn-submit { width: 100%; padding: 15px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; gap: 10px; }
+    .spinner { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s infinite; display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .form-message { text-align: center; margin-top: 15px; font-weight: 600; }
+    .form-message.success { color: #10b981; }
+    
+    @media (max-width: 850px) { .contact-container { grid-template-columns: 1fr; } .form-row { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+    document.getElementById('supportForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        const spinner = document.getElementById('btnSpinner');
+        const msg = document.getElementById('formMessage');
+
+        btn.disabled = true;
+        spinner.style.display = 'block';
+        msg.textContent = "";
+
+        const formData = new FormData(e.target);
+
+        try {
+            const response = await fetch('/submit-ticket', { method: 'POST', body: formData });
+            const result = await response.json();
+
+            if (result.success) {
+                msg.textContent = `Ticket Created! ID: ${result.ticket_id}. Check your email.`;
+                msg.className = "form-message success";
+                e.target.reset();
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            msg.textContent = "Error submitting ticket. Please try again.";
+            msg.style.color = "red";
+            btn.disabled = false;
+        } finally {
+            spinner.style.display = 'none';
+            if(!msg.textContent.includes("Error")) btn.querySelector('span').textContent = "Submitted";
+        }
+    };
+</script>
+
+{% endblock %}

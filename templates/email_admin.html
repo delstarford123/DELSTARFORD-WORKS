@@ -2,50 +2,75 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <title>New Project Lead</title>
     <style>
-        body { font-family: sans-serif; background-color: #f1f5f9; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .header { background: #0f172a; padding: 20px; color: white; text-align: center; }
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f1f5f9; }
+        .wrapper { width: 100%; table-layout: fixed; background-color: #f1f5f9; padding: 20px 0; }
+        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.08); border-top: 5px solid #10b981; }
+        
+        /* Header */
+        .header { background: #0f172a; padding: 25px; text-align: center; }
+        .logo { display: block; margin: 0 auto 15px auto; max-width: 120px; height: auto; }
+        .header h2 { color: white; margin: 0; font-size: 20px; font-weight: 600; letter-spacing: 0.5px; }
+
+        /* Content */
         .content { padding: 30px; }
-        .data-row { border-bottom: 1px solid #e2e8f0; padding: 10px 0; display: flex; }
-        .label { font-weight: bold; width: 120px; color: #64748b; }
-        .value { color: #0f172a; font-weight: 600; flex: 1; }
-        .details-box { background: #f8fafc; padding: 15px; border-radius: 5px; margin-top: 10px; border: 1px solid #e2e8f0; }
-        .badge { background: #10b981; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+        .lead-intro { font-size: 14px; color: #64748b; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; }
+        
+        /* Data Rows */
+        .data-row { display: flex; align-items: flex-start; margin-bottom: 12px; }
+        .label { font-weight: 700; width: 130px; color: #475569; font-size: 14px; }
+        .value { color: #0f172a; font-weight: 500; font-size: 15px; flex: 1; }
+        .value a { color: #2563eb; text-decoration: none; }
+        
+        /* Details Box */
+        .details-label { margin-top: 25px; font-weight: 700; color: #334155; font-size: 14px; display: block; margin-bottom: 8px; }
+        .details-box { background: #f8fafc; padding: 15px; border-radius: 6px; border: 1px solid #cbd5e1; color: #334155; font-size: 14px; line-height: 1.6; }
+
+        /* Footer */
+        .footer { background-color: #f8fafc; padding: 15px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h2>🚀 New Project Lead</h2>
-        </div>
-        <div class="content">
-            <p>You have received a new request from the website.</p>
-            
-            <div class="data-row">
-                <span class="label">Client Name:</span>
-                <span class="value">{{ name }}</span>
-            </div>
-            <div class="data-row">
-                <span class="label">Email:</span>
-                <span class="value"><a href="mailto:{{ email }}">{{ email }}</a></span>
-            </div>
-            <div class="data-row">
-                <span class="label">Service:</span>
-                <span class="value">{{ service }}</span>
-            </div>
-            <div class="data-row">
-                <span class="label">Budget:</span>
-                <span class="value">{{ budget }}</span>
-            </div>
-            <div class="data-row">
-                <span class="label">Timeline:</span>
-                <span class="value">{{ timeline }}</span>
+    <div class="wrapper">
+        <div class="container">
+            <div class="header">
+                <img src="https://delstarford-works.onrender.com/static/images/DEL SVG.svg" alt="Delstarford Works" class="logo">
+                <h2>New Project Lead</h2>
             </div>
 
-            <p style="margin-top: 20px; font-weight: bold;">Project Description:</p>
-            <div class="details-box">
-                {{ details }}
+            <div class="content">
+                <p class="lead-intro">A new potential client has submitted a request via the website.</p>
+                
+                <div class="data-row">
+                    <span class="label">Client Name:</span>
+                    <span class="value">{{ name }}</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Email Address:</span>
+                    <span class="value"><a href="mailto:{{ email }}">{{ email }}</a></span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Service Interest:</span>
+                    <span class="value" style="color: #2563eb; font-weight: 700;">{{ service }}</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Est. Budget:</span>
+                    <span class="value">{{ budget }}</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Timeline:</span>
+                    <span class="value">{{ timeline }}</span>
+                </div>
+
+                <span class="details-label">Project Requirements / Notes:</span>
+                <div class="details-box">
+                    {{ details }}
+                </div>
+            </div>
+
+            <div class="footer">
+                &copy; 2026 Delstarford Works Internal System
             </div>
         </div>
     </div>

@@ -3,9 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Delstarford Works: Enterprise AI & Agricultural Biotech Solutions.">
-    <meta name="theme-color" content="#2563eb">
+    <meta name="description" content="Delstarford Works: Leading Kenyan Enterprise AI, Web Systems, and Agricultural Biotech Solutions.">
+    <meta name="theme-color" content="#0f172a">
     
+    <meta property="og:title" content="Delstarford Works | Engineering the Future">
+    <meta property="og:description" content="Where Biology Meets Technology. Custom AI, Biotech, and Web Solutions.">
+    <meta property="og:image" content="{{ url_for('static', filename='images/logo.png') }}">
+    <meta property="og:url" content="https://delstarford-works.onrender.com">
+
     <title>Delstarford Works | Engineering the Future</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
@@ -13,37 +18,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
 
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCdbCJvC2-WdaEMQc_ZGaggqA_-SMf1DYU",
-            authDomain: "delstarford-works.firebaseapp.com",
-            projectId: "delstarford-works",
-            storageBucket: "delstarford-works.firebasestorage.app",
-            messagingSenderId: "735702460296",
-            appId: "1:735702460296:web:8534ca0b1e86cc6a76bc3d",
-            measurementId: "G-DHSQPE2MZW"
-        };
-
-        // Prevent double initialization
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        
-        // Expose globally for other scripts
-        window.auth = firebase.auth();
-        window.database = firebase.database();
-    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js" defer></script>
+    
+    <script src="{{ url_for('static', filename='js/firebase-init.js') }}" defer></script>
 </head>
 <body>
 
     <header class="site-header">
         <div class="container header-inner">
             <a href="/" class="brand-logo">
-                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="DW Logo">
+                <img src="{{ url_for('static', filename='images/DEL SVG.svg') }}" alt="DW Logo">
                 <div class="brand-text">
                     <span class="brand-name">DELSTARFORD</span>
                     <span class="brand-suffix">WORKS</span>
@@ -54,14 +40,22 @@
                 <a href="/" class="nav-link">Home</a>
                 <a href="/services" class="nav-link">Services</a>
                 <a href="/ai-lab" class="nav-link">AI Lab</a>
-                <a href="/location" class="nav-link">Locations</a>
                 <a href="/about" class="nav-link">About</a>
-                <a href="/support" class="nav-link">Support Center</a>
+                
+                <a href="/login" id="nav-login" class="nav-link">Login</a>
+                
+                <a href="/dashboard" id="nav-dashboard" class="nav-link" style="display:none; color: #2563eb; font-weight: bold;">
+                    <i class="fas fa-user-circle"></i> Dashboard
+                </a>
+                
+                <a href="javascript:void(0)" onclick="globalLogout()" id="nav-logout" class="nav-link" style="display:none; color: #ef4444;">
+                    Logout
+                </a>
+
+                <a href="/custom" class="btn-primary-small">Get Started</a>
             </nav>
 
             <div class="header-actions">
-                <a href="/dashboard" class="btn-ghost">Dashboard</a>
-                <a href="/custom" class="btn-primary-small">Get Started <i class="fas fa-arrow-right"></i></a>
                 <button class="mobile-toggle" aria-label="Toggle Menu">
                     <i class="fas fa-bars"></i>
                 </button>
@@ -75,19 +69,16 @@
                 <span class="brand-name">MENU</span>
                 <button class="close-menu"><i class="fas fa-times"></i></button>
             </div>
-            <nav>
+            <nav class="mobile-nav-links">
                 <a href="/">Home</a>
                 <a href="/services">Services</a>
-                <a href="/ai-lab">Availlable AI Models</a>
-                <a href="/case-study">Case Studies</a>
-                <a href="/about">About</a>
+                <a href="/ai-lab">AI Solutions</a>
                 <a href="/dashboard">Dashboard</a>
+                <a href="/support">Support Center</a>
+                <a href="/agreement" style="color: #10b981;">Pricing</a>
+                <a href="/register">Join Team</a>
+                <hr>
                 <a href="/custom" class="btn-mobile-cta">Request Solution</a>
-                <a href="/estimator" class="btn-mobile-cta">Price Estimator</a>
-                <a href="/support" class="nav-link">Support Center</a>
-                <button onclick="handleLogout()" class="btn-logout">
-    <i class="fas fa-sign-out-alt"></i> Logout
-</button>
             </nav>
         </div>
     </div>
@@ -121,23 +112,24 @@
                     <p>Engineering robust AI & Biotech ecosystems from Kakamega to the global stage.</p>
                     <div class="social-links">
                         <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
-                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="https://www.linkedin.com/in/delstarford-isaiah-968400354"><i class="fab fa-linkedin"></i></a>
+                        <a href="https://github.com/delstarford123"><i class="fab fa-github"></i></a>
                     </div>
                 </div>
                 
                 <div class="footer-links">
                     <div class="link-group">
                         <h4>Platform</h4>
-                        <a href="/ai-lab">AI Marketplace</a>
+                        <a href="/ai-lab">AI Models</a>
                         <a href="/services">Web Systems</a>
-                        <a href="/dashboard">Client Portal</a>
+                        <a href="/dashboard">Portal</a>
                     </div>
                     <div class="link-group">
                         <h4>Company</h4>
                         <a href="/about">Our Story</a>
-                        <a href="/location">Locations</a>
-                        <a href="/contact">Support</a>
+                        <a href="/register">Careers</a>
+                        <a href="/agreement">Pricing</a>
+                        <a href="/admin" style="color: #ef4444;"><i class="fas fa-lock"></i> Admin Console</a>
                     </div>
                     <div class="link-group">
                         <h4>Contact</h4>
@@ -151,8 +143,8 @@
             <div class="footer-bottom">
                 <p>&copy; 2026 Delstarford Works. All rights reserved.</p>
                 <div class="legal-links">
-                    <a href="/privacy">Privacy</a>
-                    <a href="#"></a>
+                    <a href="/privacy">Privacy Policy</a>
+                    <a href="/support">Support</a>
                 </div>
             </div>
         </div>
@@ -161,12 +153,56 @@
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
     <script>
-        // Header Scroll Effect
-        window.addEventListener('scroll', () => {
-            const header = document.querySelector('.site-header');
-            if(window.scrollY > 20) header.classList.add('scrolled');
-            else header.classList.remove('scrolled');
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // Wait slightly for Firebase to init
+            setTimeout(() => {
+                if (window.auth) {
+                    auth.onAuthStateChanged((user) => {
+                        if (user) {
+                            console.log("Global Auth: User Detected ->", user.email);
+                            window.currentUser = user; 
+                            updateNavbarState(true);
+                            
+                            // Tell other pages (like Dashboard) "We are ready!"
+                            document.dispatchEvent(new CustomEvent('userReady', { detail: user }));
+                        } else {
+                            console.log("Global Auth: Guest Mode");
+                            window.currentUser = null;
+                            updateNavbarState(false);
+                        }
+                    });
+                }
+            }, 500); // 500ms safety buffer
         });
+
+        // Helper to swap Login/Logout buttons
+        function updateNavbarState(isLoggedIn) {
+            const loginLink = document.getElementById('nav-login');
+            const dashLink = document.getElementById('nav-dashboard');
+            const logoutLink = document.getElementById('nav-logout');
+
+            if (loginLink && dashLink && logoutLink) {
+                if(isLoggedIn) {
+                    loginLink.style.display = 'none';
+                    dashLink.style.display = 'inline-block';
+                    logoutLink.style.display = 'inline-block';
+                } else {
+                    loginLink.style.display = 'inline-block';
+                    dashLink.style.display = 'none';
+                    logoutLink.style.display = 'none';
+                }
+            }
+        }
+
+        // Global Logout Function
+        window.globalLogout = function() {
+            if(window.auth) {
+                auth.signOut().then(() => {
+                    window.location.href = '/login';
+                });
+            }
+        }
 
         // Mobile Menu Logic
         const toggle = document.querySelector('.mobile-toggle');
@@ -174,16 +210,24 @@
         const closeBtn = document.querySelector('.close-menu');
 
         function toggleMenu() {
-            overlay.classList.toggle('active');
-            document.body.style.overflow = overlay.classList.contains('active') ? 'hidden' : 'auto';
+            if(overlay) {
+                overlay.classList.toggle('active');
+                document.body.style.overflow = overlay.classList.contains('active') ? 'hidden' : 'auto';
+            }
         }
 
         if(toggle) toggle.addEventListener('click', toggleMenu);
         if(closeBtn) closeBtn.addEventListener('click', toggleMenu);
-        
-        // Close menu when clicking outside
-        overlay.addEventListener('click', (e) => {
+        if(overlay) overlay.addEventListener('click', (e) => {
             if(e.target === overlay) toggleMenu();
+        });
+
+        // Highlight Active Link
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.nav-link').forEach(link => {
+            if(link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            }
         });
     </script>
 </body>

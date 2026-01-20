@@ -1,0 +1,295 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="agreement-wrapper">
+    <div class="contract-container">
+        
+        <div class="contract-header">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Delstarford Works" class="contract-logo">
+            <h1>Service Agreement & Pricing Schedule</h1>
+            <p>Premium Model Development & Analytical Solutions</p>
+        </div>
+
+        <form id="agreementForm">
+            
+            <div class="contract-section">
+                <h3>1. Service Pricing Schedule</h3>
+                <p>At Delstarford Works, we believe in transparent pricing. Our payment structure is milestone-based to ensure satisfaction at every stage.</p>
+                
+                <div class="payment-structure-box">
+                    <div class="milestone">
+                        <span class="ms-percent">30%</span>
+                        <span class="ms-label">Initial Deposit</span>
+                        <span class="ms-desc">Commencement & Mobilization</span>
+                    </div>
+                    <div class="milestone">
+                        <span class="ms-percent">20%</span>
+                        <span class="ms-label">Mid-Project</span>
+                        <span class="ms-desc">First Draft / Prototype</span>
+                    </div>
+                    <div class="milestone">
+                        <span class="ms-percent">50%</span>
+                        <span class="ms-label">Completion</span>
+                        <span class="ms-desc">Final Handover & Approval</span>
+                    </div>
+                </div>
+
+                <h4>Standard Industry Rates</h4>
+                <div class="table-responsive">
+                    <table class="pricing-table">
+                        <thead>
+                            <tr>
+                                <th>Select</th>
+                                <th>Industry Sector</th>
+                                <th>Total Cost (KSH)</th>
+                                <th>Start (30%)</th>
+                                <th>Middle (20%)</th>
+                                <th>End (50%)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="radio" name="sector_select" value="Health" onclick="setStandardPrice(30000)"></td>
+                                <td><strong>Health Solutions</strong></td>
+                                <td>30,000</td>
+                                <td>9,000</td>
+                                <td>6,000</td>
+                                <td>15,000</td>
+                            </tr>
+                            <tr>
+                                <td><input type="radio" name="sector_select" value="Security" onclick="setStandardPrice(28000)"></td>
+                                <td><strong>Security Systems</strong></td>
+                                <td>28,000</td>
+                                <td>8,400</td>
+                                <td>5,600</td>
+                                <td>14,000</td>
+                            </tr>
+                            <tr>
+                                <td><input type="radio" name="sector_select" value="Agriculture" onclick="setStandardPrice(25000)"></td>
+                                <td><strong>Agriculture</strong></td>
+                                <td>25,000</td>
+                                <td>7,500</td>
+                                <td>5,000</td>
+                                <td>12,500</td>
+                            </tr>
+                            <tr>
+                                <td><input type="radio" name="sector_select" value="Education" onclick="setStandardPrice(20000)"></td>
+                                <td><strong>Education</strong></td>
+                                <td>20,000</td>
+                                <td>6,000</td>
+                                <td>4,000</td>
+                                <td>10,000</td>
+                            </tr>
+                            <tr>
+                                <td><input type="radio" name="sector_select" value="Social" onclick="setStandardPrice(15000)"></td>
+                                <td><strong>Social Sciences</strong></td>
+                                <td>15,000</td>
+                                <td>4,500</td>
+                                <td>3,000</td>
+                                <td>7,500</td>
+                            </tr>
+                            <tr>
+                                <td><input type="radio" name="sector_select" value="Finance" onclick="setStandardPrice(10000)"></td>
+                                <td><strong>Finance Models</strong></td>
+                                <td>10,000</td>
+                                <td>3,000</td>
+                                <td>2,000</td>
+                                <td>5,000</td>
+                            </tr>
+                            <tr>
+                                <td><input type="radio" name="sector_select" value="Custom" id="customRadio" onclick="enableCustomBudget()"></td>
+                                <td><strong>Custom / Negotiated</strong></td>
+                                <td colspan="4"><em>Select to enter manual budget below</em></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="custom-budget-panel" id="customPanel">
+                    <h4>Client Budget Proposal</h4>
+                    <p class="small-text">Enter your proposed total budget. The system will automatically calculate the milestones.</p>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Proposed Total (KSH)</label>
+                            <input type="number" name="custom_total" id="customTotal" placeholder="e.g. 50000" oninput="calculateSplits()">
+                        </div>
+                    </div>
+                    <div class="splits-display">
+                        <div class="split-box">Start (30%): <strong id="split1">0</strong></div>
+                        <div class="split-box">Mid (20%): <strong id="split2">0</strong></div>
+                        <div class="split-box">End (50%): <strong id="split3">0</strong></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Justification / Comments</label>
+                        <textarea name="justification" rows="2" placeholder="Why does this budget fit your needs?"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contract-section">
+                <h3>2. Deliverables & Value Proposition</h3>
+                <ul class="deliverables-list">
+                    <li><i class="fas fa-search"></i> <strong>Requirement Analysis:</strong> Dedicated problem statement session.</li>
+                    <li><i class="fas fa-code"></i> <strong>Model Development:</strong> Custom algorithm or database design.</li>
+                    <li><i class="fas fa-vial"></i> <strong>Testing & Validation:</strong> Rigorous accuracy checks.</li>
+                    <li><i class="fas fa-book"></i> <strong>Documentation:</strong> User guides and technical manuals.</li>
+                    <li><i class="fas fa-sync"></i> <strong>Revisions:</strong> Up to two (2) rounds of minor revisions.</li>
+                </ul>
+            </div>
+
+            <div class="contract-section">
+                <h3>3. Terms & Conditions</h3>
+                <div class="terms-scroll-box">
+                    <p><strong>1. Scope of Work:</strong> Delstarford Works agrees to provide model development services as discussed.</p>
+                    <p><strong>2. Payment Terms:</strong> Work commences only upon receipt of the Phase 1 (30%) deposit. Final deliverables are released upon Phase 3 (50%) payment.</p>
+                    <p><strong>3. Timeline:</strong> Timelines are estimated. Delstarford Works will communicate technical delays immediately.</p>
+                    <p><strong>4. Client Obligations:</strong> Client agrees to provide necessary data and feedback in a timely manner.</p>
+                    <p><strong>5. Confidentiality:</strong> We agree not to disclose, share, or sell proprietary client data.</p>
+                    <p><strong>6. Intellectual Property:</strong> Upon full payment, the Client owns rights to the specific solution. Delstarford Works retains rights to generic libraries.</p>
+                    <p><strong>7. Termination:</strong> If cancelled after Phase 1 but before Phase 2, the 30% deposit is non-refundable.</p>
+                </div>
+            </div>
+
+            <div class="contract-section signature-section">
+                <h3>Acceptance & Signature</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Client Full Name</label>
+                        <input type="text" name="client_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" name="date" id="todayDate" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Digital Signature (Type Full Name to Sign)</label>
+                    <input type="text" name="signature" class="signature-input" placeholder="/s/ Sarah" required>
+                    <p class="legal-disclaimer">By typing your name above, you agree to the Terms & Conditions and Pricing Schedule outlined in this document.</p>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="submit" class="btn-sign">Submit Agreement</button>
+                    <button type="button" class="btn-print" onclick="window.print()">Download PDF</button>
+                </div>
+                <p id="formMessage" class="form-message"></p>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<style>
+    /* Styling */
+    .agreement-wrapper { padding: 40px 20px; background: #f1f5f9; }
+    .contract-container { max-width: 850px; margin: 0 auto; background: white; padding: 50px; border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+    
+    .contract-header { text-align: center; border-bottom: 2px solid #0f172a; padding-bottom: 30px; margin-bottom: 30px; }
+    .contract-logo { width: 120px; margin-bottom: 15px; }
+    .contract-header h1 { color: #0f172a; margin: 0; font-size: 2rem; }
+    .contract-header p { color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+    .contract-section { margin-bottom: 40px; }
+    .contract-section h3 { background: #f8fafc; padding: 10px 15px; border-left: 5px solid #10b981; color: #0f172a; margin-bottom: 20px; }
+
+    /* Payment Structure Box */
+    .payment-structure-box { display: flex; justify-content: space-between; gap: 10px; margin: 20px 0; }
+    .milestone { background: #0f172a; color: white; padding: 15px; flex: 1; text-align: center; border-radius: 6px; }
+    .ms-percent { display: block; font-size: 1.5rem; font-weight: 800; color: #10b981; }
+    .ms-label { display: block; font-weight: 700; text-transform: uppercase; font-size: 0.8rem; margin: 5px 0; }
+    .ms-desc { display: block; font-size: 0.75rem; color: #cbd5e1; }
+
+    /* Table */
+    .pricing-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
+    .pricing-table th { background: #e2e8f0; padding: 12px; text-align: left; color: #334155; }
+    .pricing-table td { border-bottom: 1px solid #e2e8f0; padding: 12px; }
+    .pricing-table tr:hover { background: #f8fafc; }
+
+    /* Custom Budget */
+    .custom-budget-panel { display: none; background: #fffbeb; border: 1px solid #fcd34d; padding: 20px; margin-top: 20px; border-radius: 6px; }
+    .splits-display { display: flex; gap: 15px; margin-top: 10px; background: white; padding: 10px; border-radius: 4px; }
+    .split-box { font-size: 0.9rem; color: #475569; }
+
+    /* Terms Box */
+    .terms-scroll-box { height: 200px; overflow-y: auto; background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; font-size: 0.9rem; line-height: 1.6; color: #334155; }
+
+    /* Deliverables */
+    .deliverables-list { list-style: none; padding: 0; }
+    .deliverables-list li { padding: 8px 0; border-bottom: 1px dashed #e2e8f0; }
+    .deliverables-list i { color: #10b981; margin-right: 10px; }
+
+    /* Form Elements */
+    input[type="text"], input[type="number"], input[type="date"], textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; margin-top: 5px; }
+    .signature-input { font-family: 'Courier New', Courier, monospace; font-style: italic; font-size: 1.2rem; border-bottom: 2px solid #0f172a !important; border-top: none; border-left: none; border-right: none; background: transparent; }
+    
+    .action-buttons { display: flex; gap: 15px; margin-top: 30px; }
+    .btn-sign { flex: 2; background: #10b981; color: white; border: none; padding: 15px; font-weight: bold; border-radius: 5px; cursor: pointer; font-size: 1.1rem; }
+    .btn-print { flex: 1; background: #cbd5e1; color: #0f172a; border: none; padding: 15px; font-weight: bold; border-radius: 5px; cursor: pointer; }
+    
+    @media print {
+        body { background: white; }
+        .agreement-wrapper { padding: 0; }
+        .contract-container { box-shadow: none; padding: 0; max-width: 100%; }
+        .btn-sign, .btn-print, header, footer { display: none !important; }
+    }
+</style>
+
+<script>
+    // Set Today's Date
+    document.getElementById('todayDate').valueAsDate = new Date();
+
+    function setStandardPrice(price) {
+        // Hide custom panel
+        document.getElementById('customPanel').style.display = 'none';
+        // Clear custom input
+        document.getElementById('customTotal').value = '';
+    }
+
+    function enableCustomBudget() {
+        document.getElementById('customPanel').style.display = 'block';
+    }
+
+    function calculateSplits() {
+        let total = document.getElementById('customTotal').value;
+        if(total) {
+            document.getElementById('split1').innerText = (total * 0.30).toLocaleString() + " KSH";
+            document.getElementById('split2').innerText = (total * 0.20).toLocaleString() + " KSH";
+            document.getElementById('split3').innerText = (total * 0.50).toLocaleString() + " KSH";
+        }
+    }
+
+    // Handle Form Submission
+    document.getElementById('agreementForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const btn = document.querySelector('.btn-sign');
+        const msg = document.getElementById('formMessage');
+        
+        btn.textContent = "Processing...";
+        btn.disabled = true;
+
+        const formData = new FormData(e.target);
+
+        try {
+            // NOTE: You need to add a route in main.py for '/submit-agreement'
+            const response = await fetch('/submit-agreement', { method: 'POST', body: formData });
+            const result = await response.json();
+            
+            if (result.success) {
+                alert("Agreement Signed Successfully! A copy has been emailed to you.");
+                window.location.href = "/";
+            } else {
+                throw new Error("Submission failed");
+            }
+        } catch (error) {
+            msg.textContent = "Error signing agreement. Please try again.";
+            btn.disabled = false;
+            btn.textContent = "Submit Agreement";
+        }
+    };
+</script>
+
+{% endblock %}

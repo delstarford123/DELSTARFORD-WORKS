@@ -1,21 +1,78 @@
 <!DOCTYPE html>
 <html>
-<body style="font-family: sans-serif; background: #f1f5f9; padding: 20px;">
-    <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden;">
-        <div style="background: #0f172a; padding: 20px; text-align: center; color: white;">
-            <h2>Support Ticket Created</h2>
-        </div>
-        <div style="padding: 30px;">
-            <p>Hi {{ name }},</p>
-            <p>We have received your support request. A ticket has been created with the following ID:</p>
+<head>
+    <meta charset="UTF-8">
+    <title>Support Ticket Created</title>
+    <style>
+        /* RESET & BASE */
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f1f5f9; color: #334155; }
+        .wrapper { width: 100%; table-layout: fixed; background-color: #f1f5f9; padding: 40px 0; }
+        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 5px solid #2563eb; } /* Blue Border for Support */
+
+        /* HEADER */
+        .header { background-color: #0f172a; padding: 30px; text-align: center; }
+        .tagline { color: #94a3b8; font-size: 11px; margin-top: 8px; text-transform: uppercase; letter-spacing: 1.5px; }
+
+        /* CONTENT */
+        .content { padding: 40px 30px; }
+        
+        /* TICKET ID BOX */
+        .ticket-box { background-color: #eff6ff; border: 2px dashed #bfdbfe; color: #1e40af; padding: 20px; text-align: center; border-radius: 8px; margin: 25px 0; }
+        .ticket-label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #60a5fa; margin-bottom: 5px; }
+        .ticket-number { font-size: 28px; font-weight: 800; display: block; letter-spacing: 1px; }
+
+        /* DETAILS */
+        .details-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
+        .details-table td { padding: 10px 0; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
+        .details-label { font-weight: 700; color: #64748b; width: 80px; }
+        .status-badge { background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+
+        /* FOOTER */
+        .footer { background-color: #f8fafc; padding: 20px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; }
+        .btn { display: inline-block; background: #0f172a; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-size: 14px; font-weight: 600; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="container">
             
-            <div style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; border-radius: 5px; margin: 20px 0;">
-                {{ ticket_id }}
+            <div class="header">
+                <img src="https://delstarford-works.onrender.com/static/images/logo.png" alt="Delstarford Works" width="130" style="display: block; margin: 0 auto;">
+                <div class="tagline">Support & Engineering Team</div>
             </div>
 
-            <p><strong>Subject:</strong> {{ subject }}</p>
-            <p>Our engineering team usually replies within 24 hours.</p>
-            <p>Best,<br>Delstarford Support Team</p>
+            <div class="content">
+                <h2 style="color: #0f172a; margin-top: 0; font-size: 20px;">Support Request Received</h2>
+                <p>Hello {{ name }},</p>
+                <p>We have received your support request. A ticket has been created in our system and assigned to an engineer.</p>
+                
+                <div class="ticket-box">
+                    <span class="ticket-label">Ticket Reference ID</span>
+                    <span class="ticket-number">{{ ticket_id }}</span>
+                </div>
+
+                <table class="details-table">
+                    <tr>
+                        <td class="details-label">Status:</td>
+                        <td><span class="status-badge">Open</span></td>
+                    </tr>
+                    <tr>
+                        <td class="details-label">Subject:</td>
+                        <td style="font-weight: 600; color: #0f172a;">{{ subject }}</td>
+                    </tr>
+                </table>
+
+                <p style="font-size: 14px; color: #475569;">Our engineering team typically reviews new tickets within 24 hours. You will receive an email update as soon as the status changes.</p>
+                
+                <center>
+                    <a href="https://delstarford-works.onrender.com/support" class="btn">View Help Center</a>
+                </center>
+            </div>
+
+            <div class="footer">
+                <p>&copy; 2026 Delstarford Works. All rights reserved.</p>
+                <p>Kakamega, Kenya | <a href="mailto:delstarfordisaiah@gmail.com" style="color: #64748b;">Contact Support</a></p>
+            </div>
         </div>
     </div>
 </body>

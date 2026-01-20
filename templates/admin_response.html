@@ -1,0 +1,512 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="admin-wrapper">
+    
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="admin-icon"><i class="fas fa-user-shield"></i></div>
+            <div class="admin-meta">
+                <h3>System Admin</h3>
+                <span class="status-badge">● ONLINE</span>
+            </div>
+        </div>
+
+        <nav class="nav-links">
+            <button class="nav-item active" onclick="switchView('leads')">
+                <i class="fas fa-briefcase"></i>
+                <span>Project Leads</span>
+                <span id="count-leads" class="counter">0</span>
+            </button>
+            <button class="nav-item" onclick="switchView('tickets')">
+                <i class="fas fa-headset"></i>
+                <span>Support Tickets</span>
+                <span id="count-tickets" class="counter">0</span>
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="handleLogout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        
+        <header class="top-bar">
+            <div class="breadcrumb">
+                <h1>Admin Console</h1>
+                <span class="divider">/</span>
+                <span id="current-view-name">Project Leads</span>
+            </div>
+            <div class="controls">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="global-search" placeholder="Search ID, Name, Email..." onkeyup="handleSearch(this.value)">
+                </div>
+            </div>
+        </header>
+
+        <div id="view-leads" class="data-view">
+            <div class="table-wrapper">
+                <table class="pro-table" id="table-leads">
+                    <thead>
+                        <tr>
+                            <th width="15%">Date</th>
+                            <th width="25%">Client</th>
+                            <th width="20%">Service</th>
+                            <th width="15%">Budget</th>
+                            <th width="15%">Status</th>
+                            <th width="10%">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="body-leads">
+                        <tr><td colspan="6" class="loading-row"><div class="spinner-small"></div> Loading Records...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="view-tickets" class="data-view" style="display: none;">
+            <div class="table-wrapper">
+                <table class="pro-table" id="table-tickets">
+                    <thead>
+                        <tr>
+                            <th width="15%">Ticket ID</th>
+                            <th width="10%">Priority</th>
+                            <th width="25%">User</th>
+                            <th width="25%">Subject</th>
+                            <th width="15%">Status</th>
+                            <th width="10%">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="body-tickets">
+                        <tr><td colspan="6" class="loading-row"><div class="spinner-small"></div> Loading Records...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<div id="detail-modal" class="modal-backdrop">
+    <div class="modal-panel">
+        
+        <div class="modal-header">
+            <h2 id="modal-title">Record Details</h2>
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+        </div>
+
+        <div class="modal-body-grid">
+            
+            <div class="details-column">
+                <h4 class="col-title">Record Information</h4>
+                <div class="info-grid" id="modal-info-grid">
+                    </div>
+
+                <h4 class="col-title mt-4">Full Message / Description</h4>
+                <div class="message-box" id="modal-full-message">
+                    </div>
+            </div>
+
+            <div class="action-column">
+                <h4 class="col-title">Admin Action</h4>
+                
+                <input type="hidden" id="modal-hidden-db-path">
+                <input type="hidden" id="modal-hidden-email">
+                <input type="hidden" id="modal-hidden-name">
+                <input type="hidden" id="modal-hidden-type">
+
+                <div class="form-group">
+                    <label>Update Status</label>
+                    <select id="modal-status" class="form-control">
+                        </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Reply to Client (Email)</label>
+                    <textarea id="modal-reply" class="form-control" rows="8" placeholder="Type a professional response. This will be emailed to the client immediately..."></textarea>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn-primary-action" onclick="sendResponse()">
+                        <i class="fas fa-paper-plane"></i> Update & Send
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    /* --- CSS VARIABLES & RESET --- */
+    :root {
+        --bg-dark: #0f172a;
+        --bg-light: #f1f5f9;
+        --white: #ffffff;
+        --border: #e2e8f0;
+        --text-main: #334155;
+        --text-light: #64748b;
+        --primary: #2563eb;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+    }
+    
+    body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg-light); overflow: hidden; }
+
+    /* --- LAYOUT --- */
+    .admin-wrapper { display: flex; height: 100vh; width: 100vw; }
+    
+    /* Sidebar */
+    .sidebar { width: 260px; background: var(--bg-dark); color: var(--white); display: flex; flex-direction: column; flex-shrink: 0; }
+    .sidebar-header { padding: 25px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 15px; }
+    .admin-icon { font-size: 1.5rem; color: var(--primary); }
+    .admin-meta h3 { margin: 0; font-size: 1rem; font-weight: 600; }
+    .status-badge { font-size: 0.7rem; color: var(--success); font-weight: bold; letter-spacing: 1px; }
+
+    .nav-links { flex: 1; padding: 20px 0; overflow-y: auto; }
+    .nav-item { width: 100%; background: transparent; border: none; color: #94a3b8; padding: 15px 25px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 0.95rem; transition: 0.2s; text-align: left; }
+    .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.05); color: var(--white); border-left: 4px solid var(--primary); }
+    .counter { margin-left: auto; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; }
+
+    .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+    .logout-btn { width: 100%; padding: 10px; background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 6px; cursor: pointer; transition: 0.2s; }
+    .logout-btn:hover { background: var(--danger); color: var(--white); }
+
+    /* Main Content */
+    .main-content { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    
+    /* Top Bar */
+    .top-bar { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 30px; height: 70px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .breadcrumb h1 { font-size: 1.2rem; margin: 0; color: var(--text-main); display: inline; }
+    .breadcrumb .divider { margin: 0 10px; color: var(--text-light); }
+    .breadcrumb span { color: var(--text-light); font-weight: 500; }
+    
+    .search-box { position: relative; width: 300px; }
+    .search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-light); }
+    .search-box input { width: 100%; padding: 10px 10px 10px 35px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-light); outline: none; transition: 0.2s; }
+    .search-box input:focus { border-color: var(--primary); background: var(--white); }
+
+    /* Data View Container */
+    .data-view { flex: 1; padding: 20px 30px; overflow: hidden; display: flex; flex-direction: column; }
+    .table-wrapper { background: var(--white); border-radius: 8px; border: 1px solid var(--border); flex: 1; overflow: auto; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); position: relative; }
+
+    /* Professional Table */
+    .pro-table { width: 100%; border-collapse: collapse; }
+    .pro-table th { background: #f8fafc; position: sticky; top: 0; z-index: 10; padding: 15px 20px; text-align: left; font-size: 0.85rem; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--border); }
+    .pro-table td { padding: 15px 20px; border-bottom: 1px solid var(--border); color: var(--text-main); font-size: 0.95rem; vertical-align: middle; }
+    .pro-table tr:hover { background: #f8fafc; }
+    
+    /* Table Elements */
+    .client-cell b { display: block; color: var(--bg-dark); }
+    .client-cell small { color: var(--text-light); font-size: 0.85rem; }
+    .btn-view { padding: 6px 12px; background: var(--white); border: 1px solid var(--border); border-radius: 4px; color: var(--primary); font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 0.85rem; }
+    .btn-view:hover { background: var(--primary); color: var(--white); border-color: var(--primary); }
+
+    /* Pills */
+    .pill { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+    .pill.green { background: #dcfce7; color: #166534; }
+    .pill.blue { background: #dbeafe; color: #1e40af; }
+    .pill.yellow { background: #fef3c7; color: #b45309; }
+    .pill.red { background: #fee2e2; color: #991b1b; }
+
+    /* --- MODAL --- */
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(2px); z-index: 1000; display: none; align-items: center; justify-content: center; }
+    .modal-panel { background: var(--white); width: 900px; height: 85vh; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+    
+    .modal-header { background: var(--bg-dark); color: var(--white); padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+    .modal-header h2 { margin: 0; font-size: 1.2rem; }
+    .close-modal { background: none; border: none; color: var(--white); font-size: 1.5rem; cursor: pointer; }
+
+    .modal-body-grid { display: grid; grid-template-columns: 1fr 1fr; flex: 1; overflow: hidden; }
+    
+    .details-column { padding: 25px; border-right: 1px solid var(--border); overflow-y: auto; background: #fdfdfd; }
+    .action-column { padding: 25px; overflow-y: auto; background: var(--white); }
+
+    .col-title { margin-top: 0; margin-bottom: 20px; color: var(--primary); text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
+    
+    /* Info Grid in Modal */
+    .info-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+    .info-item { display: flex; flex-direction: column; }
+    .info-label { font-size: 0.75rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
+    .info-value { font-size: 1rem; color: var(--bg-dark); font-weight: 500; word-break: break-word; }
+
+    .message-box { background: #f1f5f9; padding: 15px; border-radius: 6px; border: 1px solid var(--border); font-size: 0.95rem; line-height: 1.6; color: var(--text-main); white-space: pre-wrap; }
+
+    /* Form in Modal */
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--text-main); }
+    .form-control { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 0.95rem; box-sizing: border-box; }
+    .form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+    
+    .btn-primary-action { width: 100%; background: var(--success); color: var(--white); border: none; padding: 15px; font-size: 1rem; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .btn-primary-action:hover { background: #059669; }
+
+    .mt-4 { margin-top: 25px; }
+    .spinner-small { width: 20px; height: 20px; border: 2px solid var(--text-light); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+
+<script>
+    // --- GLOBAL DATA CACHE ---
+    // We store data here so we can open full details without making new API calls
+    const adminCache = {
+        leads: {},
+        tickets: {}
+    };
+
+    // 1. INIT
+    document.addEventListener('DOMContentLoaded', () => {
+        initAdminData();
+    });
+
+    function initAdminData() {
+        const db = firebase.database();
+
+        // Listen for Leads
+        db.ref('leads/service_requests').on('value', (snap) => {
+            const data = snap.val();
+            adminCache.leads = data || {};
+            renderLeads(adminCache.leads);
+        });
+
+        // Listen for Tickets
+        db.ref('support_tickets').on('value', (snap) => {
+            const data = snap.val();
+            adminCache.tickets = data || {};
+            renderTickets(adminCache.tickets);
+        });
+    }
+
+    // 2. RENDER FUNCTIONS
+    function renderLeads(data) {
+        const tbody = document.getElementById('body-leads');
+        tbody.innerHTML = '';
+        let count = 0;
+
+        if (Object.keys(data).length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px;">No records found.</td></tr>`;
+            document.getElementById('count-leads').innerText = 0;
+            return;
+        }
+
+        Object.entries(data).reverse().forEach(([key, item]) => {
+            count++;
+            const status = item.status || "New";
+            const date = item.timestamp ? new Date(item.timestamp).toLocaleDateString() : 'N/A';
+            
+            // Status Color Logic
+            let pillClass = 'blue';
+            if(status === 'Approved') pillClass = 'green';
+            if(status === 'Rejected') pillClass = 'red';
+            if(status === 'Under Review') pillClass = 'yellow';
+
+            const row = `
+                <tr onclick="openDetailModal('lead', '${key}')" style="cursor:pointer">
+                    <td>${date}</td>
+                    <td class="client-cell">
+                        <b>${item.name || 'Unknown'}</b>
+                        <small>${item.email || 'No Email'}</small>
+                    </td>
+                    <td>${item.service || 'N/A'}</td>
+                    <td>${item.budget || '-'}</td>
+                    <td><span class="pill ${pillClass}">${status}</span></td>
+                    <td><button class="btn-view">Manage</button></td>
+                </tr>
+            `;
+            tbody.innerHTML += row;
+        });
+        document.getElementById('count-leads').innerText = count;
+    }
+
+    function renderTickets(data) {
+        const tbody = document.getElementById('body-tickets');
+        tbody.innerHTML = '';
+        let count = 0;
+
+        if (Object.keys(data).length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px;">No tickets found.</td></tr>`;
+            document.getElementById('count-tickets').innerText = 0;
+            return;
+        }
+
+        Object.entries(data).reverse().forEach(([key, item]) => {
+            count++;
+            const status = item.status || "Open";
+            
+            let pillClass = 'blue';
+            if(status === 'Resolved') pillClass = 'green';
+            if(item.priority === 'High') pillClass = 'red';
+
+            const row = `
+                <tr onclick="openDetailModal('ticket', '${key}')" style="cursor:pointer">
+                    <td><code>${item.ticket_id || '###'}</code></td>
+                    <td><span class="pill ${item.priority === 'High' ? 'red' : 'blue'}">${item.priority || 'Normal'}</span></td>
+                    <td class="client-cell">
+                        <b>${item.name}</b>
+                        <small>${item.email}</small>
+                    </td>
+                    <td>${item.subject}</td>
+                    <td><span class="pill ${pillClass}">${status}</span></td>
+                    <td><button class="btn-view">Reply</button></td>
+                </tr>
+            `;
+            tbody.innerHTML += row;
+        });
+        document.getElementById('count-tickets').innerText = count;
+    }
+
+    // 3. MODAL LOGIC (The "Muck Full Professional" Part)
+    function openDetailModal(type, key) {
+        const modal = document.getElementById('detail-modal');
+        const infoGrid = document.getElementById('modal-info-grid');
+        const msgBox = document.getElementById('modal-full-message');
+        const statusSelect = document.getElementById('modal-status');
+        
+        // Fetch Data from Cache
+        const data = type === 'lead' ? adminCache.leads[key] : adminCache.tickets[key];
+        if(!data) return alert("Error: Data not found in cache.");
+
+        // Set Hidden Fields for Form Submission
+        document.getElementById('modal-hidden-db-path').value = type === 'lead' ? `leads/service_requests/${key}` : `support_tickets/${key}`;
+        document.getElementById('modal-hidden-email').value = data.email;
+        document.getElementById('modal-hidden-name').value = data.name;
+        document.getElementById('modal-hidden-type').value = type;
+
+        // Populate Left Column (Details)
+        infoGrid.innerHTML = '';
+        
+        // Common Fields
+        addInfoItem('Client Name', data.name);
+        addInfoItem('Email Address', data.email);
+        addInfoItem('Date Submitted', data.timestamp);
+
+        // Specific Fields
+        if(type === 'lead') {
+            document.getElementById('modal-title').textContent = "Project Lead Details";
+            addInfoItem('Service Type', data.service);
+            addInfoItem('Proposed Budget', data.budget);
+            addInfoItem('Timeline', data.timeline);
+            msgBox.textContent = data.details || "No details provided.";
+            
+            // Populate Dropdown for Leads
+            statusSelect.innerHTML = `
+                <option value="New">New</option>
+                <option value="Under Review">Under Review</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
+                <option value="Completed">Completed</option>
+            `;
+        } else {
+            document.getElementById('modal-title').textContent = `Ticket: ${data.ticket_id}`;
+            addInfoItem('Ticket ID', data.ticket_id);
+            addInfoItem('Priority', data.priority);
+            addInfoItem('Category', data.category);
+            addInfoItem('Subject', data.subject);
+            msgBox.textContent = data.message || "No message content.";
+
+            // Populate Dropdown for Tickets
+            statusSelect.innerHTML = `
+                <option value="Open">Open</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Resolved">Resolved</option>
+                <option value="Closed">Closed</option>
+            `;
+        }
+
+        // Set current status in dropdown
+        statusSelect.value = data.status || (type === 'lead' ? 'New' : 'Open');
+
+        // Show Modal
+        modal.style.display = 'flex';
+    }
+
+    function addInfoItem(label, value) {
+        const div = document.createElement('div');
+        div.className = 'info-item';
+        div.innerHTML = `<span class="info-label">${label}</span><span class="info-value">${value || '-'}</span>`;
+        document.getElementById('modal-info-grid').appendChild(div);
+    }
+
+    function closeModal() {
+        document.getElementById('detail-modal').style.display = 'none';
+        document.getElementById('modal-reply').value = ''; // Clear text
+    }
+
+    // 4. ACTION LOGIC
+    async function sendResponse() {
+        const btn = document.querySelector('.btn-primary-action');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = `<div class="spinner-small" style="border-color: white; border-top-color: transparent;"></div> Sending...`;
+        btn.disabled = true;
+
+        const payload = {
+            dbPath: document.getElementById('modal-hidden-db-path').value,
+            email: document.getElementById('modal-hidden-email').value,
+            name: document.getElementById('modal-hidden-name').value,
+            newStatus: document.getElementById('modal-status').value,
+            replyMessage: document.getElementById('modal-reply').value,
+            type: document.getElementById('modal-hidden-type').value
+        };
+
+        try {
+            const response = await fetch('/admin-reply', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+            
+            if(result.success) {
+                alert("Success: Record updated and email sent.");
+                closeModal();
+            } else {
+                alert("Error: " + result.message);
+            }
+        } catch(e) {
+            console.error(e);
+            alert("Network Error");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    }
+
+    // 5. VIEW SWITCHING
+    function switchView(viewName) {
+        document.getElementById('view-leads').style.display = 'none';
+        document.getElementById('view-tickets').style.display = 'none';
+        
+        document.getElementById('view-' + viewName).style.display = 'flex'; // Use flex for sticky header to work
+        
+        // Update Sidebar Active State
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+
+        // Update Breadcrumb
+        document.getElementById('current-view-name').innerText = viewName === 'leads' ? 'Project Leads' : 'Support Tickets';
+    }
+
+    // 6. SEARCH FUNCTION
+    function handleSearch(query) {
+        const filter = query.toLowerCase();
+        // Determine visible table
+        const activeTable = document.getElementById('view-leads').style.display !== 'none' ? 'table-leads' : 'table-tickets';
+        const rows = document.getElementById(activeTable).getElementsByTagName('tr');
+
+        for (let i = 1; i < rows.length; i++) { // Skip header
+            const text = rows[i].textContent.toLowerCase();
+            rows[i].style.display = text.includes(filter) ? '' : 'none';
+        }
+    }
+
+    function handleLogout() {
+        window.location.href = '/admin-logout';
+    }
+</script>
+
+{% endblock %}

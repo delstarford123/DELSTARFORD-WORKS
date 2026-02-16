@@ -4,120 +4,135 @@ import smtplib
 import ssl
 import threading  # For background emails
 import random     # For ticket IDs
+import requests   # For M-Pesa API
+import base64     # For M-Pesa Password encoding
+import stripe     # pip install stripe
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication # For attachments
+from werkzeug.utils import secure_filename
 
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
-# New Import for .env
 from dotenv import load_dotenv
 
 # Firebase Admin Imports
 import firebase_admin
 from firebase_admin import credentials, db
 
-# --- LOAD SECRETS ---
+# ==============================================================================
+# 1. CONFIGURATION & SETUP
+# ==============================================================================
+
+# Load Environment Variables
 load_dotenv()
 
-# --- CONFIGURATION ---
-
-# Add 'session' and 'redirect' to your flask imports
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
-
-# ... existing imports ...
-
 app = Flask(__name__)
-
 # [CRITICAL] Set a secret key for session security
-app.secret_key = "DELSTARFORD_SECURE_KEY_2026" 
+app.secret_key = os.getenv("FLASK_SECRET_KEY", "DELSTARFORD_SECURE_KEY_2026")
 
-# --- WHITELIST CREDENTIALS ---
+# --- PAYMENT CONFIGURATION ---
+# Stripe
+stripe.api_key = os.getenv('STRIPE_SECRET_KEY') # sk_...
+STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY') # pk_...
+
+# PayPal
+PAYPAL_CLIENT_ID = os.getenv('PAYPAL_CLIENT_ID')
+
+# M-Pesa (Sandbox Credentials)
+MPESA_CONSUMER_KEY = os.getenv('MPESA_KEY', 'mjpi9dRnBx6ZgredXiDbOK8U1gSnCds5TdJr7A3VrAdEg5a0')
+MPESA_CONSUMER_SECRET = os.getenv('MPESA_SECRET', 'CPiCSfv7qWx5faY0tfHElspd1OMA9IBIlJo86snqBMtGhtglvBKPwzP2mG3d33hD')
+MPESA_PASSKEY = os.getenv('MPESA_PASSKEY', 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919')
+MPESA_SHORT_CODE = '174379' 
+# IMPORTANT: Update this with your live NGROK URL for testing
+MPESA_CALLBACK_URL = os.getenv('MPESA_CALLBACK_URL', 'https://your-ngrok-url.ngrok-free.app/callback')
+
+# --- WHITELIST CREDENTIALS (Admin) ---
 ADMIN_WHITELIST = {
     "email": "delstarfordisaiah@gmail.com",
     "password": "Delstarford123"
 }
-# Load Environment Variables
-SERVICE_ACCOUNT_KEY = os.getenv("SERVICE_ACCOUNT_KEY")
-DATABASE_URL = os.getenv("DATABASE_URL")
+
+# --- EMAIL CONFIG ---
 SENDER_EMAIL = os.getenv("SENDER_EMAIL")
 SENDER_PASSWORD = os.getenv("SENDER_PASSWORD")
-
-# Email Settings (Gmail Standard TLS)
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 
 # --- FIREBASE INITIALIZATION ---
+SERVICE_ACCOUNT_KEY = os.getenv("SERVICE_ACCOUNT_KEY")
+DATABASE_URL = os.getenv("DATABASE_URL")
+
 if not firebase_admin._apps:
     try:
         if SERVICE_ACCOUNT_KEY and os.path.exists(SERVICE_ACCOUNT_KEY):
             cred = credentials.Certificate(SERVICE_ACCOUNT_KEY)
-            firebase_admin.initialize_app(cred, {
-                'databaseURL': DATABASE_URL
-            })
-            print("Firebase Admin Initialized Successfully.")
+            firebase_admin.initialize_app(cred, {'databaseURL': DATABASE_URL})
+            print(">> Firebase Initialized Successfully.")
         else:
-            print("WARNING: Service Account Key not found. Database features will fail.")
+            print(">> WARNING: Firebase Key not found. Database features will fail.")
     except Exception as e:
-        print(f"Error Initializing Firebase: {e}")
+        print(f">> Error Initializing Firebase: {e}")
 
 # --- AI MODELS DATA ---
 AI_MODELS = [
-    {"id": 1, "name": "DexaGen AI", "category": "Pharmacology", "price": "KSh 85,000", "tech": "DeepChem, WebGL", "desc": "Neuro-Symbolic engine simulating 3D drug interactions and molecular analysis."},
-    {"id": 19, "name": "SMART HEALTH AI", "category": "Healthcare", "price": "KSh 95,000", "tech": "Scikit-learn, IoT", "desc": "Predicts malaria-prone regions via mosquito species tracking."},
-    {"id": 20, "name": "Reen AI", "category": "EdTech", "price": "KSh 40,000", "tech": "3D Rendering", "desc": "Interactive biochemistry tool for visualizing drug molecules."},
-    {"id": 6, "name": "Agritech Field Manager", "category": "Agri-Tech", "price": "KSh 60,000", "tech": "Django, Plotly", "desc": "Lab-to-field experiment tracking with advanced data ingestion."},
+    {"id": 1, "name": "DexaGen AI", "category": "Pharmacology", "price": "KSh 85,000", "tech": "DeepChem, WebGL", "desc": "Neuro-Symbolic engine simulating 3D drug interactions."},
+    {"id": 19, "name": "SMART HEALTH AI", "category": "Healthcare", "price": "KSh 95,000", "tech": "Scikit-learn, IoT", "desc": "Predicts malaria-prone regions via mosquito tracking."},
+    {"id": 20, "name": "Reen AI", "category": "EdTech", "price": "KSh 40,000", "tech": "3D Rendering", "desc": "Interactive biochemistry tool for visualizing molecules."},
+    {"id": 6, "name": "Agritech Field Manager", "category": "Agri-Tech", "price": "KSh 60,000", "tech": "Django, Plotly", "desc": "Lab-to-field experiment tracking."},
     {"id": 11, "name": "Plant Pathology AI", "category": "Agri-Tech", "price": "KSh 55,000", "tech": "PyTorch, IoT", "desc": "Disease detection system with voice navigation."},
     {"id": 14, "name": "ANIPRO AI", "category": "FinTech / Agri", "price": "KSh 70,000", "tech": "Predictive Models", "desc": "Derisking platform connecting farmers to insurance."},
     {"id": 2, "name": "ScriptureAI", "category": "NLP", "price": "KSh 45,000", "tech": "Vector DB, RAG", "desc": "Semantic search engine for theological texts."},
     {"id": 8, "name": "Eco-Ride", "category": "Environment", "price": "KSh 50,000", "tech": "React Native", "desc": "Carbon footprint tracking app."},
 ]
 
-# --- BACKGROUND EMAIL FUNCTION ---
+# ==============================================================================
+# 2. HELPER FUNCTIONS
+# ==============================================================================
+
+def get_mpesa_access_token():
+    api_url = "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
+    try:
+        r = requests.get(api_url, auth=(MPESA_CONSUMER_KEY, MPESA_CONSUMER_SECRET))
+        r.raise_for_status()
+        return r.json()['access_token']
+    except Exception as e:
+        print(f"Error getting M-Pesa token: {e}")
+        return None
+
+def generate_mpesa_password(timestamp):
+    data_to_encode = MPESA_SHORT_CODE + MPESA_PASSKEY + timestamp
+    return base64.b64encode(data_to_encode.encode()).decode('utf-8')
+
 def send_email_background(to_email, subject, html_content):
-    """
-    This function runs in a separate thread.
-    It handles the slow connection to Gmail.
-    """
-    # Re-fetch env vars inside thread to be safe
-    email_user = os.getenv("SENDER_EMAIL")
-    email_pass = os.getenv("SENDER_PASSWORD")
-    
-    if not email_user or not email_pass:
-        print("Error: Email credentials missing in background thread.")
+    """ Runs in a separate thread to prevent blocking the user response """
+    if not SENDER_EMAIL or not SENDER_PASSWORD:
+        print(">> Email credentials missing.")
         return
 
     try:
-        # Create the email structure
         msg = MIMEMultipart('alternative')
-        msg['From'] = email_user
+        msg['From'] = SENDER_EMAIL
         msg['To'] = to_email
         msg['Subject'] = subject
+        msg.attach(MIMEText(html_content, 'html'))
 
-        # Attach the HTML body
-        part = MIMEText(html_content, 'html')
-        msg.attach(part)
-
-        # Secure connection with explicit timeout (60 seconds)
         context = ssl.create_default_context()
         with smtplib.SMTP(SMTP_SERVER, SMTP_PORT, timeout=60) as server:
-            server.starttls(context=context) # Secure the connection
-            server.login(email_user, email_pass)
+            server.starttls(context=context)
+            server.login(SENDER_EMAIL, SENDER_PASSWORD)
             server.send_message(msg)
-            
-        print(f"Background Email sent successfully to {to_email}")
+        print(f">> Email sent to {to_email}")
     except Exception as e:
-        print(f"Failed to send background email: {e}")
+        print(f">> Failed to send email: {e}")
 
-# --- MAIN EMAIL WRAPPER ---
 def send_email_html(to_email, subject, html_content):
-    """
-    Starts the email sending in a background thread and returns immediately.
-    This prevents the 'Worker Timeout' error.
-    """
     thread = threading.Thread(target=send_email_background, args=(to_email, subject, html_content))
     thread.start()
     return True
 
-# --- PAGE ROUTES ---
+# ==============================================================================
+# 3. PAGE ROUTES (View Layer)
+# ==============================================================================
 
 @app.route('/')
 def home():
@@ -129,7 +144,11 @@ def services():
 
 @app.route('/ai-lab')
 def ai_lab():
-    return render_template('ai_lab.html', models=AI_MODELS)
+    # Pass Keys to the Frontend for Stripe/PayPal/M-Pesa handling
+    return render_template('ai_lab.html', 
+                           models=AI_MODELS, 
+                           paypal_client_id=PAYPAL_CLIENT_ID,
+                           stripe_publishable_key=STRIPE_PUBLISHABLE_KEY)
 
 @app.route('/dashboard')
 def dashboard():
@@ -159,50 +178,165 @@ def case_study():
 def login():
     return render_template('login.html')
 
-# --- ADMIN REPLY ROUTE ---
+@app.route('/register')
+def register_page():
+    return render_template('register.html')
+
+@app.route('/register2')
+def register2_page():
+    return render_template('register2.html')
+
+@app.route('/support')
+def support():
+    return render_template('support.html')
+
+@app.route('/agreement')
+def agreement_page():
+    return render_template('agreement.html')
+
+# ==============================================================================
+# 4. PAYMENT PROCESSING ROUTES
+# ==============================================================================
+
+# --- M-PESA STK PUSH ---
+@app.route('/pay', methods=['POST'])
+def pay():
+    data = request.json
+    raw_phone = data.get('phone') 
+    amount_str = data.get('amount')
+
+    # 1. Validation
+    if not raw_phone:
+         return jsonify({"error": "Phone number is required"}), 400
+
+    # 2. SANITIZE PHONE NUMBER
+    clean_phone = ''.join(filter(str.isdigit, str(raw_phone)))
+
+    # Convert common Kenyan formats to 254...
+    if clean_phone.startswith('07') or clean_phone.startswith('01'): 
+        formatted_phone = '254' + clean_phone[1:] 
+    elif clean_phone.startswith('254') and len(clean_phone) == 12: 
+        formatted_phone = clean_phone            
+    elif len(clean_phone) == 9:
+        formatted_phone = '254' + clean_phone
+    else: 
+        formatted_phone = clean_phone # Fallback
+
+    # 3. Handle Amount (Force 1 for Sandbox)
+    try:
+        # In Production: amount = int(amount_str)
+        amount = 1 
+    except:
+        amount = 1 
+
+    access_token = get_mpesa_access_token()
+    if not access_token:
+        return jsonify({"error": "Failed to authenticate with Safaricom"}), 500
+
+    timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+    password = generate_mpesa_password(timestamp)
+
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json'
+    }
+
+    payload = {
+        "BusinessShortCode": MPESA_SHORT_CODE,
+        "Password": password,
+        "Timestamp": timestamp,
+        "TransactionType": "CustomerPayBillOnline",
+        "Amount": amount, 
+        "PartyA": formatted_phone, 
+        "PartyB": MPESA_SHORT_CODE,
+        "PhoneNumber": formatted_phone, 
+        "CallBackURL": MPESA_CALLBACK_URL,
+        "AccountReference": "DELSTARFORD",
+        "TransactionDesc": "AI Model Purchase"
+    }
+
+    stk_url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
+    
+    try:
+        response = requests.post(stk_url, json=payload, headers=headers)
+        response_data = response.json()
+        
+        # Log to Firebase
+        try:
+             ref = db.reference('payments/initiated')
+             ref.push({
+                 'original_input': raw_phone,
+                 'formatted_phone': formatted_phone,
+                 'amount': amount,
+                 'response': response_data,
+                 'timestamp': str(datetime.datetime.now())
+             })
+        except:
+            pass 
+
+        return jsonify(response_data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/callback', methods=['POST'])
+def callback():
+    data = request.json
+    print(">> MPESA CALLBACK RECEIVED:", data)
+    try:
+        db.reference('payments/callbacks').push({'data': data, 'timestamp': str(datetime.datetime.now())})
+    except:
+        pass
+    return "OK"
+
+# --- STRIPE PAYMENT INTENT ---
+@app.route('/create-payment-intent', methods=['POST'])
+def create_payment_intent():
+    try:
+        data = request.json
+        amount = int(data.get('amount'))
+        
+        intent = stripe.PaymentIntent.create(
+            amount=amount,
+            currency='kes',
+            automatic_payment_methods={'enabled': True},
+        )
+        return jsonify({'clientSecret': intent.client_secret})
+    except Exception as e:
+        return jsonify(error=str(e)), 403
+
+# ==============================================================================
+# 5. ADMIN & FORM SUBMISSION ROUTES
+# ==============================================================================
+
 @app.route('/admin-reply', methods=['POST'])
 def admin_reply():
     try:
         data = request.json
-        
-        # 1. Extract Data
         db_path = data.get('dbPath')
         client_email = data.get('email')
         client_name = data.get('name')
         new_status = data.get('newStatus')
         reply_message = data.get('replyMessage')
-        item_type = data.get('type') # 'lead' or 'ticket'
+        item_type = data.get('type') 
         
-        # 2. Update Firebase Status
         if db_path:
-            ref = db.reference(db_path)
-            ref.update({
+            db.reference(db_path).update({
                 'status': new_status,
                 'last_admin_response': str(datetime.datetime.now())
             })
 
-        # 3. Send Email (Only if there is a message)
         if reply_message:
-            subject = f"Update on your Project: {new_status}" if item_type == 'lead' else f"Ticket Update: {new_status}"
-            
-            # Simple HTML Template for Reply
+            subject = f"Update on your Project: {new_status}"
             html_content = f"""
-            <html>
-            <body style="font-family: sans-serif; padding: 20px;">
+            <html><body>
                 <h2 style="color: #0f172a;">Hello {client_name},</h2>
-                <p>There is an update regarding your {item_type}.</p>
-                <p><strong>New Status:</strong> {new_status}</p>
-                
-                <div style="background: #f1f5f9; padding: 15px; border-left: 4px solid #10b981; margin: 20px 0;">
-                    <strong>Admin Response:</strong><br>
-                    {reply_message}
+                <p>Status Update for your {item_type}: <strong>{new_status}</strong></p>
+                <div style="background: #f1f5f9; padding: 15px; border-left: 4px solid #10b981;">
+                    <strong>Admin Response:</strong><br>{reply_message}
                 </div>
-                
-                <p>Best Regards,<br>Delstarford Works Admin Team</p>
-            </body>
-            </html>
+                <p>Regards,<br>Delstarford Works</p>
+            </body></html>
             """
-            
             send_email_html(client_email, subject, html_content)
             return jsonify({"success": True, "message": "Email sent and DB updated"})
         else:
@@ -210,13 +344,10 @@ def admin_reply():
 
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
-# --- PROTECTED ADMIN ROUTES ---
 
 @app.route('/admin-login')
 def admin_login_page():
-    # If already logged in, skip login page
-    if session.get('is_admin'):
-        return redirect(url_for('admin_page'))
+    if session.get('is_admin'): return redirect(url_for('admin_page'))
     return render_template('admin_login.html')
 
 @app.route('/admin-login-submit', methods=['POST'])
@@ -224,7 +355,6 @@ def admin_login_submit():
     email = request.form.get('email')
     password = request.form.get('password')
     
-    # CHECK WHITELIST
     if email == ADMIN_WHITELIST["email"] and password == ADMIN_WHITELIST["password"]:
         session['is_admin'] = True
         return redirect(url_for('admin_page'))
@@ -239,117 +369,52 @@ def admin_logout():
 
 @app.route('/admin')
 def admin_page():
-    # SERVER-SIDE PROTECTION
-    if not session.get('is_admin'):
-        return redirect(url_for('admin_login_page'))
-    
+    if not session.get('is_admin'): return redirect(url_for('admin_login_page'))
     return render_template('admin_response.html')
-
-@app.route('/estimator')
-def estimator():
-    # If your estimator is inside custom.html, redirect there
-    return render_template('custom.html')
-# --- AGREEMENT ROUTES ---
-@app.route('/agreement')
-def agreement_page():
-    return render_template('agreement.html')
 
 @app.route('/submit-agreement', methods=['POST'])
 def submit_agreement():
     try:
         data = request.form
-        
-        # 1. Extract Data
         client_name = data.get('client_name')
         sector = data.get('sector_select')
         custom_total = data.get('custom_total')
-        justification = data.get('justification')
         signature = data.get('signature')
         date_signed = data.get('date')
-        
-        # 2. Determine Final Price
+
+        # Standard rates logic
         standard_rates = {
-            "Health": 30000,
-            "Security": 28000,
-            "Agriculture": 25000,
-            "Education": 20000,
-            "Social": 15000,
-            "Finance": 10000
+            "Health": 30000, "Security": 28000, "Agriculture": 25000,
+            "Education": 20000, "Social": 15000, "Finance": 10000
         }
         
         if sector == "Custom":
             total_cost = int(custom_total) if custom_total else 0
-            details_text = f"Custom Budget Proposed. Justification: {justification}"
         else:
             total_cost = standard_rates.get(sector, 0)
-            details_text = "Standard Industry Rate Applied."
-
-        # 3. Save to Firebase
+        
         contract_id = f"CNT-{random.randint(10000, 99999)}"
-        try:
-            ref = db.reference(f'agreements/{contract_id}')
-            ref.set({
-                'contract_id': contract_id,
-                'client_name': client_name,
-                'sector': sector,
-                'total_cost': total_cost,
-                'signature': signature,
-                'date': date_signed,
-                'status': 'Signed & Pending Review' if sector == 'Custom' else 'Active',
-                'timestamp': str(datetime.datetime.now())
-            })
-        except Exception as e:
-            print(f"DB Error: {e}")
+        db.reference(f'agreements/{contract_id}').set({
+            'contract_id': contract_id,
+            'client_name': client_name,
+            'sector': sector,
+            'total_cost': total_cost,
+            'signature': signature,
+            'date': date_signed,
+            'timestamp': str(datetime.datetime.now())
+        })
 
-        # 4. Send Emails (Re-using your professional templates)
-        
-        # Admin Email (Notification)
-        admin_msg = f"""
-        SIGNED CONTRACT ALERT
-        ---------------------
-        Client: {client_name}
-        Sector: {sector}
-        Value: {total_cost:,} KSH
-        Signature: {signature}
-        
-        View full contract in Firebase Console.
-        """
-        # We assume you want the nice HTML version, so we map fields to your existing template
-        admin_html = render_template('email_admin.html', 
-                                     name=client_name, 
-                                     email="[See Contract]", 
-                                     service=f"AGREEMENT: {sector}", 
-                                     budget=f"{total_cost:,} KSH", 
-                                     timeline="Per Contract", 
-                                     details=f"Digital Signature: {signature}<br>Date: {date_signed}<br>Notes: {details_text}")
-        
+        # Admin Notification
+        admin_html = render_template('email_admin.html', name=client_name, email="[Contract]", service=f"Contract: {sector}", budget=total_cost, timeline="Signed", details="See DB for Signature")
         send_email_html(SENDER_EMAIL, f"📝 Contract Signed: {client_name}", admin_html)
-
-        # Client Email (Receipt)
-        # We reuse the client template but tweak the message slightly via the 'service' field
-        client_html = render_template('email_client.html', 
-                                      name=client_name, 
-                                      service=f"Service Agreement ({contract_id})")
         
+        # Client Receipt
+        client_html = render_template('email_client.html', name=client_name, service=f"Service Agreement ({contract_id})")
         send_email_html(SENDER_EMAIL, f"Agreement Receipt - {contract_id}", client_html)
 
         return jsonify({"success": True, "contract_id": contract_id})
-
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
-
-# At the very top with other imports:
-from werkzeug.utils import secure_filename
-from email.mime.application import MIMEApplication # For attachments
-
-# ... existing code ...
-
-@app.route('/register')
-def register_page():
-    return render_template('register.html')
-@app.route('/register2')
-def register2_page():
-    return render_template('register2.html')
 
 @app.route('/submit-registration', methods=['POST'])
 def submit_registration():
@@ -361,201 +426,114 @@ def submit_registration():
         role = data.get('role')
         phone = data.get('phone')
         
-        # 2. Handle Files (We will email them to Admin)
+        # 2. Handle Files (Read into memory to attach)
         uploaded_files = []
         for file_key in ['doc_id', 'doc_kra', 'doc_photo']:
             file = request.files.get(file_key)
             if file and file.filename:
                 filename = secure_filename(file.filename)
-                # Read file data into memory to attach to email
                 file_data = file.read()
                 uploaded_files.append({'name': filename, 'data': file_data})
 
         # 3. Save Text Data to Firebase
         reg_id = f"MEM-{random.randint(10000, 99999)}"
-        try:
-            ref = db.reference(f'members/{reg_id}')
-            ref.set({
-                'member_id': reg_id,
-                'name': name,
-                'email': email,
-                'role': role,
-                'phone': phone,
-                'payment_method': data.get('payment_method'),
-                'status': 'Pending Review',
-                'timestamp': str(datetime.datetime.now())
-            })
-        except Exception as e:
-            print(f"DB Error: {e}")
+        db.reference(f'members/{reg_id}').set({
+            'member_id': reg_id, 'name': name, 'email': email,
+            'role': role, 'phone': phone, 'status': 'Pending Review',
+            'timestamp': str(datetime.datetime.now())
+        })
 
         # 4. SEND EMAIL TO ADMIN (With Attachments)
-        # We write a custom email sender here to handle attachments
         try:
             msg = MIMEMultipart()
             msg['From'] = SENDER_EMAIL
-            msg['To'] = SENDER_EMAIL # Send to yourself
+            msg['To'] = SENDER_EMAIL 
             msg['Subject'] = f"📄 New Job Application: {name} ({role})"
             
-            body = f"""
-            NEW MEMBER REGISTRATION
-            -----------------------
-            Name: {name}
-            Role: {role}
-            Email: {email}
-            Phone: {phone}
-            
-            Payment: {data.get('payment_method')}
-            Signature: {data.get('signature')}
-            
-            ATTACHED: ID, KRA, and Photo.
-            """
+            body = f"Name: {name}\nRole: {role}\nEmail: {email}\nPhone: {phone}"
             msg.attach(MIMEText(body, 'plain'))
             
-            # Attach Files
             for f in uploaded_files:
                 part = MIMEApplication(f['data'], Name=f['name'])
                 part['Content-Disposition'] = f'attachment; filename="{f["name"]}"'
                 msg.attach(part)
                 
-            # Connect & Send
             context = ssl.create_default_context()
             with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
                 server.starttls(context=context)
                 server.login(SENDER_EMAIL, SENDER_PASSWORD)
                 server.send_message(msg)
-                
         except Exception as e:
             print(f"Email Attachment Error: {e}")
 
-        # 5. Send Welcome Email to User (HTML)
-        user_html = render_template('email_client.html', 
-                                    name=name, 
-                                    service=f"Application: {role} (Ref: {reg_id})")
+        # 5. Send Welcome Email
+        user_html = render_template('email_client.html', name=name, service=f"Application: {role} (Ref: {reg_id})")
         send_email_html(email, "Application Received - Delstarford Works", user_html)
 
         return jsonify({"success": True})
-
     except Exception as e:
-        print(e)
         return jsonify({"success": False, "message": str(e)}), 500
-# --- SUPPORT TICKET SYSTEM ---
-@app.route('/support')
-def support():
-    return render_template('support.html')
 
 @app.route('/submit-ticket', methods=['POST'])
 def submit_ticket():
     try:
         data = request.form
-        
-        # Generate a random number
         rand_num = random.randint(1000, 9999)
-
-        # 1. CLEAN ID for Database Path (Firebase doesn't allow '#')
         db_key = f"TKT-{rand_num}"
-        
-        # 2. PRETTY ID for User/Email Display (We add the '#' here)
         display_ticket_id = f"#{db_key}"
         
-        name = data.get('name')
-        email = data.get('email')
-        category = data.get('category')
-        priority = data.get('priority')
-        subject = data.get('subject')
-        message = data.get('message')
-
-        # 3. Save to Firebase using the CLEAN key
-        try:
-            # Notice we use 'db_key' (no hash) for the path
-            ref = db.reference(f'support_tickets/{db_key}')
-            ref.set({
-                'ticket_id': display_ticket_id, 
-                'status': 'Open',
-                'name': name,
-                'email': email,
-                'category': category,
-                'priority': priority,
-                'subject': subject,
-                'message': message,
-                'timestamp': str(datetime.datetime.now())
-            })
-        except Exception as e:
-            print(f"DB Error: {e}")
-
-        # 4. Send Emails (Uses Background Threading)
+        db.reference(f'support_tickets/{db_key}').set({
+            'ticket_id': display_ticket_id, 
+            'name': data.get('name'), 'email': data.get('email'),
+            'subject': data.get('subject'), 'message': data.get('message'),
+            'priority': data.get('priority'), 'category': data.get('category'),
+            'status': 'Open', 'timestamp': str(datetime.datetime.now())
+        })
         
         # Admin Email
-        admin_html = render_template('email_ticket_admin.html', 
-                                     ticket_id=display_ticket_id, name=name, email=email, 
-                                     category=category, priority=priority, 
-                                     subject=subject, message=message)
+        admin_html = render_template('email_ticket_admin.html', ticket_id=display_ticket_id, 
+                                     name=data.get('name'), email=data.get('email'), 
+                                     subject=data.get('subject'), message=data.get('message'))
+        send_email_html(SENDER_EMAIL, f"New Ticket {display_ticket_id}", admin_html)
         
-        send_email_html(SENDER_EMAIL, f"[{priority.upper()}] New Ticket {display_ticket_id}: {subject}", admin_html)
-
         # User Email
-        user_html = render_template('email_ticket_user.html', 
-                                    name=name, ticket_id=display_ticket_id, subject=subject)
-        
-        send_email_html(email, f"Support Ticket Received - {display_ticket_id}", user_html)
+        user_html = render_template('email_ticket_user.html', name=data.get('name'), ticket_id=display_ticket_id, subject=data.get('subject'))
+        send_email_html(data.get('email'), f"Support Ticket Received - {display_ticket_id}", user_html)
 
         return jsonify({"success": True, "ticket_id": display_ticket_id})
-
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
-# --- MAIN LOGIC ROUTE (Email + Form + Estimator) ---
 @app.route('/custom', methods=['GET', 'POST'])
 def custom_solution():
-    if request.method == 'GET':
-        return render_template('custom.html') 
+    if request.method == 'GET': return render_template('custom.html')
     
-    if request.method == 'POST':
-        try:
-            # 1. Get Data from Form
-            data = request.form
-            name = data.get('name')
-            email = data.get('email')
-            service = data.get('service')
-            budget = data.get('budget')
-            timeline = data.get('timeline')
-            details = data.get('details')
-            
-            print(f"New Lead: {email} requesting {service}")
+    try:
+        data = request.form
+        name = data.get('name')
+        email = data.get('email')
+        service = data.get('service')
+        
+        db.reference('leads/service_requests').push({
+            'name': name, 'email': email, 
+            'service': service, 'details': data.get('details'),
+            'timestamp': str(datetime.datetime.now())
+        })
+        
+        admin_html = render_template('email_admin.html', name=name, email=email, service=service, details=data.get('details'))
+        send_email_html(SENDER_EMAIL, f"New Lead: {service}", admin_html)
+        
+        client_html = render_template('email_client.html', name=name, service=service)
+        send_email_html(email, "We received your request", client_html)
 
-            # 2. GENERATE HTML EMAIL CONTENT
-            admin_html = render_template('email_admin.html', 
-                                         name=name, email=email, service=service, 
-                                         budget=budget, timeline=timeline, details=details)
-            
-            client_html = render_template('email_client.html', 
-                                          name=name, service=service)
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
 
-            # 3. SEND EMAILS (Now instant thanks to threading)
-            send_email_html(SENDER_EMAIL, f"New Lead: {service} from {name}", admin_html)
-            send_email_html(email, "We received your request - Delstarford Works", client_html)
-            
-            # 4. Save to Firebase
-            try:
-                ref = db.reference('leads/service_requests')
-                ref.push({
-                    'name': name,
-                    'email': email,
-                    'service': service,
-                    'details': details,
-                    'budget': budget,
-                    'timeline': timeline,
-                    'timestamp': str(datetime.datetime.now())
-                })
-            except Exception as e:
-                print(f"Database Error: {e}")
+@app.route('/estimator')
+def estimator():
+    return render_template('custom.html')
 
-            return jsonify({"success": True, "message": "Request sent! Check your email for confirmation."}), 200
-
-        except Exception as e:
-            print(f"Server Error: {e}")
-            return jsonify({"success": False, "message": "Server error occurred."}), 500
-
-# --- ESTIMATOR LOGIC ---
 @app.route('/calculate-estimate', methods=['POST'])
 def calculate_estimate():
     try:
@@ -568,7 +546,6 @@ def calculate_estimate():
             data_size = 0
             
         complexity = data.get('complexity', 'standard')
-        
         multipliers = {'standard': 1.0, 'advanced': 2.5, 'enterprise': 5.0}
         model_adds = {'tabular': 5000, 'vision': 25000, 'nlp': 15000, 'bio': 30000}
         
@@ -586,13 +563,14 @@ def calculate_estimate():
 
 @app.route('/dashboard-data')
 def get_dashboard_data():
-    user_id = 'user_123' 
     try:
-        ref = db.reference(f'active_projects/{user_id}')
-        data = ref.get()
-        return jsonify(data if data else {})
-    except Exception as e:
-        return jsonify({"error": str(e)})
+        return jsonify(db.reference(f'active_projects/user_123').get() or {})
+    except:
+        return jsonify({})
 
+# ==============================================================================
+# 6. RUN SERVER
+# ==============================================================================
 if __name__ == '__main__':
-    app.run(debug=True)
+    # 'host=0.0.0.0' makes the server accessible on your local network/phone
+    app.run(host='0.0.0.0', port=5000, debug=True)

@@ -2,39 +2,39 @@
 {% block content %}
 
 <section class="hero-section" style="padding: 80px 20px; background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);">
-    <div class="hero-content">
-        <span class="hero-badge">Delstarford AI Lab</span>
-        <h1>Marketplace of <span class="highlight">Intelligence</span></h1>
-        <p>Production-ready models for Agriculture, Biotech, and Fintech. Proven algorithms deployed to your server in less than 24 hours.</p>
+    <div class="hero-content" style="max-width: 800px; margin: 0 auto; text-align: center;">
+        <span class="hero-badge" style="background: #e0e7ff; color: #4338ca; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Delstarford AI Lab</span>
+        <h1 style="font-size: 3rem; margin-top: 20px; color: #0f172a;">Marketplace of <span class="highlight" style="color: #2563eb;">Intelligence</span></h1>
+        <p style="font-size: 1.1rem; color: #64748b; margin-top: 15px;">Production-ready models for Agriculture, Biotech, and Fintech. Proven algorithms deployed to your server in less than 24 hours.</p>
     </div>
 </section>
 
-<section class="container py-50">
+<section class="container py-50" style="padding: 50px 5%;">
     <div class="grid-filter" style="text-align: center; margin-bottom: 50px;">
         <p style="color: #64748b; font-size: 0.95rem; font-weight: 500;">
             Showing <strong>{{ models|length }}</strong> Enterprise Solutions
         </p>
     </div>
 
-    <div class="model-grid">
+    <div class="model-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px;">
         {% for model in models %}
-        <div class="model-card scroll-trigger">
-            <div class="card-header">
-                <span class="category-tag">{{ model.category }}</span>
-                <span class="price-tag">{{ model.price }}</span>
+        <div class="model-card scroll-trigger" style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; transition: transform 0.2s, box-shadow 0.2s;">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <span class="category-tag" style="background: #f1f5f9; color: #475569; padding: 4px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600;">{{ model.category }}</span>
+                <span class="price-tag" style="color: #059669; font-weight: 700; font-size: 1.1rem;">{{ model.price }}</span>
             </div>
             
-            <h3>{{ model.name }}</h3>
-            <p class="desc">{{ model.desc }}</p>
+            <h3 style="margin: 0 0 10px 0; color: #1e293b; font-size: 1.25rem;">{{ model.name }}</h3>
+            <p class="desc" style="color: #64748b; font-size: 0.9rem; line-height: 1.5; margin-bottom: 20px;">{{ model.desc }}</p>
             
-            <div class="tech-stack">
-                <i class="fas fa-microchip" style="margin-right: 8px;"></i> 
+            <div class="tech-stack" style="border-top: 1px solid #f1f5f9; padding-top: 15px; margin-bottom: 20px; font-size: 0.85rem; color: #94a3b8;">
+                <i class="fas fa-microchip" style="margin-right: 8px; color: #3b82f6;"></i> 
                 {{ model.tech }}
             </div>
 
-            <div class="card-actions">
-                <a href="/custom" class="btn-buy">Purchase License</a>
-                <button class="btn-demo" onclick="alert('Demo request for {{ model.name }} has been logged. Our team will contact you.')">
+            <div class="card-actions" style="display: flex; gap: 10px;">
+                <button onclick="openPaymentModal('{{ model.name }}', '{{ model.price }}')" class="btn-buy" style="flex: 1; background: #0f172a; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: 600;">Purchase License</button>
+                <button class="btn-demo" onclick="alert('Demo request for {{ model.name }} has been logged.')" style="background: transparent; border: 1px solid #cbd5e1; color: #475569; padding: 10px 15px; border-radius: 6px; cursor: pointer;">
                     View Demo
                 </button>
             </div>
@@ -43,66 +43,293 @@
     </div>
 </section>
 
+<div id="paymentModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
+    <div class="modal-content" style="background: white; width: 90%; max-width: 500px; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
+        
+        <div class="modal-header" style="background: #f8fafc; padding: 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0; color: #0f172a; font-size: 1.1rem;">Secure Checkout</h3>
+            <button onclick="closeModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #94a3b8;">&times;</button>
+        </div>
+
+        <div class="modal-body" style="padding: 25px;">
+            
+            <div style="background: #eff6ff; padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6; margin-bottom: 25px;">
+                <p style="margin: 0; font-size: 0.85rem; color: #1e40af; font-weight: 600; text-transform: uppercase;">Order Summary</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
+                    <strong id="modalModelName" style="font-size: 1.1rem; color: #1e3a8a;">Model Name</strong>
+                    <span id="modalModelPrice" style="font-weight: 700; color: #059669; font-size: 1.1rem;">0</span>
+                </div>
+            </div>
+
+            <div style="display: flex; border-bottom: 1px solid #e2e8f0; margin-bottom: 20px;">
+                <button class="tab-link active" onclick="openTab(event, 'tabMpesa')" style="flex: 1; padding: 10px; background: none; border: none; border-bottom: 2px solid #10b981; font-weight: 600; color: #0f172a; cursor: pointer;">M-PESA</button>
+                <button class="tab-link" onclick="openTab(event, 'tabCard')" style="flex: 1; padding: 10px; background: none; border: none; color: #64748b; cursor: pointer;">Card</button>
+                <button class="tab-link" onclick="openTab(event, 'tabPaypal')" style="flex: 1; padding: 10px; background: none; border: none; color: #64748b; cursor: pointer;">PayPal</button>
+            </div>
+
+            <div id="tabMpesa" class="tab-content" style="display: block;">
+                <p style="font-size: 0.9rem; color: #475569; margin-bottom: 10px;">Enter M-Pesa number for instant STK push:</p>
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <input type="text" id="mpesaPhone" placeholder="e.g. 0712345678" style="flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none;">
+                    <button onclick="initiateMpesa()" id="btnPayMpesa" style="background: #10b981; color: white; border: none; padding: 0 20px; border-radius: 6px; font-weight: 600; cursor: pointer;">PAY</button>
+                </div>
+                <div id="mpesaStatus" style="font-size: 0.85rem; display: none;"></div>
+            </div>
+
+            <div id="tabCard" class="tab-content" style="display: none;">
+                <form id="payment-form">
+                    <div id="card-element" style="padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; margin-bottom: 15px;">
+                        </div>
+                    <button id="submit-stripe" style="width: 100%; background: #6366f1; color: white; padding: 12px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">
+                        Pay Securely with Card
+                    </button>
+                    <div id="card-errors" style="color: #ef4444; font-size: 0.85rem; margin-top: 10px;"></div>
+                </form>
+            </div>
+
+            <div id="tabPaypal" class="tab-content" style="display: none;">
+                <div id="paypal-button-container"></div>
+            </div>
+
+            <div style="margin-top: 20px; text-align: center; font-size: 0.85rem;">
+                <a href="#" onclick="toggleBankDetails(); return false;" style="color: #64748b; text-decoration: none;">Or pay via Bank Transfer</a>
+                <div id="bankDetails" style="display: none; background: #f8fafc; padding: 10px; margin-top: 10px; border-radius: 6px; text-align: left; color: #475569;">
+                    <p style="margin: 2px 0;"><strong>Bank:</strong> I&M BANK</p>
+                    <p style="margin: 2px 0;"><strong>Acc Name:</strong> DELSTARFORD WORKS</p>
+                    <p style="margin: 2px 0;"><strong>Acc No:</strong> 1234 567 890</p>
+                </div>
+            </div>
+
+        </div>
+        
+        <div class="modal-footer" style="background: #f8fafc; padding: 15px; text-align: center;">
+            <p style="font-size: 0.75rem; color: #94a3b8; margin: 0;">
+                <i class="fas fa-lock"></i> SSL Encrypted & Secure
+            </p>
+        </div>
+    </div>
+</div>
+
 <div style="position: fixed; bottom: 30px; left: 30px; z-index: 100;">
-    <button onclick="toggleAudio()" id="audioControl" class="btn-primary" style="border-radius: 50px; padding: 12px 25px; font-size: 0.85rem; box-shadow: 0 4px 15px rgba(37,99,235,0.3);">
+    <button onclick="toggleAudio()" id="audioControl" class="btn-primary" style="border: none; background: #2563eb; color: white; border-radius: 50px; padding: 12px 25px; font-size: 0.85rem; box-shadow: 0 4px 15px rgba(37,99,235,0.3); cursor: pointer; transition: all 0.3s;">
         🔊 Listen to Overview
     </button>
 </div>
 
+<script src="https://js.stripe.com/v3/"></script>
+<script src="https://www.paypal.com/sdk/js?client-id={{ paypal_client_id }}&currency=USD"></script>
+
 <script>
+    // --- 1. INITIALIZE STRIPE ---
+    // The key is injected safely from your Python backend
+    const stripe = Stripe('{{ stripe_publishable_key }}');
+    const elements = stripe.elements();
+    const card = elements.create('card', {
+        style: {
+            base: {
+                fontSize: '16px',
+                color: '#32325d',
+            },
+        },
+    });
+    card.mount('#card-element');
+
+    // --- 2. GLOBAL STATE ---
+    let currentPrice = 0;
+    let currentModel = "";
+
+    // --- 3. MODAL FUNCTIONS ---
+    function openPaymentModal(name, priceStr) {
+        document.getElementById('modalModelName').innerText = name;
+        document.getElementById('modalModelPrice').innerText = priceStr;
+        currentModel = name;
+        
+        // Clean Price: "KSh 85,000" -> 85000
+        currentPrice = parseInt(priceStr.replace(/[^0-9]/g, ''));
+        
+        const modal = document.getElementById('paymentModal');
+        modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('paymentModal').style.display = 'none';
+        document.getElementById('mpesaStatus').style.display = 'none';
+        document.getElementById('bankDetails').style.display = 'none';
+    }
+
+    // Tabs Logic
+    function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tab-link");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].style.borderBottom = "none";
+            tablinks[i].style.color = "#64748b";
+        }
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.style.borderBottom = "2px solid #10b981";
+        evt.currentTarget.style.color = "#0f172a";
+    }
+
+    // Toggle Bank Details
+    function toggleBankDetails() {
+        const div = document.getElementById('bankDetails');
+        div.style.display = (div.style.display === 'none') ? 'block' : 'none';
+    }
+
+    // Close on background click
+    window.onclick = function(event) {
+        const modal = document.getElementById('paymentModal');
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+
+    // --- 4. PAYMENT LOGIC: M-PESA ---
+    function initiateMpesa() {
+        const phone = document.getElementById('mpesaPhone').value;
+        const btn = document.getElementById('btnPayMpesa');
+        const status = document.getElementById('mpesaStatus');
+
+        btn.disabled = true;
+        btn.innerText = "...";
+        status.style.display = 'block';
+        status.innerText = "Sending STK Push...";
+        status.style.color = "#475569";
+
+        fetch('/pay', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ phone: phone, amount: currentPrice })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.ResponseCode === "0") {
+                status.innerHTML = "✅ <b>Sent!</b> Check your phone for PIN.";
+                status.style.color = "green";
+            } else {
+                status.innerText = "❌ Error: " + (data.errorMessage || "Failed");
+                status.style.color = "red";
+                btn.innerText = "PAY";
+                btn.disabled = false;
+            }
+        })
+        .catch(err => {
+            status.innerText = "❌ Network Error";
+            status.style.color = "red";
+            btn.innerText = "PAY";
+            btn.disabled = false;
+        });
+    }
+
+    // --- 5. PAYMENT LOGIC: STRIPE ---
+    const form = document.getElementById('payment-form');
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const btn = document.getElementById('submit-stripe');
+        btn.disabled = true;
+        btn.innerText = "Processing...";
+
+        // 1. Create PaymentIntent on Backend
+        const res = await fetch('/create-payment-intent', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ amount: currentPrice })
+        });
+        const { clientSecret } = await res.json();
+
+        // 2. Confirm Payment with Stripe
+        const result = await stripe.confirmCardPayment(clientSecret, {
+            payment_method: {
+                card: card,
+                billing_details: { name: 'Delstarford Customer' }
+            }
+        });
+
+        if (result.error) {
+            document.getElementById('card-errors').textContent = result.error.message;
+            btn.disabled = false;
+            btn.innerText = "Pay Securely";
+        } else {
+            if (result.paymentIntent.status === 'succeeded') {
+                alert("Payment Successful!");
+                closeModal();
+                btn.innerText = "Paid";
+            }
+        }
+    });
+
+    // --- 6. PAYMENT LOGIC: PAYPAL ---
+    paypal.Buttons({
+        createOrder: function(data, actions) {
+            // Convert KES to USD (Approx 130 rate)
+            const usdAmount = (currentPrice / 130).toFixed(2);
+            return actions.order.create({
+                purchase_units: [{
+                    amount: { value: usdAmount },
+                    description: currentModel
+                }]
+            });
+        },
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details) {
+                alert('Transaction completed by ' + details.payer.name.given_name);
+                closeModal();
+            });
+        }
+    }).render('#paypal-button-container');
+
+    // --- 7. AUDIO LOGIC ---
     let isSpeaking = false;
     const synth = window.speechSynthesis;
 
     function toggleAudio() {
         const btn = document.getElementById('audioControl');
-        
         if (synth.speaking) {
-            // Stop speaking
             synth.cancel();
             isSpeaking = false;
             btn.innerHTML = "🔊 Listen to Overview";
-            btn.style.background = "#2563eb"; // Reset color
+            btn.style.background = "#2563eb";
         } else {
-            // Start speaking
             isSpeaking = true;
             btn.innerHTML = "🔇 Stop Listening";
-            btn.style.background = "#ef4444"; // Red for stop
+            btn.style.background = "#ef4444";
             speakProjects();
         }
     }
 
     function speakProjects() {
         const btn = document.getElementById('audioControl');
-        
-        // Intro Text
-        let textToRead = "Welcome to the Delstarford AI Lab. Here are our available enterprise solutions. ";
-        
-        // Read Cards (Limit to first 5 for better UX)
+        let textToRead = "Welcome to the Delstarford AI Lab. ";
         const cards = document.querySelectorAll('.model-card');
         cards.forEach((card, index) => {
             if(index < 5) { 
                 const title = card.querySelector('h3')?.innerText;
                 const price = card.querySelector('.price-tag')?.innerText;
-                // Add a natural pause in the text
                 textToRead += `Solution: ${title}. Price: ${price}. `;
             }
         });
-        
-        textToRead += "Please browse the page to see the full catalog.";
-        
         const utterance = new SpeechSynthesisUtterance(textToRead);
-        utterance.rate = 1; 
-        utterance.pitch = 1;
-
-        // Reset button when speech finishes naturally
         utterance.onend = function() {
             isSpeaking = false;
             btn.innerHTML = "🔊 Listen to Overview";
             btn.style.background = "#2563eb";
         };
-        
         synth.speak(utterance);
     }
 </script>
+
+<style>
+    .model-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    }
+    .tab-link:hover {
+        background-color: #f8fafc !important;
+    }
+</style>
 
 {% endblock %}

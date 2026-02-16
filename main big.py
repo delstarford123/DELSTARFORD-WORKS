@@ -4,8 +4,12 @@ import smtplib
 import ssl
 import threading  # For background emails
 import random     # For ticket IDs
+import requests   # NEW: For M-Pesa API
+import base64     # NEW: For M-Pesa Password encoding
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication # For attachments
+from werkzeug.utils import secure_filename
 
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
 # New Import for .env
@@ -19,16 +23,18 @@ from firebase_admin import credentials, db
 load_dotenv()
 
 # --- CONFIGURATION ---
-
-# Add 'session' and 'redirect' to your flask imports
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
-
-# ... existing imports ...
-
 app = Flask(__name__)
 
 # [CRITICAL] Set a secret key for session security
 app.secret_key = "DELSTARFORD_SECURE_KEY_2026" 
+
+# --- MPESA CONFIGURATION (Sandbox) ---
+MPESA_CONSUMER_KEY = 'mjpi9dRnBx6ZgredXiDbOK8U1gSnCds5TdJr7A3VrAdEg5a0'
+MPESA_CONSUMER_SECRET = 'CPiCSfv7qWx5faY0tfHElspd1OMA9IBIlJo86snqBMtGhtglvBKPwzP2mG3d33hD'
+MPESA_PASSKEY = 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919'
+MPESA_SHORT_CODE = '174379'  # Sandbox Paybill
+# IMPORTANT: This must be a live URL (use Ngrok for local testing)
+MPESA_CALLBACK_URL = 'https://your-ngrok-url.ngrok-free.app/callback' 
 
 # --- WHITELIST CREDENTIALS ---
 ADMIN_WHITELIST = {
@@ -71,6 +77,22 @@ AI_MODELS = [
     {"id": 8, "name": "Eco-Ride", "category": "Environment", "price": "KSh 50,000", "tech": "React Native", "desc": "Carbon footprint tracking app."},
 ]
 
+# --- MPESA HELPER FUNCTIONS ---
+
+def get_mpesa_access_token():
+    api_url = "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
+    try:
+        r = requests.get(api_url, auth=(MPESA_CONSUMER_KEY, MPESA_CONSUMER_SECRET))
+        r.raise_for_status()
+        return r.json()['access_token']
+    except Exception as e:
+        print(f"Error getting M-Pesa token: {e}")
+        return None
+
+def generate_mpesa_password(timestamp):
+    data_to_encode = MPESA_SHORT_CODE + MPESA_PASSKEY + timestamp
+    return base64.b64encode(data_to_encode.encode()).decode('utf-8')
+
 # --- BACKGROUND EMAIL FUNCTION ---
 def send_email_background(to_email, subject, html_content):
     """
@@ -111,7 +133,6 @@ def send_email_background(to_email, subject, html_content):
 def send_email_html(to_email, subject, html_content):
     """
     Starts the email sending in a background thread and returns immediately.
-    This prevents the 'Worker Timeout' error.
     """
     thread = threading.Thread(target=send_email_background, args=(to_email, subject, html_content))
     thread.start()
@@ -158,6 +179,113 @@ def case_study():
 @app.route('/login')
 def login():
     return render_template('login.html')
+
+# --- MPESA PAYMENT ROUTES (NEW) ---
+
+# --- MPESA PAYMENT ROUTES (UPDATED) ---
+
+@app.route('/pay', methods=['POST'])
+def pay():
+    data = request.json
+    raw_phone = data.get('phone') 
+    amount_str = data.get('amount')
+
+    # 1. Validation: Check if data exists
+    if not raw_phone:
+         return jsonify({"error": "Phone number is required"}), 400
+
+    # 2. SANITIZE PHONE NUMBER (The Fix)
+    # Remove spaces, plus signs, dashes
+    clean_phone = ''.join(filter(str.isdigit, str(raw_phone)))
+
+    # Convert formats to 254...
+    if clean_phone.startswith('07') or clean_phone.startswith('01'):
+        # Turn 0707... -> 254707...
+        formatted_phone = '254' + clean_phone[1:]
+    elif clean_phone.startswith('254') and len(clean_phone) == 12:
+        # Already correct
+        formatted_phone = clean_phone
+    elif len(clean_phone) == 9:
+        # Case: 707605751 -> 254707605751
+        formatted_phone = '254' + clean_phone
+    else:
+        # If it doesn't match known patterns, try sending it raw or return error
+        # Ideally, return error here, but we will try sending it.
+        formatted_phone = clean_phone
+
+    # 3. Handle Amount
+    try:
+        amount = int(amount_str)
+    except:
+        amount = 1 # Fallback
+
+    access_token = get_mpesa_access_token()
+    if not access_token:
+        return jsonify({"error": "Failed to authenticate with Safaricom"}), 500
+
+    timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+    password = generate_mpesa_password(timestamp)
+
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json'
+    }
+
+    payload = {
+        "BusinessShortCode": MPESA_SHORT_CODE,
+        "Password": password,
+        "Timestamp": timestamp,
+        "TransactionType": "CustomerPayBillOnline",
+        "Amount": 1, # KEEP AS 1 FOR SANDBOX TESTING
+        "PartyA": formatted_phone, # Use the clean number
+        "PartyB": MPESA_SHORT_CODE,
+        "PhoneNumber": formatted_phone, # Use the clean number
+        "CallBackURL": MPESA_CALLBACK_URL,
+        "AccountReference": "DELSTARFORD",
+        "TransactionDesc": "AI Model Purchase"
+    }
+
+    stk_url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
+    
+    try:
+        response = requests.post(stk_url, json=payload, headers=headers)
+        response_data = response.json()
+        
+        # Log to Firebase
+        try:
+             ref = db.reference('payments/initiated')
+             ref.push({
+                 'original_input': raw_phone,
+                 'formatted_phone': formatted_phone,
+                 'amount_requested': amount,
+                 'response': response_data,
+                 'timestamp': str(datetime.datetime.now())
+             })
+        except:
+            pass 
+
+        return jsonify(response_data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+@app.route('/callback', methods=['POST'])
+def callback():
+    """
+    Safaricom sends the payment result here.
+    """
+    data = request.json
+    print("MPESA CALLBACK DATA:", data)
+    
+    # Log the success/failure to Firebase
+    try:
+        ref = db.reference('payments/callbacks')
+        ref.push({
+            'data': data,
+            'timestamp': str(datetime.datetime.now())
+        })
+    except:
+        pass
+
+    return "OK"
 
 # --- ADMIN REPLY ROUTE ---
 @app.route('/admin-reply', methods=['POST'])
@@ -210,6 +338,7 @@ def admin_reply():
 
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
+
 # --- PROTECTED ADMIN ROUTES ---
 
 @app.route('/admin-login')
@@ -249,6 +378,7 @@ def admin_page():
 def estimator():
     # If your estimator is inside custom.html, redirect there
     return render_template('custom.html')
+
 # --- AGREEMENT ROUTES ---
 @app.route('/agreement')
 def agreement_page():
@@ -337,12 +467,6 @@ def submit_agreement():
 
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
-
-# At the very top with other imports:
-from werkzeug.utils import secure_filename
-from email.mime.application import MIMEApplication # For attachments
-
-# ... existing code ...
 
 @app.route('/register')
 def register_page():
@@ -438,6 +562,7 @@ def submit_registration():
     except Exception as e:
         print(e)
         return jsonify({"success": False, "message": str(e)}), 500
+
 # --- SUPPORT TICKET SYSTEM ---
 @app.route('/support')
 def support():
@@ -595,4 +720,5 @@ def get_dashboard_data():
         return jsonify({"error": str(e)})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Using host='0.0.0.0' enables you to test on mobile via local network
+    app.run(host='0.0.0.0', port=5000, debug=True)

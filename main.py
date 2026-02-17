@@ -154,10 +154,51 @@ def ai_lab():
 def dashboard():
     return render_template('dashboard.html')
 
-@app.route('/contact')
+# --- CONTACT FORM ROUTE ---
+@app.route('/contact', methods=['GET', 'POST'])
 def contact():
-    return render_template('contact.html')
+    if request.method == 'GET':
+        return render_template('contact.html')
+    
+    if request.method == 'POST':
+        try:
+            # 1. Get Data from Form
+            data = request.json # Using JSON for AJAX
+            if not data:
+                data = request.form # Fallback for standard form submit
 
+            name = data.get('name')
+            email = data.get('email')
+            subject = data.get('subject')
+            message = data.get('message')
+
+            # 2. EMAIL TO ADMIN (Notification)
+            admin_subject = f"📩 New Inquiry: {subject} from {name}"
+            admin_body = render_template('email_contact_admin.html', 
+                                         name=name, email=email, subject=subject, message=message, 
+                                         timestamp=datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
+            send_email_html(SENDER_EMAIL, admin_subject, admin_body)
+
+            # 3. EMAIL TO USER (Confirmation Receipt)
+            user_subject = "We received your message - Delstarford Works"
+            user_body = render_template('email_contact_user.html', name=name)
+            send_email_html(email, user_subject, user_body)
+
+            # 4. Save to Firebase (Optional Log)
+            try:
+                db.reference('leads/contact_form').push({
+                    'name': name, 'email': email, 'subject': subject, 'message': message,
+                    'timestamp': str(datetime.datetime.now())
+                })
+            except:
+                pass
+
+            return jsonify({"success": True, "message": "Message sent successfully!"})
+
+        except Exception as e:
+            print(f"Contact Error: {e}")
+            return jsonify({"success": False, "message": "Server error. Please try again."}), 500
+        
 @app.route('/location')
 def location():
     return render_template('location.html')

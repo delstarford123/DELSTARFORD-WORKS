@@ -25,9 +25,10 @@
             <div class="detail-card">
                 <div class="icon-circle whatsapp-icon"><i class="fab fa-whatsapp"></i></div>
                 <div>
-                    <h3>WhatsApp Direct</h3>
-                    <p>Instant chat for urgent support</p>
+                    <h3>WhatsApp / Call</h3>
+                    <p>Instant chat & Voice Support</p>
                     <a href="https://wa.me/254707605751" target="_blank" class="link-item">+254 707 605 751</a>
+                    <a href="tel:+254707605751" class="link-item" style="display:block; margin-top:5px; font-size:0.85rem; color:#2563eb;">📞 Call Now</a>
                 </div>
             </div>
 
@@ -42,8 +43,8 @@
 
             <div class="map-wrapper">
                 <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.691745426749!2d34.76566631457199!3d0.283333399870567!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x17803e4d0c2e9b3d%3A0x6734763375000000!2sMasinde%20Muliro%20University%20of%20Science%20and%20Technology!5e0!3m2!1sen!2ske!4v1625000000000!5m2!1sen!2ske" 
-                    width="100%" height="250" style="border:0;" allowfullscreen="" loading="lazy">
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.691740925783!2d34.76569131475354!3d0.2827309997977053!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x17803ed65c27663f%3A0x6a0a033a39c59573!2sMasinde%20Muliro%20University%20of%20Science%20and%20Technology!5e0!3m2!1sen!2ske!4v1625567890123!5m2!1sen!2ske" 
+                    width="100%" height="250" style="border:0; border-radius: 12px;" allowfullscreen="" loading="lazy">
                 </iframe>
             </div>
         </div>
@@ -59,7 +60,7 @@
                     <label>Full Name</label>
                     <div class="input-wrapper">
                         <i class="fas fa-user"></i>
-                        <input type="text" name="name" placeholder="e.g. kevin" required>
+                        <input type="text" id="name" name="name" placeholder="e.g. Kevin Omondi" required>
                     </div>
                 </div>
 
@@ -67,7 +68,7 @@
                     <label>Email Address</label>
                     <div class="input-wrapper">
                         <i class="fas fa-envelope"></i>
-                        <input type="email" name="email" placeholder="kevin@gmail.com" required>
+                        <input type="email" id="email" name="email" placeholder="kevin@example.com" required>
                     </div>
                 </div>
 
@@ -75,7 +76,7 @@
                     <label>Service Category</label>
                     <div class="input-wrapper">
                         <i class="fas fa-list"></i>
-                        <select name="subject">
+                        <select id="subject" name="subject">
                             <option value="General Inquiry">General Inquiry</option>
                             <option value="AI Model Request">AI Model Request</option>
                             <option value="Agri-Biotech Service">Agri-Biotech Service</option>
@@ -88,7 +89,7 @@
                     <label>Message</label>
                     <div class="input-wrapper top-align">
                         <i class="fas fa-comment-alt"></i>
-                        <textarea name="message" rows="5" placeholder="Tell us about your project or issue..." required></textarea>
+                        <textarea id="message" name="message" rows="5" placeholder="Tell us about your project or issue..." required></textarea>
                     </div>
                 </div>
 
@@ -96,29 +97,82 @@
                     <span>Send Message</span>
                     <i class="fas fa-paper-plane"></i>
                 </button>
+                <div id="formStatus" style="margin-top: 15px; text-align: center; font-size: 0.9rem; font-weight: 500;"></div>
             </form>
         </div>
     </div>
 </section>
 
-<section class="faq-section">
-    <div class="container">
-        <h2>Frequently Asked Questions</h2>
-        <div class="faq-grid">
-            <div class="faq-item">
-                <h4><i class="fas fa-robot"></i> Can I buy an AI model directly?</h4>
-                <p>Yes. Visit our <a href="/ai-lab">AI Lab</a> to purchase pre-built models instantly. For custom neural networks, use the form above.</p>
-            </div>
-            <div class="faq-item">
-                <h4><i class="fas fa-dna"></i> Do you offer on-site Biotech?</h4>
-                <p>Yes. Our Artificial Insemination and genetic analysis services are available for farms across Western Kenya.</p>
-            </div>
-            <div class="faq-item">
-                <h4><i class="fas fa-code"></i> How secure are your web systems?</h4>
-                <p>We use enterprise-grade encryption (SSL) and Firebase Security Rules to protect all financial and personal data.</p>
-            </div>
-        </div>
-    </div>
-</section>
+<script>
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevent page reload
+
+        const btn = document.getElementById('sendBtn');
+        const status = document.getElementById('formStatus');
+        const originalBtnText = btn.innerHTML;
+
+        // 1. UI Loading State
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+        btn.disabled = true;
+        status.style.display = 'none';
+
+        // 2. Gather Data
+        const formData = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            subject: document.getElementById('subject').value,
+            message: document.getElementById('message').value
+        };
+
+        // 3. Send to Python Backend
+        fetch('/contact', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                status.innerHTML = '<span style="color: #10b981;">✅ Message Sent! We will check it shortly.</span>';
+                status.style.display = 'block';
+                document.getElementById('contactForm').reset(); // Clear form
+            } else {
+                status.innerHTML = '<span style="color: #ef4444;">❌ Error sending message. Try WhatsApp.</span>';
+                status.style.display = 'block';
+            }
+        })
+        .catch(error => {
+            status.innerHTML = '<span style="color: #ef4444;">❌ Network Error. Please try again.</span>';
+            status.style.display = 'block';
+        })
+        .finally(() => {
+            // Reset Button
+            btn.innerHTML = originalBtnText;
+            btn.disabled = false;
+        });
+    });
+</script>
+
+<style>
+    .contact-grid-advanced { display: grid; grid-template-columns: 1fr 1.5fr; gap: 40px; }
+    .contact-details { display: flex; flex-direction: column; gap: 20px; }
+    .detail-card { background: white; padding: 20px; border-radius: 12px; display: flex; align-items: center; gap: 15px; border: 1px solid #e2e8f0; transition: transform 0.2s; }
+    .detail-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+    .icon-circle { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .email-icon { background: #eff6ff; color: #2563eb; }
+    .whatsapp-icon { background: #dcfce7; color: #16a34a; }
+    .loc-icon { background: #fef2f2; color: #dc2626; }
+    .contact-form-wrapper { background: white; padding: 40px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+    .input-wrapper { display: flex; align-items: center; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0 15px; }
+    .input-wrapper i { color: #94a3b8; margin-right: 10px; }
+    .input-wrapper input, .input-wrapper select, .input-wrapper textarea { width: 100%; border: none; background: transparent; padding: 12px 0; outline: none; color: #334155; }
+    .top-align { align-items: flex-start; padding-top: 12px; }
+    
+    @media (max-width: 768px) {
+        .contact-grid-advanced { grid-template-columns: 1fr; }
+    }
+</style>
 
 {% endblock %}

@@ -466,7 +466,23 @@ def get_clients():
     except Exception as e:
         print(f"Critical Error in get-clients: {e}")
         return jsonify({"success": False, "error": f"Python Error: {str(e)}"}), 500
-    
+@app.route('/post-announcement', methods=['POST'])
+def post_announcement():
+    try:
+        data = request.json
+        # Add a unique ID based on timestamp
+        update_id = f"UPD-{int(time.time())}"
+        db.reference(f'announcements/{update_id}').set({
+            "title": data['title'],
+            "description": data['description'],
+            "type": data['type'],
+            "date": data['date'],
+            "priority": "High" if data['type'] == "EVENT" else "Normal"
+        })
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+        
 @app.route('/dashboard-data', methods=['POST'])
 def get_dashboard_data():
     try:

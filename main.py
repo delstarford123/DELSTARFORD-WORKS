@@ -465,24 +465,50 @@ def get_clients():
 
     except Exception as e:
         print(f"Critical Error in get-clients: {e}")
+       
         return jsonify({"success": False, "error": f"Python Error: {str(e)}"}), 500
+    
+# Route to fetch announcements for the Updates Screen
+@app.route('/get-announcements', methods=['GET'])
+def get_announcements():
+    try:
+        # Fetch data from the 'announcements' node in Firebase
+        updates_data = db.reference('announcements').get() or {}
+        
+        updates_list = []
+        for key, val in updates_data.items():
+            val['id'] = key
+            updates_list.append(val)
+            
+        # Reverse so newest announcements appear at the top
+        updates_list.reverse()
+        
+        return jsonify({"success": True, "updates": updates_list})
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+# Route for the Admin to post new announcements
 @app.route('/post-announcement', methods=['POST'])
 def post_announcement():
     try:
         data = request.json
-        # Add a unique ID based on timestamp
+        import time
         update_id = f"UPD-{int(time.time())}"
+        
         db.reference(f'announcements/{update_id}').set({
-            "title": data['title'],
-            "description": data['description'],
-            "type": data['type'],
-            "date": data['date'],
-            "priority": "High" if data['type'] == "EVENT" else "Normal"
+            "title": data.get('title'),
+            "description": data.get('description'),
+            "type": data.get('type', 'ANNOUNCEMENT'),
+            "date": data.get('date'),
+            "location": data.get('location', 'Remote'),
+            "priority": "High" if data.get('type') == "EVENT" else "Normal"
         })
         return jsonify({"success": True})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
-        
+    
+            
 @app.route('/dashboard-data', methods=['POST'])
 def get_dashboard_data():
     try:

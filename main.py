@@ -391,29 +391,28 @@ def admin_reply():
 @app.route('/get-clients', methods=['GET'])
 def get_clients():
     try:
-        # 1. Fetch data safely
+        # 1. Fetch all relevant nodes safely
         raw_service_reqs = db.reference('leads/service_requests').get()
         raw_agreements = db.reference('agreements').get()
+        raw_members = db.reference('members').get()
         
         clients = []
-        
-        # 2. Safely convert Lists to Dicts if Firebase returned a list
-        service_reqs = {}
-        if isinstance(raw_service_reqs, dict):
-            service_reqs = raw_service_reqs
-        elif isinstance(raw_service_reqs, list):
-            service_reqs = {str(i): v for i, v in enumerate(raw_service_reqs) if v is not None}
 
-        agreements = {}
-        if isinstance(raw_agreements, dict):
-            agreements = raw_agreements
-        elif isinstance(raw_agreements, list):
-            agreements = {str(i): v for i, v in enumerate(raw_agreements) if v is not None}
-            
-        # 3. Format Service Requests
+        # 2. Helper to safely convert lists/dicts from Firebase
+        def safe_dict(data):
+            if isinstance(data, dict):
+                return data
+            if isinstance(data, list):
+                return {str(i): v for i, v in enumerate(data) if v is not None}
+            return {}
+
+        service_reqs = safe_dict(raw_service_reqs)
+        agreements = safe_dict(raw_agreements)
+        members = safe_dict(raw_members)
+
+        # 3. Format Service Requests (Leads)
         for key, req in service_reqs.items():
-            if not isinstance(req, dict): continue # Skip corrupted data
-            
+            if not isinstance(req, dict): continue
             timestamp = str(req.get('timestamp', ''))
             clients.append({
                 "id": str(key),
@@ -421,32 +420,53 @@ def get_clients():
                 "email": str(req.get('email', 'N/A')),
                 "request": str(req.get('service', 'General Inquiry')),
                 "status": str(req.get('status', 'Pending')),
-                "date": timestamp[:10] if len(timestamp) >= 10 else "N/A"
+                "date": timestamp[:10] if len(timestamp) >= 10 else "N/A",
+                "type": "lead"
             })
-            
-        # 4. Format Paid Contracts
+
+        # 4. Format Signed Contracts (Agreements)
         for key, agmt in agreements.items():
-            if not isinstance(agmt, dict): continue # Skip corrupted data
-            
+            if not isinstance(agmt, dict): continue
             date_str = str(agmt.get('date', ''))
             clients.append({
                 "id": str(key),
                 "name": str(agmt.get('client_name', 'Unknown')),
-                "email": "Registered Client",
-                "request": f"Contract: {agmt.get('sector', 'Unknown')}",
+                "email": "Contract Signed",
+                "request": f"Contract: {agmt.get('sector', 'General')}",
                 "status": "Approved",
-                "date": date_str[:10] if len(date_str) >= 10 else "N/A"
+                "date": date_str[:10] if len(date_str) >= 10 else "N/A",
+                "type": "agreement"
             })
 
-        # Return sorted list (newest first)
+        # 5. Format Member Registrations (Clients, Partners, Developers)
+        # Passes all fields from the Onboarding Document
+        for key, member in members.items():
+            if not isinstance(member, dict): continue
+            timestamp = str(member.get('timestamp', ''))
+            
+            # Base data for the list view
+            member_data = {
+                "id": str(key),
+                "name": str(member.get('full_name', 'Unknown')),
+                "email": str(member.get('email', 'N/A')),
+                "request": f"Registration: {member.get('role', 'Member')}",
+                "status": str(member.get('status', 'Pending Review')),
+                "date": timestamp[:10] if len(timestamp) >= 10 else "N/A",
+                "type": "registration"
+            }
+            
+            # Merge all extra fields (skills, linkedin, bank_info, etc.) for the Admin Detail view
+            member_data.update(member)
+            clients.append(member_data)
+
+        # 6. Return sorted list (newest first)
         clients.reverse()
         return jsonify({"success": True, "clients": clients})
 
     except Exception as e:
-        print(f"Error fetching clients: {e}")
+        print(f"Critical Error in get-clients: {e}")
         return jsonify({"success": False, "error": f"Python Error: {str(e)}"}), 500
-
-
+    
 @app.route('/dashboard-data', methods=['POST'])
 def get_dashboard_data():
     try:
@@ -563,65 +583,67 @@ def submit_agreement():
         return jsonify({"success": True, "contract_id": contract_id})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
-
 @app.route('/submit-registration', methods=['POST'])
 def submit_registration():
     try:
-        # 1. Get Text Data
         data = request.form
-        name = data.get('full_name')
+        role = data.get('role', 'Client')
         email = data.get('email')
-        role = data.get('role')
-        phone = data.get('phone')
         
-        # 2. Handle Files (Read into memory to attach)
+        # Unique ID for the user
+        user_id = f"USR-{random.randint(10000, 99999)}"
+        
+        # Build the user object based on available data
+        user_profile = {
+            'user_id': user_id,
+            'full_name': data.get('full_name'),
+            'email': email,
+            'role': role,
+            'status': 'Pending Review',
+            'timestamp': str(datetime.datetime.now())
+        }
+
+        # Add extended info for Partners and Developers
+        if role in ['Partner', 'Developer']:
+            user_profile.update({
+                'dob': data.get('dob'),
+                'nationality': data.get('nationality'),
+                'address': data.get('address'),
+                'phone': data.get('phone'),
+                'desired_position': data.get('desired_position'),
+                'skills': data.get('skills'),
+                'linkedin': data.get('linkedin'),
+                'github': data.get('github'),
+                'portfolio': data.get('portfolio'),
+            })
+
+        # Add financial info specifically for Developers
+        if role == 'Developer':
+            user_profile.update({
+                'payment_method': data.get('payment_method'),
+                'bank_info': data.get('bank_info'),
+                'mpesa_info': data.get('mpesa_info'),
+            })
+
+        # Save text data to Firebase under 'members' node
+        db.reference(f'members/{user_id}').set(user_profile)
+
+        # Handle file uploads (National ID, KRA, Photo)
         uploaded_files = []
         for file_key in ['doc_id', 'doc_kra', 'doc_photo']:
             file = request.files.get(file_key)
             if file and file.filename:
                 filename = secure_filename(file.filename)
-                file_data = file.read()
-                uploaded_files.append({'name': filename, 'data': file_data})
+                uploaded_files.append({'name': f"{user_id}_{filename}", 'data': file.read()})
 
-        # 3. Save Text Data to Firebase
-        reg_id = f"MEM-{random.randint(10000, 99999)}"
-        db.reference(f'members/{reg_id}').set({
-            'member_id': reg_id, 'name': name, 'email': email,
-            'role': role, 'phone': phone, 'status': 'Pending Review',
-            'timestamp': str(datetime.datetime.now())
-        })
+        # (Optional) Send email to admin with attachments as backup
+        # ... [Keep your existing email logic here] ...
 
-        # 4. SEND EMAIL TO ADMIN (With Attachments)
-        try:
-            msg = MIMEMultipart()
-            msg['From'] = SENDER_EMAIL
-            msg['To'] = SENDER_EMAIL 
-            msg['Subject'] = f"📄 New Job Application: {name} ({role})"
-            
-            body = f"Name: {name}\nRole: {role}\nEmail: {email}\nPhone: {phone}"
-            msg.attach(MIMEText(body, 'plain'))
-            
-            for f in uploaded_files:
-                part = MIMEApplication(f['data'], Name=f['name'])
-                part['Content-Disposition'] = f'attachment; filename="{f["name"]}"'
-                msg.attach(part)
-                
-            context = ssl.create_default_context()
-            with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
-                server.starttls(context=context)
-                server.login(SENDER_EMAIL, SENDER_PASSWORD)
-                server.send_message(msg)
-        except Exception as e:
-            print(f"Email Attachment Error: {e}")
-
-        # 5. Send Welcome Email
-        user_html = render_template('email_client.html', name=name, service=f"Application: {role} (Ref: {reg_id})")
-        send_email_html(email, "Application Received - Delstarford Works", user_html)
-
-        return jsonify({"success": True})
+        return jsonify({"success": True, "message": "Profile saved to database."})
     except Exception as e:
+        print(f"Registration Error: {e}")
         return jsonify({"success": False, "message": str(e)}), 500
-
+    
 @app.route('/submit-ticket', methods=['POST'])
 def submit_ticket():
     try:

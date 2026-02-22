@@ -384,37 +384,58 @@ def admin_reply():
             return jsonify({"success": True, "message": "DB updated (no email sent)"})
 
     except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 500
+     
+       return jsonify({"success": False, "message": str(e)}), 500
+
 
 @app.route('/get-clients', methods=['GET'])
 def get_clients():
     try:
-        # Fetch data from multiple nodes to build a complete admin view
-        service_reqs = db.reference('leads/service_requests').get() or {}
-        agreements = db.reference('agreements').get() or {}
+        # 1. Fetch data safely
+        raw_service_reqs = db.reference('leads/service_requests').get()
+        raw_agreements = db.reference('agreements').get()
         
         clients = []
         
-        # Format Service Requests
+        # 2. Safely convert Lists to Dicts if Firebase returned a list
+        service_reqs = {}
+        if isinstance(raw_service_reqs, dict):
+            service_reqs = raw_service_reqs
+        elif isinstance(raw_service_reqs, list):
+            service_reqs = {str(i): v for i, v in enumerate(raw_service_reqs) if v is not None}
+
+        agreements = {}
+        if isinstance(raw_agreements, dict):
+            agreements = raw_agreements
+        elif isinstance(raw_agreements, list):
+            agreements = {str(i): v for i, v in enumerate(raw_agreements) if v is not None}
+            
+        # 3. Format Service Requests
         for key, req in service_reqs.items():
+            if not isinstance(req, dict): continue # Skip corrupted data
+            
+            timestamp = str(req.get('timestamp', ''))
             clients.append({
-                "id": key,
-                "name": req.get('name', 'Unknown'),
-                "email": req.get('email', 'N/A'),
-                "request": req.get('service', 'General Inquiry'),
-                "status": req.get('status', 'Pending'), # Defaults to Pending if new
-                "date": req.get('timestamp', '')[:10] # Get just the YYYY-MM-DD part
+                "id": str(key),
+                "name": str(req.get('name', 'Unknown')),
+                "email": str(req.get('email', 'N/A')),
+                "request": str(req.get('service', 'General Inquiry')),
+                "status": str(req.get('status', 'Pending')),
+                "date": timestamp[:10] if len(timestamp) >= 10 else "N/A"
             })
             
-        # Format Paid Contracts
+        # 4. Format Paid Contracts
         for key, agmt in agreements.items():
-             clients.append({
-                "id": key,
-                "name": agmt.get('client_name', 'Unknown'),
-                "email": "Registered Client", # Email might be in a different node
-                "request": f"Contract: {agmt.get('sector')}",
+            if not isinstance(agmt, dict): continue # Skip corrupted data
+            
+            date_str = str(agmt.get('date', ''))
+            clients.append({
+                "id": str(key),
+                "name": str(agmt.get('client_name', 'Unknown')),
+                "email": "Registered Client",
+                "request": f"Contract: {agmt.get('sector', 'Unknown')}",
                 "status": "Approved",
-                "date": agmt.get('date', '')
+                "date": date_str[:10] if len(date_str) >= 10 else "N/A"
             })
 
         # Return sorted list (newest first)
@@ -423,7 +444,55 @@ def get_clients():
 
     except Exception as e:
         print(f"Error fetching clients: {e}")
+        return jsonify({"success": False, "error": f"Python Error: {str(e)}"}), 500
+
+
+@app.route('/dashboard-data', methods=['POST'])
+def get_dashboard_data():
+    try:
+        data = request.json or {}
+        user_email = data.get('email')
+        
+        if not user_email:
+            return jsonify({"error": "Email required"}), 400
+
+        # Safe fetch
+        raw_requests = db.reference('leads/service_requests').get()
+        
+        # Safe convert
+        all_requests = {}
+        if isinstance(raw_requests, dict):
+            all_requests = raw_requests
+        elif isinstance(raw_requests, list):
+            all_requests = {str(i): v for i, v in enumerate(raw_requests) if v is not None}
+
+        user_projects = []
+        
+        for key, proj in all_requests.items():
+            if not isinstance(proj, dict): continue
+            
+            if proj.get('email') == user_email:
+                status = str(proj.get('status', 'Pending'))
+                progress = 0.1 if status == 'Pending' else (0.6 if status == 'In Progress' else 1.0)
+                timestamp = str(proj.get('timestamp', ''))
+                
+                user_projects.append({
+                    "name": str(proj.get('service', 'Custom Request')),
+                    "type": "Requested Service",
+                    "status": status,
+                    "progress": progress,
+                    "date": timestamp[:10] if len(timestamp) >= 10 else "N/A"
+                })
+
+        return jsonify({"success": True, "projects": user_projects})
+        
+    except Exception as e:
+        print(f"Dashboard Data Error: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
+    
+    
+    
+    
 @app.route('/admin-login')
 def admin_login_page():
     if session.get('is_admin'): return redirect(url_for('admin_page'))
@@ -641,40 +710,6 @@ def calculate_estimate():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
-@app.route('/dashboard-data', methods=['POST'])
-def get_dashboard_data():
-    try:
-        data = request.json
-        user_email = data.get('email')
-        
-        if not user_email:
-            return jsonify({"error": "Email required"}), 400
-
-        # Search Firebase for all projects tied to this email
-        # Note: Firebase RTDB requires querying if we don't know the exact ID
-        all_requests = db.reference('leads/service_requests').get() or {}
-        user_projects = []
-        
-        for key, proj in all_requests.items():
-            if proj.get('email') == user_email:
-                status = proj.get('status', 'Pending')
-                # Calculate fake progress based on status
-                progress = 0.1 if status == 'Pending' else (0.6 if status == 'In Progress' else 1.0)
-                
-                user_projects.append({
-                    "name": proj.get('service'),
-                    "type": "Requested Service",
-                    "status": status,
-                    "progress": progress,
-                    "date": proj.get('timestamp')[:10]
-                })
-
-        return jsonify({
-            "success": True, 
-            "projects": user_projects
-        })
-    except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
 # ==============================================================================
 # 6. RUN SERVER
 # ==============================================================================

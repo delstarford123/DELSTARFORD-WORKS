@@ -472,22 +472,35 @@ def get_clients():
 @app.route('/get-announcements', methods=['GET'])
 def get_announcements():
     try:
-        # Fetch data from the 'announcements' node in Firebase
-        updates_data = db.reference('announcements').get() or {}
-        
-        updates_list = []
-        for key, val in updates_data.items():
-            val['id'] = key
-            updates_list.append(val)
-            
-        # Reverse so newest announcements appear at the top
-        updates_list.reverse()
-        
-        return jsonify({"success": True, "updates": updates_list})
-    except Exception as e:
-        print(f"Error: {e}")
-        return jsonify({"success": False, "error": str(e)}), 500
+        # 1. Fetch data from Firebase
+        ref = db.reference('announcements')
+        data = ref.get()
 
+        updates_list = []
+
+        # 2. Check if data is actually a dictionary (not None or Bool)
+        if isinstance(data, dict):
+            for key, val in data.items():
+                # Ensure val is a dictionary before assigning ID
+                if isinstance(val, dict):
+                    val['id'] = key
+                    updates_list.append(val)
+            
+            # Sort newest first
+            updates_list.reverse()
+
+        # 3. Always return a valid JSON list, even if empty
+        return jsonify({
+            "success": True, 
+            "updates": updates_list
+        })
+
+    except Exception as e:
+        print(f"Server Error: {str(e)}")
+        return jsonify({
+            "success": False, 
+            "error": str(e)
+        }), 500
 # Route for the Admin to post new announcements
 @app.route('/post-announcement', methods=['POST'])
 def post_announcement():

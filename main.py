@@ -386,6 +386,44 @@ def admin_reply():
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
+@app.route('/get-clients', methods=['GET'])
+def get_clients():
+    try:
+        # Fetch data from multiple nodes to build a complete admin view
+        service_reqs = db.reference('leads/service_requests').get() or {}
+        agreements = db.reference('agreements').get() or {}
+        
+        clients = []
+        
+        # Format Service Requests
+        for key, req in service_reqs.items():
+            clients.append({
+                "id": key,
+                "name": req.get('name', 'Unknown'),
+                "email": req.get('email', 'N/A'),
+                "request": req.get('service', 'General Inquiry'),
+                "status": req.get('status', 'Pending'), # Defaults to Pending if new
+                "date": req.get('timestamp', '')[:10] # Get just the YYYY-MM-DD part
+            })
+            
+        # Format Paid Contracts
+        for key, agmt in agreements.items():
+             clients.append({
+                "id": key,
+                "name": agmt.get('client_name', 'Unknown'),
+                "email": "Registered Client", # Email might be in a different node
+                "request": f"Contract: {agmt.get('sector')}",
+                "status": "Approved",
+                "date": agmt.get('date', '')
+            })
+
+        # Return sorted list (newest first)
+        clients.reverse()
+        return jsonify({"success": True, "clients": clients})
+
+    except Exception as e:
+        print(f"Error fetching clients: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
 @app.route('/admin-login')
 def admin_login_page():
     if session.get('is_admin'): return redirect(url_for('admin_page'))
@@ -558,6 +596,7 @@ def custom_solution():
         db.reference('leads/service_requests').push({
             'name': name, 'email': email, 
             'service': service, 'details': data.get('details'),
+            'status': 'Pending', # ADD THIS LINE
             'timestamp': str(datetime.datetime.now())
         })
         
@@ -602,13 +641,40 @@ def calculate_estimate():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
-@app.route('/dashboard-data')
+@app.route('/dashboard-data', methods=['POST'])
 def get_dashboard_data():
     try:
-        return jsonify(db.reference(f'active_projects/user_123').get() or {})
-    except:
-        return jsonify({})
+        data = request.json
+        user_email = data.get('email')
+        
+        if not user_email:
+            return jsonify({"error": "Email required"}), 400
 
+        # Search Firebase for all projects tied to this email
+        # Note: Firebase RTDB requires querying if we don't know the exact ID
+        all_requests = db.reference('leads/service_requests').get() or {}
+        user_projects = []
+        
+        for key, proj in all_requests.items():
+            if proj.get('email') == user_email:
+                status = proj.get('status', 'Pending')
+                # Calculate fake progress based on status
+                progress = 0.1 if status == 'Pending' else (0.6 if status == 'In Progress' else 1.0)
+                
+                user_projects.append({
+                    "name": proj.get('service'),
+                    "type": "Requested Service",
+                    "status": status,
+                    "progress": progress,
+                    "date": proj.get('timestamp')[:10]
+                })
+
+        return jsonify({
+            "success": True, 
+            "projects": user_projects
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 # ==============================================================================
 # 6. RUN SERVER
 # ==============================================================================

@@ -23,134 +23,131 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
     <script src="https://unpkg.com/split-type"></script>
 
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js" defer></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js" defer></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js" defer></script>
-    <script src="{{ url_for('static', filename='js/firebase-init.js') }}" defer></script>
-
     <style>
-        /* --- GLOBAL UI UPGRADES --- */
-        html { scroll-behavior: smooth; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; padding: 0; background: #f8fafc; overflow-x: hidden; }
-        ::selection { background: #3b82f6; color: #ffffff; }
+        /* --- CORE RESPONSIVE ENGINE --- */
+        :root {
+            --header-height: 80px;
+            --primary: #3b82f6;
+            --dark: #0f172a;
+        }
 
-        /* --- CUSTOM SCROLLBAR --- */
-        ::-webkit-scrollbar { width: 8px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #2563eb; }
+        html { scroll-behavior: smooth; }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            margin: 0; padding: 0; 
+            background: #f8fafc; 
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            box-sizing: border-box;
+        }
 
         /* --- PRELOADER --- */
         #preloader {
-            position: fixed; inset: 0; background: #0f172a; z-index: 9999;
+            position: fixed; inset: 0; background: var(--dark); z-index: 9999;
             display: flex; justify-content: center; align-items: center;
-            transition: opacity 0.5s ease;
         }
         #preloader img { height: 60px; animation: pulseLogo 1.5s infinite; }
-        @keyframes pulseLogo { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.8));} 100% { transform: scale(1); opacity: 0.8; } }
 
-        /* --- SCROLL PROGRESS BAR --- */
-        #scrollProgress { 
-            position: fixed; top: 0; left: 0; height: 4px; width: 0%; z-index: 4000; 
-            background: linear-gradient(to right, #3b82f6, #10b981); 
-            transition: width 0.1s ease-out; box-shadow: 0 0 15px rgba(16, 185, 129, 0.8); 
+        @keyframes pulseLogo { 
+            0% { transform: scale(1); opacity: 0.8; } 
+            50% { transform: scale(1.1); opacity: 1; filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.8));} 
+            100% { transform: scale(1); opacity: 0.8; } 
         }
 
-        /* --- HEADER STYLING --- */
+        /* --- NAVIGATION --- */
         .site-header {
             position: fixed; top: 0; width: 100%; z-index: 3000;
-            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(15px);
             border-bottom: 1px solid rgba(255,255,255,0.05);
-            transition: all 0.3s ease; cursor: pointer;
         }
-        .header-inner { display: flex; justify-content: space-between; align-items: center; padding: 15px 2rem; cursor: default; }
 
-        .brand-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; flex-shrink: 0; transition: transform 0.3s; }
-        .brand-logo:hover { transform: scale(1.02); }
-        .brand-text { display: flex; flex-direction: column; line-height: 1.1; }
-        .brand-name { color: #fff; font-weight: 800; font-size: 1.2rem; letter-spacing: -0.5px; }
-        .brand-suffix { color: #3b82f6; font-weight: 700; font-size: 0.85rem; letter-spacing: 2px; }
+        .header-inner { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            height: var(--header-height);
+        }
 
-        /* Desktop Nav */
-        .desktop-nav { display: flex; align-items: center; gap: 20px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
-        .desktop-nav::-webkit-scrollbar { display: none; }
-        .nav-link { color: #cbd5e1; text-decoration: none; font-size: 0.95rem; font-weight: 600; transition: color 0.3s, transform 0.2s; flex-shrink: 0; }
-        .nav-link:hover { color: #fff; transform: translateY(-1px); }
+        .brand-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .brand-name { color: #fff; font-weight: 800; font-size: 1.1rem; letter-spacing: -0.5px; }
+        .brand-suffix { color: var(--primary); font-weight: 700; font-size: 0.8rem; letter-spacing: 1.5px; }
         
-        .header-utils { display: flex; align-items: center; gap: 15px; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 20px; margin-left: 10px; flex-shrink: 0; }
-        
-        .search-box { position: relative; }
-        .search-box input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 8px 15px 8px 35px; border-radius: 20px; width: 120px; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); font-family: inherit; font-size: 0.85rem; outline: none; }
-        .search-box input:focus { width: 200px; border-color: #3b82f6; background: rgba(255,255,255,0.1); box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); }
-        .search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.85rem; pointer-events: none; }
-
-        .btn-primary-small { 
-            background: #2563eb; color: white; padding: 10px 22px; border-radius: 8px; 
-            font-weight: 700; text-decoration: none; transition: all 0.3s; position: relative; overflow: hidden;
-            box-shadow: 0 4px 10px rgba(37,99,235,0.2);
+        .contact-pill {
+            background: rgba(255,255,255,0.05);
+            padding: 4px 10px;
+            border-radius: 6px;
+            color: #94a3b8;
+            font-size: 0.7rem;
+            margin-left: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .btn-primary-small::after {
-            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent);
-            transform: skewX(-20deg); transition: 0.5s;
-        }
-        .btn-primary-small:hover::after { left: 150%; }
-        .btn-primary-small:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,99,235,0.4); }
 
-        /* --- MOBILE MENU & HAMBURGER --- */
+        .desktop-nav { display: flex; align-items: center; gap: 1.5rem; }
+        .nav-link { 
+            color: #cbd5e1; 
+            text-decoration: none; 
+            font-size: 0.9rem; 
+            font-weight: 600; 
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+        .nav-link:hover { color: #fff; }
+
+        /* --- MOBILE CONTROLS --- */
         .mobile-toggle { 
-            display: none; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); cursor: pointer; 
-            flex-direction: column; gap: 5px; z-index: 3100; padding: 12px; border-radius: 8px; transition: 0.3s;
+            display: none; background: none; border: none; cursor: pointer; 
+            padding: 10px; z-index: 3100;
         }
-        .mobile-toggle:hover { background: rgba(255,255,255,0.1); }
-        .mobile-toggle .bar { width: 24px; height: 2px; background-color: #fff; transition: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); border-radius: 2px; }
-        
-        .mobile-toggle.active .bar:nth-child(1) { transform: translateY(7px) rotate(45deg); background-color: #ef4444; }
-        .mobile-toggle.active .bar:nth-child(2) { opacity: 0; transform: translateX(-10px); }
-        .mobile-toggle.active .bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background-color: #ef4444; }
-        
-        .mobile-menu-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
-            background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            z-index: 2500; display: flex; flex-direction: column; 
-            opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s;
-            background-image: radial-gradient(circle at center, rgba(37,99,235,0.15) 0%, transparent 80%);
-            padding-top: 100px; overflow-y: auto; 
+        .bar { width: 25px; height: 2px; background: #fff; margin: 5px 0; transition: 0.4s; }
+
+        /* --- BUTTONS --- */
+        .btn-primary-small { 
+            background: var(--primary); color: white; padding: 10px 20px; 
+            border-radius: 8px; font-weight: 700; text-decoration: none;
+            transition: 0.3s; font-size: 0.85rem;
         }
-        .mobile-menu-overlay.active { opacity: 1; visibility: visible; }
 
-        .mobile-nav-content { display: flex; flex-direction: column; align-items: center; width: 100%; padding: 0 20px 100px; box-sizing: border-box; }
-        .mobile-nav-links { display: flex; flex-direction: column; gap: 20px; text-align: center; width: 100%; transform: translateY(30px); transition: transform 0.5s ease; }
-        .mobile-menu-overlay.active .mobile-nav-links { transform: translateY(0); }
-        
-        .m-link { position: relative; color: #f8fafc; text-decoration: none; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; transition: color 0.3s; display: inline-block; padding: 10px; }
-        .m-link::after { content: ' →'; opacity: 0; transform: translateX(-10px); transition: all 0.3s ease; position: absolute; right: -35px; color: #3b82f6; }
-        .m-link:hover { color: #3b82f6; }
-        .m-link:hover::after { opacity: 1; transform: translateX(0); }
+        /* --- BREAKPOINTS --- */
+        @media (max-width: 1200px) {
+            .contact-pill { display: none; } /* Hide phone in header on smaller desktops */
+        }
 
-        .btn-mobile-cta { background: #2563eb; color: white; padding: 15px 30px; border-radius: 12px; margin-top: 20px; font-size: 1.2rem; text-decoration: none; font-weight: 700; transition: all 0.3s; display: inline-block; }
-        .btn-mobile-cta:hover { background: #1d4ed8; box-shadow: 0 5px 15px rgba(37,99,235,0.4); transform: translateY(-2px); }
-
-        /* --- BACK TO TOP BUTTON --- */
-        #backToTop { position: fixed; bottom: 30px; right: 30px; background: #0f172a; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; cursor: pointer; border: 2px solid #3b82f6; opacity: 0; visibility: hidden; transition: all 0.3s; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        #backToTop.show { opacity: 1; visibility: visible; }
-        #backToTop:hover { background: #2563eb; transform: translateY(-8px); box-shadow: 0 8px 20px rgba(37,99,235,0.5); }
-
-        /* --- FLASH MESSAGES --- */
-        .flash-wrapper { position: fixed; top: 90px; right: 20px; z-index: 4000; display: flex; flex-direction: column; gap: 10px; }
-        .flash-card { background: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 15px; border-left: 4px solid #3b82f6; min-width: 300px; }
-        .flash-card.success { border-left-color: #10b981; }
-        .flash-card.error { border-left-color: #ef4444; }
-        .flash-icon { font-size: 1.2rem; color: #3b82f6; }
-        .flash-card.success .flash-icon { color: #10b981; }
-        .flash-text { flex: 1; font-weight: 600; color: #0f172a; font-size: 0.95rem; }
-        .flash-close { background: none; border: none; font-size: 1.2rem; color: #94a3b8; cursor: pointer; transition: 0.3s; }
-        .flash-close:hover { color: #ef4444; }
-
-        @media (max-width: 1100px) {
+        @media (max-width: 1024px) {
             .desktop-nav, .header-utils { display: none; }
-            .mobile-toggle { display: flex; }
+            .mobile-toggle { display: block; }
         }
+
+        @media (max-width: 480px) {
+            .brand-name { font-size: 1rem; }
+            .brand-suffix { display: none; } /* Keep it clean on tiny phones */
+        }
+
+        /* --- MOBILE MENU OVERLAY --- */
+        .mobile-menu-overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98);
+            z-index: 2500; display: flex; flex-direction: column;
+            padding: 100px 2rem; transform: translateX(100%);
+            transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        .mobile-menu-overlay.active { transform: translateX(0); }
+        .m-link { 
+            color: #fff; text-decoration: none; font-size: 1.5rem; 
+            font-weight: 700; margin-bottom: 1.5rem; display: block;
+        }
+
+        /* --- SCROLLBAR & PROGRESS --- */
+        #scrollProgress { position: fixed; top: 0; left: 0; height: 3px; background: var(--primary); z-index: 4000; width: 0; }
+        
+        /* --- FLASH MESSAGES --- */
+        .flash-wrapper { position: fixed; top: 90px; right: 20px; z-index: 4000; width: calc(100% - 40px); max-width: 350px; }
+        .flash-card { background: white; padding: 1rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin-bottom: 10px; border-left: 5px solid var(--primary); display: flex; align-items: center; justify-content: space-between; }
     </style>
 </head>
 <body>
@@ -158,15 +155,15 @@
     <div id="scrollProgress"></div>
     <div id="preloader"><img src="{{ url_for('static', filename='images/DEL SVG.svg') }}" alt="Loading..."></div>
 
-    <header class="site-header" id="siteHeader">
-        <div class="container header-inner" id="headerInner">
-            <a href="/" class="brand-logo anim-slide-left">
-                <img src="{{ url_for('static', filename='images/DEL SVG.svg') }}" alt="DW Logo" style="height: 40px;">
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="/" class="brand-logo">
+                <img src="{{ url_for('static', filename='images/DEL SVG.svg') }}" alt="DW Logo" style="height: 35px;">
                 <div class="brand-text">
                     <span class="brand-name">DELSTARFORD</span>
                     <span class="brand-suffix">WORKS</span>
                 </div>
-                CALL/CHAT: 0707605751
+                <span class="contact-pill"><i class="fas fa-phone"></i> 0707605751</span>
             </a>
 
             <nav class="desktop-nav">
@@ -174,25 +171,14 @@
                 <a href="/about" class="nav-link">About</a>
                 <a href="/services" class="nav-link">Services</a>
                 <a href="/ai-lab" class="nav-link">AI Lab</a>
-                <a href="/support" class="nav-link">Support</a>
-                <a href="/contact" class="nav-link">Contact</a>
                 <a href="/agreement" class="nav-link" style="color: #10b981;">Pricing</a>
-                
-                <a href="/dashboard" id="nav-dashboard" class="nav-link" style="display:none; color: #3b82f6;"><i class="fas fa-layer-group"></i> Console</a>
-                <a href="/register" id="nav-register" class="nav-link">Register</a>
+                <div style="width:1px; height:20px; background:rgba(255,255,255,0.1); margin:0 10px;"></div>
                 <a href="/login" id="nav-login" class="nav-link">Login</a>
-                <a href="javascript:void(0)" onclick="globalLogout()" id="nav-logout" class="nav-link" style="display:none; color: #ef4444;">Logout</a>
+                <a href="/dashboard" id="nav-dashboard" class="nav-link" style="display:none; color: var(--primary);"><i class="fas fa-th-large"></i> Console</a>
+                <a href="/custom" class="btn-primary-small">Get Started</a>
             </nav>
 
-            <div class="header-utils">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search...">
-                </div>
-                <a href="/custom" class="btn-primary-small anim-scale-up">Get Started</a>
-            </div>
-
-            <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle Menu">
+            <button class="mobile-toggle" id="mobileToggle">
                 <div class="bar"></div>
                 <div class="bar"></div>
                 <div class="bar"></div>
@@ -201,352 +187,97 @@
     </header>
 
     <div class="mobile-menu-overlay" id="mobileOverlay">
-        <div class="mobile-nav-content">
-            <div class="search-box" style="margin-bottom: 40px; width: 100%; max-width: 350px;">
-                <i class="fas fa-search" style="left: 15px; color: white;"></i>
-                <input type="text" placeholder="Search site..." style="width: 100%; border-radius: 8px; padding: 15px 15px 15px 45px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); font-size:1.1rem; color: white;">
-            </div>
-
-            <nav class="mobile-nav-links">
-                <a href="/" class="m-link">Home</a>
-                <a href="/about" class="m-link">About Us</a>
-                <a href="/services" class="m-link">Our Solutions</a>
-                <a href="/ai-lab" class="m-link">AI Lab</a>
-                <a href="/support" class="m-link">Support Center</a>
-                <a href="/contact" class="m-link">Contact Us</a>
-                <a href="/agreement" class="m-link" style="color: #10b981;">Pricing & Plans</a>
-                <a href="/register" class="m-link" style="color: #10b981;">Join</a>
-                <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 15px 0; width: 100%;"></div>
-                
-                <a href="/register" id="mobile-nav-register" class="m-link">Join Team</a>
-                <a href="/login" id="mobile-nav-login" class="m-link">Client Login</a>
-                <a href="/dashboard" id="mobile-nav-dashboard" class="m-link" style="display:none; color: #3b82f6;">Client Console</a>
-                <a href="/custom" class="btn-mobile-cta">Start a Project</a>
-            </nav>
-        </div>
+        <nav>
+            <a href="/" class="m-link">Home</a>
+            <a href="/about" class="m-link">About</a>
+            <a href="/services" class="m-link">Services</a>
+            <a href="/ai-lab" class="m-link">AI Lab</a>
+            <a href="/register2" class="m-link">Join</a>
+            <a href="/contact" class="m-link">Contact</a>
+            <a href="/agreement" class="m-link">Pricing</a>
+            <hr style="opacity: 0.1; margin: 2rem 0;">
+            <a href="/login" class="m-link">Client Login</a>
+            <a href="/custom" class="btn-primary-small" style="display: inline-block; font-size: 1.2rem; padding: 15px 30px;">Start Project</a>
+        </nav>
     </div>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         <div class="flash-wrapper">
           {% for category, message in messages %}
-            <div class="flash-card {{ category }} anim-bounce-in">
-                <div class="flash-icon"><i class="fas fa-info-circle"></i></div>
-                <div class="flash-text">{{ message }}</div>
-                <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+            <div class="flash-card {{ category }}">
+                <span><i class="fas fa-info-circle" style="margin-right: 10px;"></i> {{ message }}</span>
+                <button onclick="this.parentElement.remove()" style="background:none; border:none; color:#94a3b8; cursor:pointer;">&times;</button>
             </div>
           {% endfor %}
         </div>
       {% endif %}
     {% endwith %}
     
-    <main class="site-content" style="padding-top: 80px; min-height: 80vh;">
-        {% block content %}{% endblock %}
+    <main style="padding-top: var(--header-height); min-height: 80vh;">
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
     </main>
 
-    <button id="backToTop" aria-label="Scroll to top"><i class="fas fa-arrow-up"></i></button>
-
-    <footer class="site-footer" style="background: #0f172a; color: white; padding: 60px 0 20px; margin-top: 40px; border-top: 4px solid #3b82f6;">
+    <footer style="background: var(--dark); color: white; padding: 80px 0 40px; border-top: 4px solid var(--primary);">
         <div class="container">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; margin-bottom: 40px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px;">
                 <div>
-                    <img src="{{ url_for('static', filename='images/DEL SVG.svg') }}" alt="Logo" style="height: 50px; margin-bottom: 15px;">
-                    <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.6;">Engineering robust AI & Biotech ecosystems from Kakamega to the global stage.</p>
+                    <img src="{{ url_for('static', filename='images/DEL SVG.svg') }}" alt="Logo" style="height: 40px; margin-bottom: 20px;">
+                    <p style="color: #94a3b8; line-height: 1.6;">Engineering robust AI & Biotech ecosystems from Kakamega to the global stage.</p>
                 </div>
                 <div>
-                    <h4 style="margin-bottom: 20px; font-size: 1.1rem; color: #f8fafc;">Platform</h4>
-                    <div style="display: flex; flex-direction: column; gap: 12px;">
-                        <a href="/ai-lab" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#3b82f6'" onmouseout="this.style.color='#cbd5e1'">AI Models</a>
-                        <a href="/services" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#3b82f6'" onmouseout="this.style.color='#cbd5e1'">Web Systems</a>
-                        <a href="/dashboard" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#3b82f6'" onmouseout="this.style.color='#cbd5e1'">Client Portal</a>
-                    </div>
-                </div>
-                <div>
-                    <h4 style="margin-bottom: 20px; font-size: 1.1rem; color: #f8fafc;">Company</h4>
-                    <div style="display: flex; flex-direction: column; gap: 12px;">
-                        <a href="/about" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#3b82f6'" onmouseout="this.style.color='#cbd5e1'">Our Story</a>
-                        <a href="/contact" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#3b82f6'" onmouseout="this.style.color='#cbd5e1'">Contact Us</a>
-                        <a href="/agreement" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#3b82f6'" onmouseout="this.style.color='#cbd5e1'">Pricing</a>
-                        <a href="/admin-login" style="color: #ef4444; text-decoration: none; transition: color 0.3s; font-weight: bold;" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='#ef4444'"><i class="fas fa-lock"></i> Admin Portal</a>
-                    </div>
+                    <h4 style="margin-bottom: 20px;">Quick Links</h4>
+                    <nav style="display: flex; flex-direction: column; gap: 10px;">
+                        <a href="/support" style="color: #cbd5e1; text-decoration: none;">Support</a>
+                        <a href="/contact" style="color: #cbd5e1; text-decoration: none;">Contact</a>
+                        <a href="/admin-login" style="color: #ef4444; text-decoration: none; font-size: 0.8rem;"><i class="fas fa-lock"></i> Admin</a>
+                    </nav>
                 </div>
             </div>
-            <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; display: flex; justify-content: space-between; align-items: center; color: #64748b; font-size: 0.85rem; flex-wrap: wrap; gap: 10px;">
-                <p style="margin:0;">&copy; 2026 Delstarford Works. All rights reserved.</p>
-                <div>
-                    <span style="display:inline-block; width:8px; height:8px; background:#10b981; border-radius:50%; margin-right:5px; box-shadow: 0 0 8px #10b981;"></span> System Status: Online
-                </div>
+            <div style="margin-top: 60px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; color: #64748b; font-size: 0.9rem;">
+                <p>&copy; 2026 Delstarford Works. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
     <script>
-        // --- Preloader & Scroll Progress ---
-        window.addEventListener('load', () => {
-            const preloader = document.getElementById('preloader');
-            preloader.style.opacity = '0';
-            setTimeout(() => { preloader.style.display = 'none'; }, 500);
-        });
-
-        window.addEventListener('scroll', () => {
-            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            document.getElementById("scrollProgress").style.width = (winScroll / height) * 100 + "%";
-
-            const backBtn = document.getElementById('backToTop');
-            winScroll > 300 ? backBtn.classList.add('show') : backBtn.classList.remove('show');
-        });
-
-        document.getElementById('backToTop').addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-
-        // --- Mobile Menu Logic ---
+        // --- Navigation Logic ---
         const mobileToggle = document.getElementById('mobileToggle');
         const mobileOverlay = document.getElementById('mobileOverlay');
-        const siteHeader = document.getElementById('siteHeader');
 
-        function toggleMobileMenu() {
-            const isOpen = mobileOverlay.classList.contains('active');
-            if (isOpen) {
-                mobileOverlay.classList.remove('active');
-                mobileToggle.classList.remove('active');
-                document.body.style.overflow = 'auto'; 
+        mobileToggle.addEventListener('click', () => {
+            mobileOverlay.classList.toggle('active');
+            document.body.style.overflow = mobileOverlay.classList.contains('active') ? 'hidden' : 'auto';
+            
+            // Hamburger Animation
+            const bars = mobileToggle.querySelectorAll('.bar');
+            if(mobileOverlay.classList.contains('active')) {
+                bars[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+                bars[1].style.opacity = '0';
+                bars[2].style.transform = 'rotate(-45deg) translate(5px, -5px)';
             } else {
-                mobileOverlay.classList.add('active');
-                mobileToggle.classList.add('active');
-                document.body.style.overflow = 'hidden'; 
-            }
-        }
-
-        mobileToggle.addEventListener('click', (e) => {
-            e.stopPropagation(); 
-            toggleMobileMenu();
-        });
-
-        siteHeader.addEventListener('click', (e) => {
-            if (mobileOverlay.classList.contains('active') && !mobileToggle.contains(e.target)) {
-                toggleMobileMenu();
+                bars[0].style.transform = 'none';
+                bars[1].style.opacity = '1';
+                bars[2].style.transform = 'none';
             }
         });
 
-        document.querySelectorAll('.mobile-nav-links a').forEach(link => {
-            link.addEventListener('click', () => {
-                if (mobileOverlay.classList.contains('active')) toggleMobileMenu();
-            });
-        });
+        // --- Scroll Progress ---
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("scrollProgress").style.width = scrolled + "%";
+        };
 
-        // --- THE UNIVERSAL GSAP ENGINE ---
-        document.addEventListener("DOMContentLoaded", () => {
-            if(typeof gsap !== 'undefined') {
-                gsap.registerPlugin(ScrollTrigger, TextPlugin);
-                const ST = (el) => ({ trigger: el, start: "top 85%", toggleActions: "play none none reverse" });
-
-                // 1. STANDARD CSS & TRANSFORM REVEALS
-                gsap.utils.toArray('.anim-fade-up').forEach(el => gsap.from(el, { scrollTrigger: ST(el), y: 50, opacity: 0, duration: 0.8, ease: "power3.out" }));
-                gsap.utils.toArray('.anim-scale-up').forEach(el => gsap.from(el, { scrollTrigger: ST(el), scale: 0, opacity: 0, duration: 0.8, ease: "back.out(1.7)" }));
-                gsap.utils.toArray('.anim-rotate-in').forEach(el => gsap.from(el, { scrollTrigger: ST(el), rotation: -90, transformOrigin: "left bottom", opacity: 0, duration: 1 }));
-                gsap.utils.toArray('.anim-slide-left').forEach(el => gsap.from(el, { scrollTrigger: ST(el), x: -200, opacity: 0, duration: 1, ease: "power2.out" }));
-                gsap.utils.toArray('.anim-zoom-out').forEach(el => gsap.from(el, { scrollTrigger: ST(el), scale: 3, opacity: 0, duration: 1.2, ease: "power4.out" }));
-                gsap.utils.toArray('.anim-flip-x').forEach(el => gsap.from(el, { scrollTrigger: ST(el), rotationX: 90, opacity: 0, duration: 1, transformPerspective: 800 }));
-                gsap.utils.toArray('.anim-flip-y').forEach(el => gsap.from(el, { scrollTrigger: ST(el), rotationY: 90, opacity: 0, duration: 1, transformPerspective: 800 }));
-                gsap.utils.toArray('.anim-bounce-in').forEach(el => gsap.from(el, { scrollTrigger: ST(el), y: -100, opacity: 0, duration: 1, ease: "bounce.out" }));
-                gsap.utils.toArray('.anim-skew-in').forEach(el => gsap.from(el, { scrollTrigger: ST(el), skewX: 30, x: -100, opacity: 0, duration: 1 }));
-                gsap.utils.toArray('.anim-reveal-wipe').forEach(el => gsap.from(el, { scrollTrigger: ST(el), clipPath: "inset(0 100% 0 0)", duration: 1.2, ease: "power3.inOut" }));
-                gsap.utils.toArray('.anim-ink-bleed').forEach(el => gsap.from(el, { scrollTrigger: ST(el), filter: "blur(20px)", opacity: 0, scale: 0.9, duration: 1.5 }));
-                gsap.utils.toArray('.anim-elastic-snap').forEach(el => gsap.from(el, { scrollTrigger: ST(el), x: -300, opacity: 0, duration: 1.5, ease: "elastic.out(1, 0.3)" }));
-                gsap.utils.toArray('.anim-rubber-band').forEach(el => gsap.from(el, { scrollTrigger: ST(el), scaleX: 1.8, scaleY: 0.4, opacity: 0, duration: 1, ease: "elastic.out(1.2, 0.4)" }));
-                gsap.utils.toArray('.anim-whip-slide').forEach(el => gsap.from(el, { scrollTrigger: ST(el), x: -600, rotation: -10, duration: 0.8, ease: "back.out(1.4)" }));
-                gsap.utils.toArray('.anim-cross-fade').forEach(el => gsap.from(el, { scrollTrigger: ST(el), opacity: 0, scale: 0.95, filter: "blur(8px)", duration: 1.2, ease: "power2.out" }));
-                gsap.utils.toArray('.anim-slide-up-reveal').forEach(el => gsap.from(el, { scrollTrigger: ST(el), yPercent: 100, duration: 0.8, ease: "power3.out" }));
-                gsap.utils.toArray('.anim-unfold-3d').forEach(el => gsap.from(el, { scrollTrigger: ST(el), rotationY: -90, rotationX: 45, opacity: 0, scale: 0.5, transformPerspective: 800, duration: 1.2, ease: "power3.out" }));
-                gsap.utils.toArray('.anim-stretch-warp').forEach(el => gsap.from(el, { scrollTrigger: ST(el), scaleX: 4, scaleY: 0.2, opacity: 0, duration: 1, ease: "elastic.out(1, 0.4)" }));
-                gsap.utils.toArray('.anim-cinema-title').forEach(el => gsap.from(el, { scrollTrigger: ST(el), letterSpacing: "2em", opacity: 0, duration: 2, ease: "power3.inOut" }));
-                gsap.utils.toArray('.anim-rubber-stamp').forEach(el => gsap.from(el, { scrollTrigger: ST(el), scale: 4, rotation: -15, opacity: 0, duration: 0.3, ease: "power4.in" }));
-                gsap.utils.toArray('.anim-liquid-fill').forEach(el => gsap.from(el, { scrollTrigger: ST(el), clipPath: "inset(100% 0 0 0)", duration: 1.5, ease: "power2.out" }));
-
-                // 2. TIMELINES (Glitch, Heartbeat, Earthquake, etc.)
-                gsap.utils.toArray('.anim-glitch').forEach(el => {
-                    let tl = gsap.timeline({ scrollTrigger: ST(el), repeat: 2 });
-                    tl.to(el, { x: -3, skewX: 10, duration: 0.05 }).to(el, { x: 3, skewX: -8, duration: 0.05 }).to(el, { x: 0, skewX: 0, duration: 0.05 });
-                });
-                gsap.utils.toArray('.anim-heartbeat').forEach(el => {
-                    let tl = gsap.timeline({ scrollTrigger: ST(el), repeat: 2 });
-                    tl.to(el, { scale: 1.15, duration: 0.1, ease: "power2.in" }).to(el, { scale: 1, duration: 0.1 }).to(el, { scale: 1.25, duration: 0.12 }).to(el, { scale: 1, duration: 0.3, ease: "power2.out" });
-                });
-                gsap.utils.toArray('.anim-earthquake').forEach(el => {
-                    let tl = gsap.timeline({ scrollTrigger: ST(el) });
-                    for (let i = 0; i < 8; i++) {
-                        let intensity = 12 * (1 - i / 8);
-                        tl.to(el, { x: gsap.utils.random(-intensity, intensity), y: gsap.utils.random(-intensity * 0.5, intensity * 0.5), rotation: gsap.utils.random(-3, 3), duration: 0.05 });
-                    }
-                    tl.to(el, { x: 0, y: 0, rotation: 0, duration: 0.3 });
-                });
-                gsap.utils.toArray('.anim-neon-flicker').forEach(el => {
-                    let tl = gsap.timeline({ scrollTrigger: ST(el) });
-                    tl.set(el, { opacity: 0 }).to(el, { opacity: 1, duration: 0.1 }).to(el, { opacity: 0.2, duration: 0.05 }).to(el, { opacity: 1, duration: 0.1 }).to(el, { opacity: 0, duration: 0.05 }).to(el, { opacity: 1, textShadow: "0 0 20px #3b82f6", duration: 0.3 });
-                });
-                gsap.utils.toArray('.anim-vhs-tracking').forEach(el => {
-                    let tl = gsap.timeline({ scrollTrigger: ST(el) });
-                    tl.set(el, { opacity: 0.7, skewX: 5 }).to(el, { x: -10, skewX: -8, duration: 0.06, repeat: 4, yoyo: true }).to(el, { x: 0, skewX: 0, opacity: 1, duration: 0.3 }).to(el, { x: 5, opacity: 0.6, duration: 0.04 }, "+=0.5").to(el, { x: 0, opacity: 1, duration: 0.2 });
-                });
-
-                // 3. TEXT PLUGINS & NUMBERS
-                gsap.utils.toArray('.anim-decode').forEach(el => {
-                    const originalText = el.innerText;
-                    gsap.to(el, { scrollTrigger: ST(el), text: { value: originalText, chars: "█▓▒░XO!#" }, duration: 1.5, ease: "none" });
-                });
-                gsap.utils.toArray('.anim-typewriter').forEach(el => {
-                    const originalText = el.innerText;
-                    el.innerText = "";
-                    gsap.to(el, { scrollTrigger: ST(el), text: originalText, duration: 2, ease: "none" });
-                });
-                
-                // NUMBER COUNTER: Usage <h2 class="anim-counter" data-target="5000">0</h2>
-                gsap.utils.toArray('.anim-counter').forEach(el => {
-                    const target = parseInt(el.getAttribute('data-target')) || 100;
-                    let obj = { val: 0 };
-                    gsap.to(obj, { scrollTrigger: ST(el), val: target, duration: 2.5, ease: "power2.out", onUpdate: () => { el.textContent = Math.round(obj.val).toLocaleString(); } });
-                });
-
-                // 4. SPLIT TYPE ANIMATIONS (Chars, Words, Lines)
-                if (typeof SplitType !== 'undefined') {
-                    // --- CHARACTERS ---
-                    gsap.utils.toArray('.anim-stagger-letters').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.from(text.chars, { scrollTrigger: ST(el), y: 50, opacity: 0, stagger: 0.03, duration: 0.6, ease: "back.out(1.7)" });
-                    });
-                    gsap.utils.toArray('.anim-gravity-fall').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.from(text.chars, { scrollTrigger: ST(el), y: -300, opacity: 0, stagger: 0.05, duration: 0.8, ease: "bounce.out" });
-                    });
-                    gsap.utils.toArray('.anim-matrix-rain').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.from(text.chars, { scrollTrigger: ST(el), y: -100, opacity: 0, stagger: { each: 0.05, from: "random" }, duration: 0.5, ease: "power2.out" });
-                    });
-                    gsap.utils.toArray('.anim-cascade-reveal').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.from(text.chars, { scrollTrigger: ST(el), y: -80, rotation: -15, opacity: 0, stagger: { each: 0.04, from: "start" }, duration: 0.5, ease: "back.out(1.4)" });
-                    });
-                    gsap.utils.toArray('.anim-domino-fall').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.from(text.chars, { scrollTrigger: ST(el), rotationZ: -90, transformOrigin: "bottom left", opacity: 0, stagger: 0.06, duration: 0.5, ease: "power3.out" });
-                    });
-                    gsap.utils.toArray('.anim-popcorn-pop').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.from(text.chars, { scrollTrigger: ST(el), scale: 0, y: 30, rotation: () => gsap.utils.random(-20, 20), stagger: { each: 0.04, from: "random" }, duration: 0.4, ease: "back.out(2)" });
-                    });
-                    gsap.utils.toArray('.anim-magnetic-pull').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.from(text.chars, { scrollTrigger: ST(el), x: () => gsap.utils.random(-200, 200), y: () => gsap.utils.random(-200, 200), opacity: 0, rotation: () => gsap.utils.random(-90, 90), stagger: 0.02, duration: 1, ease: "power3.out" });
-                    });
-                    gsap.utils.toArray('.anim-slot-machine').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.from(text.chars, { scrollTrigger: ST(el), yPercent: -500, stagger: { each: 0.08, from: "start" }, duration: 0.6, ease: "power4.out" });
-                    });
-                    gsap.utils.toArray('.anim-spotlight').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.from(text.chars, { scrollTrigger: ST(el), opacity: 0.1, scale: 0.8, filter: "blur(4px)", stagger: { each: 0.06, from: "center" }, duration: 0.4, ease: "power2.out" });
-                    });
-                    gsap.utils.toArray('.anim-pendulum').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.from(text.chars, { scrollTrigger: ST(el), rotation: 90, transformOrigin: "top center", opacity: 0, stagger: 0.05, duration: 1, ease: "elastic.out(1, 0.5)" });
-                    });
-                    gsap.utils.toArray('.anim-wavy-baseline').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.to(text.chars, { scrollTrigger: ST(el), y: -20, stagger: { each: 0.06, from: "start", repeat: -1, yoyo: true }, duration: 0.4, ease: "sine.inOut" });
-                    });
-                    gsap.utils.toArray('.anim-flip-board').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.from(text.chars, { scrollTrigger: ST(el), rotationX: -90, transformOrigin: "50% 0%", opacity: 0, stagger: { each: 0.1, from: "start" }, duration: 0.3, ease: "power2.out" });
-                    });
-                    gsap.utils.toArray('.anim-neon-sign').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        const tl = gsap.timeline({ scrollTrigger: ST(el) });
-                        text.chars.forEach((ch, i) => {
-                            tl.set(ch, { opacity: 0 })
-                              .to(ch, { opacity: 1, duration: 0.05 }, i * 0.15)
-                              .to(ch, { opacity: 0.3, duration: 0.03 }, i * 0.15 + 0.05)
-                              .to(ch, { opacity: 1, textShadow: "0 0 10px #3b82f6", duration: 0.1 }, i * 0.15 + 0.08);
-                        });
-                    });
-                    gsap.utils.toArray('.anim-vertical-blinds').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.from(text.chars, { scrollTrigger: ST(el), scaleX: 0, opacity: 0, stagger: { each: 0.04, from: "edges" }, duration: 0.4, ease: "power2.out" });
-                    });
-                    gsap.utils.toArray('.anim-firework-burst').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        let tl = gsap.timeline({ scrollTrigger: ST(el) });
-                        tl.set(text.chars, { scale: 0, opacity: 0 }).from(text.chars, { scale: 3, opacity: 0, stagger: { each: 0.03, from: "center" }, duration: 0.6, ease: "power4.out" });
-                    });
-                    gsap.utils.toArray('.anim-origami-unfold').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.from(text.chars, { scrollTrigger: ST(el), rotationY: -90, rotationX: 45, transformOrigin: "left center", opacity: 0, stagger: 0.05, duration: 0.8, ease: "power3.out" });
-                    });
-
-                    // --- WORDS ---
-                    gsap.utils.toArray('.anim-split-words').forEach(el => {
-                        const text = new SplitType(el, { types: 'words' });
-                        gsap.from(text.words, { scrollTrigger: ST(el), y: 40, opacity: 0, stagger: 0.15, duration: 0.8, ease: "power2.out" });
-                    });
-                    gsap.utils.toArray('.anim-shuffle-words').forEach(el => {
-                        const text = new SplitType(el, { types: 'words' });
-                        gsap.from(text.words, { scrollTrigger: ST(el), x: () => gsap.utils.random(-100, 100), y: () => gsap.utils.random(-50, 50), opacity: 0, rotation: () => gsap.utils.random(-15, 15), stagger: 0.1, duration: 0.8, ease: "power3.out" });
-                    });
-
-                    // --- LINES ---
-                    gsap.utils.toArray('.anim-line-drop').forEach(el => {
-                        const text = new SplitType(el, { types: 'lines' });
-                        gsap.from(text.lines, { scrollTrigger: ST(el), y: -200, opacity: 0, stagger: 0.3, duration: 0.6, ease: "bounce.out" });
-                    });
-                }
-                
-                // 5. REPEATING / CONTINUOUS EFFECTS
-                gsap.utils.toArray('.anim-shadow-pulse').forEach(el => {
-                    gsap.fromTo(el, { textShadow: "0 0 0px #10b981" }, { textShadow: "0 0 30px #10b981, 0 0 60px #10b981", duration: 1, yoyo: true, repeat: -1, ease: "sine.inOut" });
-                });
-
-                // 6. GRID STAGGER
-                gsap.utils.toArray('.anim-stagger-grid').forEach(grid => {
-                    const items = grid.children;
-                    gsap.from(items, { scrollTrigger: ST(grid), y: 40, opacity: 0, duration: 0.6, stagger: 0.15, ease: "power2.out" });
-                });
-            }
-        });
-
-        // --- Firebase Auth UI Update ---
-        document.addEventListener('DOMContentLoaded', () => {
+        // --- Preloader ---
+        window.addEventListener('load', () => {
             setTimeout(() => {
-                if (window.auth) {
-                    auth.onAuthStateChanged((user) => {
-                        const dLogin = document.getElementById('nav-login');
-                        const dReg = document.getElementById('nav-register');
-                        const dDash = document.getElementById('nav-dashboard');
-                        const dLogout = document.getElementById('nav-logout');
-                        
-                        const mLogin = document.getElementById('mobile-nav-login');
-                        const mReg = document.getElementById('mobile-nav-register');
-                        const mDash = document.getElementById('mobile-nav-dashboard');
-
-                        if (dLogin && dDash && dLogout && dReg) {
-                            dLogin.style.display = user ? 'none' : 'inline-block';
-                            dReg.style.display = user ? 'none' : 'inline-block';
-                            dDash.style.display = user ? 'inline-block' : 'none';
-                            dLogout.style.display = user ? 'inline-block' : 'none';
-                        }
-                        if (mLogin && mDash && mReg) {
-                            mLogin.style.display = user ? 'none' : 'block';
-                            mReg.style.display = user ? 'none' : 'block';
-                            mDash.style.display = user ? 'block' : 'none';
-                        }
-                    });
-                }
-            }, 500);
+                document.getElementById('preloader').style.display = 'none';
+            }, 600);
         });
-
-        window.globalLogout = function() {
-            if(window.auth) auth.signOut().then(() => { window.location.href = '/login'; });
-        }
     </script>
 </body>
 </html>

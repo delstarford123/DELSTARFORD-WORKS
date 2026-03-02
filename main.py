@@ -38,17 +38,14 @@ STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
 PAYPAL_CLIENT_ID = os.getenv('PAYPAL_CLIENT_ID')
 
 # M-Pesa (Sandbox Credentials)
-MPESA_CONSUMER_KEY = os.getenv('MPESA_KEY', 'mjpi9dRnBx6ZgredXiDbOK8U1gSnCds5TdJr7A3VrAdEg5a0')
-MPESA_CONSUMER_SECRET = os.getenv('MPESA_SECRET', 'CPiCSfv7qWx5faY0tfHElspd1OMA9IBIlJo86snqBMtGhtglvBKPwzP2mG3d33hD')
-MPESA_PASSKEY = os.getenv('MPESA_PASSKEY', 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919')
+MPESA_CONSUMER_KEY = os.getenv('MPESA_KEY')
+MPESA_CONSUMER_SECRET = os.getenv('MPESA_SECRET')
+MPESA_PASSKEY = os.getenv('MPESA_PASSKEY', )
 MPESA_SHORT_CODE = '174379' 
 MPESA_CALLBACK_URL = os.getenv('MPESA_CALLBACK_URL', 'https://your-ngrok-url.ngrok-free.app/callback')
 
 # --- WHITELIST CREDENTIALS (Admin) ---
-ADMIN_WHITELIST = {
-    "email": "delstarfordisaiah@gmail.com",
-    "password": "Delstarford123"
-}
+
 
 # --- EMAIL CONFIG ---
 SENDER_EMAIL = os.getenv("SENDER_EMAIL")

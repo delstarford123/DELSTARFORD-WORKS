@@ -4,51 +4,157 @@
 <style>
     /* Hide public UI elements for the dashboard */
     .site-header, .site-footer { display: none !important; }
-    body { background: #0f172a !important; color: #f8fafc; overflow: hidden; }
+    body { background: #020617 !important; color: #f8fafc; overflow: hidden; margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+    /* Theme Variables */
+    :root {
+        --bg-main: #020617;
+        --bg-panel: #0f172a;
+        --bg-card: #1e293b;
+        --border-color: #334155;
+        --border-light: rgba(255,255,255,0.05);
+        --primary: #3b82f6;
+        --primary-glow: rgba(59, 130, 246, 0.4);
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-main); }
+    ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
     /* Admin Layout */
     .admin-layout { display: flex; height: 100vh; width: 100vw; }
     
     /* Sidebar */
-    .admin-sidebar { width: 280px; background: #020617; border-right: 1px solid #1e293b; display: flex; flex-direction: column; padding: 30px 0; }
+    .admin-sidebar { 
+        width: 280px; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(20px);
+        border-right: 1px solid var(--border-light); 
+        display: flex; flex-direction: column; padding: 30px 0; z-index: 10;
+    }
     .sidebar-brand { padding: 0 30px; margin-bottom: 40px; display: flex; align-items: center; gap: 15px; }
-    .sidebar-brand img { height: 35px; }
-    .sidebar-brand h2 { font-size: 1.2rem; font-weight: 800; margin: 0; letter-spacing: 1px; color: #3b82f6; }
+    .sidebar-brand img { height: 35px; filter: drop-shadow(0 0 8px var(--primary-glow)); }
+    .sidebar-brand h2 { font-size: 1.2rem; font-weight: 800; margin: 0; letter-spacing: 2px; color: var(--text-main); }
+    .sidebar-brand h2 span { color: var(--primary); }
     
-    .admin-nav { display: flex; flex-direction: column; gap: 5px; padding: 0 15px; flex: 1; }
-    .admin-nav-btn { background: transparent; border: none; color: #94a3b8; padding: 15px 20px; text-align: left; font-size: 1rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 15px; }
-    .admin-nav-btn:hover { background: rgba(59, 130, 246, 0.1); color: #f8fafc; }
-    .admin-nav-btn.active { background: #2563eb; color: white; box-shadow: 0 4px 15px rgba(37,99,235,0.3); }
-    .admin-nav-btn i { font-size: 1.2rem; width: 20px; text-align: center; }
+    .admin-nav { display: flex; flex-direction: column; gap: 8px; padding: 0 15px; flex: 1; }
+    .admin-nav-btn { 
+        background: transparent; border: none; color: var(--text-muted); padding: 14px 20px; 
+        text-align: left; font-size: 0.95rem; font-weight: 600; border-radius: 8px; 
+        cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 15px; font-family: inherit;
+        border: 1px solid transparent;
+    }
+    .admin-nav-btn:hover { background: rgba(255,255,255,0.03); color: var(--text-main); }
+    .admin-nav-btn.active { 
+        background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, transparent 100%); 
+        color: var(--primary); border-left: 3px solid var(--primary); border-radius: 0 8px 8px 0;
+    }
+    .admin-nav-btn i { font-size: 1.1rem; width: 20px; text-align: center; }
 
-    .sidebar-footer { padding: 20px 30px; border-top: 1px solid #1e293b; }
-    .logout-btn { color: #ef4444; background: none; border: none; font-weight: bold; cursor: pointer; font-size: 1rem; display: flex; align-items: center; gap: 10px; }
+    .sidebar-footer { padding: 20px 30px; border-top: 1px solid var(--border-light); }
+    .logout-btn { color: var(--text-muted); background: none; border: none; font-weight: 600; cursor: pointer; font-size: 0.95rem; display: flex; align-items: center; gap: 10px; font-family: inherit; transition: 0.3s; }
+    .logout-btn:hover { color: var(--danger); }
 
     /* Main Content Area */
-    .admin-main { flex: 1; overflow-y: auto; padding: 40px; background: #0f172a; position: relative; }
-    .admin-header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-    .admin-header-top h1 { font-size: 2rem; margin: 0; font-weight: 800; }
-    .admin-profile { display: flex; align-items: center; gap: 15px; background: #1e293b; padding: 10px 20px; border-radius: 30px; border: 1px solid #334155; }
-    .admin-profile img { width: 35px; height: 35px; border-radius: 50%; }
+    .admin-main { flex: 1; overflow-y: auto; padding: 40px; background: var(--bg-main); position: relative; }
+    
+    /* Background Hex Grid (Subtle) */
+    .admin-main::before {
+        content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+        background-image: radial-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+        background-size: 30px 30px;
+    }
+
+    .admin-header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; position: relative; z-index: 1; }
+    .admin-header-top h1 { font-size: 2.2rem; margin: 0; font-weight: 800; letter-spacing: -0.5px; }
+    .admin-profile { display: flex; align-items: center; gap: 12px; background: rgba(30, 41, 59, 0.5); padding: 8px 16px; border-radius: 30px; border: 1px solid var(--border-light); backdrop-filter: blur(10px); }
 
     /* Data Tables */
-    .data-panel { display: none; animation: fadeIn 0.5s ease; }
+    .data-panel { display: none; animation: fadeIn 0.4s ease; position: relative; z-index: 1; }
     .data-panel.active { display: block; }
     
-    .data-card { background: #1e293b; border-radius: 12px; border: 1px solid #334155; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-    .data-card-header { padding: 20px 25px; border-bottom: 1px solid #334155; background: rgba(255,255,255,0.02); display: flex; justify-content: space-between; align-items: center; }
-    .data-card-header h3 { margin: 0; font-size: 1.2rem; }
-    
+    .data-card { background: var(--bg-panel); border-radius: 16px; border: 1px solid var(--border-light); overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+    .data-card-header { padding: 20px 30px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.01); }
+    .data-card-header h3 { margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--text-main); }
+    .btn-refresh { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); color: var(--primary); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 700; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
+    .btn-refresh:hover { background: var(--primary); color: white; box-shadow: 0 4px 12px var(--primary-glow); transform: translateY(-1px); }
+
     table { width: 100%; border-collapse: collapse; text-align: left; }
-    th, td { padding: 15px 25px; border-bottom: 1px solid #334155; font-size: 0.95rem; }
-    th { color: #94a3b8; font-weight: 700; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
-    tr:hover { background: rgba(255,255,255,0.02); }
-    td { color: #e2e8f0; }
+    th, td { padding: 18px 30px; border-bottom: 1px solid var(--border-light); font-size: 0.95rem; }
+    th { color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1.5px; background: rgba(0,0,0,0.2); }
     
-    .badge { padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
-    .badge.admin { background: rgba(59, 130, 246, 0.2); color: #3b82f6; border: 1px solid #3b82f6; }
-    .badge.member { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
-    .badge.high { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
+    tr { transition: background 0.2s; cursor: pointer; }
+    tr:hover { background: rgba(255,255,255,0.03); }
+    tr:last-child td { border-bottom: none; }
+    td { color: var(--text-main); }
+    
+    /* Action Button in Rows */
+    .btn-action-view { background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px 14px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; transition: 0.3s; cursor: pointer; }
+    tr:hover .btn-action-view { background: var(--primary); border-color: var(--primary); color: white; }
+
+    /* Badges */
+    .badge { padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; display: inline-block; text-align: center; letter-spacing: 0.5px; }
+    .badge.admin { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+    .badge.member { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge.high { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .badge.open { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+    /* SLIDE-OVER DETAIL PANEL (THE COMMAND CENTER) */
+    .detail-overlay {
+        position: fixed; inset: 0; background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(8px);
+        z-index: 9999; display: flex; justify-content: flex-end; opacity: 0; visibility: hidden; transition: all 0.4s ease;
+    }
+    .detail-overlay.active { opacity: 1; visibility: visible; }
+    
+    .detail-panel {
+        width: 550px; max-width: 100%; height: 100%; background: var(--bg-panel);
+        border-left: 1px solid var(--border-light); box-shadow: -20px 0 50px rgba(0,0,0,0.8);
+        transform: translateX(100%); transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+        display: flex; flex-direction: column;
+    }
+    .detail-overlay.active .detail-panel { transform: translateX(0); }
+
+    .dp-header { padding: 30px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); }
+    .dp-header h3 { margin: 0; font-size: 1.4rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
+    .dp-header h3 i { color: var(--primary); }
+    .btn-close-dp { background: rgba(255,255,255,0.05); border: 1px solid var(--border-light); color: var(--text-muted); width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
+    .btn-close-dp:hover { background: var(--danger); color: white; border-color: var(--danger); transform: rotate(90deg); }
+
+    .dp-body { padding: 30px; overflow-y: auto; flex: 1; }
+    
+    /* Meta Info Grid */
+    .dp-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border: 1px solid var(--border-light); margin-bottom: 30px; }
+    .dp-meta div { display: flex; flex-direction: column; gap: 5px; }
+    .dp-meta label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
+    .dp-meta span { color: var(--text-main); font-weight: 600; font-size: 0.95rem; }
+
+    /* Message Bubbles */
+    .dp-message-box { background: var(--bg-card); border-radius: 12px; padding: 25px; border: 1px solid var(--border-light); margin-bottom: 30px; position: relative; }
+    .dp-message-box::before { content: "CLIENT REQUEST"; position: absolute; top: -10px; left: 20px; background: var(--bg-panel); padding: 0 10px; font-size: 0.7rem; color: var(--text-muted); font-weight: 800; letter-spacing: 1px; }
+    .dp-message-box p { margin: 0; line-height: 1.7; color: #cbd5e1; font-size: 1rem; white-space: pre-wrap; }
+
+    /* Reply Area */
+    .dp-action-area { padding: 30px; border-top: 1px solid var(--border-light); background: rgba(0,0,0,0.2); }
+    .dp-action-area label { display: block; font-size: 0.8rem; color: var(--primary); text-transform: uppercase; font-weight: 800; margin-bottom: 10px; letter-spacing: 1px; }
+    .dp-action-area textarea { 
+        width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-main); 
+        padding: 18px; border-radius: 12px; font-family: inherit; font-size: 0.95rem; resize: vertical; 
+        min-height: 120px; margin-bottom: 15px; outline: none; transition: 0.3s; box-sizing: border-box;
+    }
+    .dp-action-area textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
+    
+    .btn-reply { 
+        background: var(--primary); color: white; border: none; padding: 15px; border-radius: 10px; 
+        font-weight: 800; font-size: 1rem; cursor: pointer; width: 100%; transition: all 0.3s; 
+        text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .btn-reply:hover { background: #2563eb; box-shadow: 0 8px 20px var(--primary-glow); transform: translateY(-2px); }
+    .btn-reply:disabled { background: var(--border-color); cursor: not-allowed; transform: none; box-shadow: none; }
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 </style>
@@ -57,7 +163,7 @@
     <aside class="admin-sidebar">
         <div class="sidebar-brand">
             <img src="{{ url_for('static', filename='images/DEL SVG.svg') }}" alt="Logo">
-            <h2>COMMAND</h2>
+            <h2>DELSTARFORD<span>.</span></h2>
         </div>
         <nav class="admin-nav">
             <button class="admin-nav-btn active" onclick="switchTab('users-panel', this)">
@@ -66,8 +172,11 @@
             <button class="admin-nav-btn" onclick="switchTab('tickets-panel', this)">
                 <i class="fas fa-ticket-alt"></i> Support Tickets
             </button>
-            <button class="admin-nav-btn" onclick="window.location.href='/'">
-                <i class="fas fa-globe"></i> View Public Site
+            <button class="admin-nav-btn" onclick="switchTab('leads-panel', this)">
+                <i class="fas fa-bolt"></i> Service Leads
+            </button>
+            <button class="admin-nav-btn" onclick="window.location.href='/'" style="margin-top: auto;">
+                <i class="fas fa-external-link-alt"></i> Public Site
             </button>
         </nav>
         <div class="sidebar-footer">
@@ -81,8 +190,8 @@
         <div class="admin-header-top">
             <h1 id="panel-title">Network Users</h1>
             <div class="admin-profile">
-                <span id="admin-name" style="font-weight: bold; font-size: 0.9rem;">Loading...</span>
-                <i class="fas fa-user-shield" style="color: #3b82f6;"></i>
+                <i class="fas fa-user-shield" style="color: var(--primary);"></i>
+                <span id="admin-name" style="font-weight: 600; font-size: 0.9rem;">Authorizing...</span>
             </div>
         </div>
 
@@ -90,20 +199,19 @@
             <div class="data-card">
                 <div class="data-card-header">
                     <h3>Registered Accounts</h3>
-                    <button onclick="loadUsers()" style="background: none; border: none; color: #3b82f6; cursor: pointer;"><i class="fas fa-sync-alt"></i> Refresh</button>
+                    <button class="btn-refresh" onclick="loadUsers()"><i class="fas fa-sync-alt"></i> Refresh</button>
                 </div>
                 <table>
                     <thead>
                         <tr>
-                            <th>User ID</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Joined Date</th>
+                            <th>User ID / Email</th>
+                            <th>Full Name</th>
+                            <th>Clearance Level</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody id="users-table-body">
-                        <tr><td colspan="5" style="text-align:center; color:#64748b;">Fetching network data...</td></tr>
+                        <tr><td colspan="4" style="text-align:center; padding: 40px; color: var(--text-muted);">Fetching secure data...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -112,21 +220,42 @@
         <div id="tickets-panel" class="data-panel">
             <div class="data-card">
                 <div class="data-card-header">
-                    <h3>Active Support Tickets</h3>
-                    <button onclick="loadTickets()" style="background: none; border: none; color: #3b82f6; cursor: pointer;"><i class="fas fa-sync-alt"></i> Refresh</button>
+                    <h3>Support Tickets</h3>
+                    <button class="btn-refresh" onclick="loadTickets()"><i class="fas fa-sync-alt"></i> Refresh</button>
                 </div>
                 <table>
                     <thead>
                         <tr>
                             <th>Ticket ID</th>
-                            <th>Client Name</th>
-                            <th>Category</th>
-                            <th>Priority</th>
-                            <th>Subject</th>
+                            <th>Client Email</th>
+                            <th>Status / Priority</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody id="tickets-table-body">
-                        <tr><td colspan="5" style="text-align:center; color:#64748b;">Fetching ticket data...</td></tr>
+                        <tr><td colspan="4" style="text-align:center; padding: 40px; color: var(--text-muted);">Fetching secure data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="leads-panel" class="data-panel">
+            <div class="data-card">
+                <div class="data-card-header">
+                    <h3>Service & Custom AI Leads</h3>
+                    <button class="btn-refresh" onclick="loadLeads()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date Logged</th>
+                            <th>Client Identity</th>
+                            <th>Requested Service</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leads-table-body">
+                        <tr><td colspan="4" style="text-align:center; padding: 40px; color: var(--text-muted);">Fetching secure data...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -134,34 +263,92 @@
     </main>
 </div>
 
+<div id="detailOverlay" class="detail-overlay" onclick="closeDetailPanel(event)">
+    <div class="detail-panel" onclick="event.stopPropagation()">
+        <div class="dp-header">
+            <h3><i class="fas fa-terminal"></i> <span id="dp-title">Record Details</span></h3>
+            <button class="btn-close-dp" onclick="closeDetailPanel()">&times;</button>
+        </div>
+        
+        <div class="dp-body">
+            <div class="dp-meta" id="dp-meta-content">
+                </div>
+            
+            <div class="dp-message-box">
+                <p id="dp-message-content">Loading content...</p>
+            </div>
+        </div>
+
+        <div class="dp-action-area" id="dp-reply-area" style="display: none;">
+            <label>Admin Response Node</label>
+            <textarea id="dp-reply-text" placeholder="Type your response... This will automatically email the client and update their dashboard."></textarea>
+            <button class="btn-reply" onclick="sendAdminReply()">
+                <i class="fas fa-paper-plane"></i> Transmit Update
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <script>
-    // Tab Switching Logic
+    // --- UI LOGIC ---
     function switchTab(panelId, btnElement) {
         document.querySelectorAll('.data-panel').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.admin-nav-btn').forEach(b => b.classList.remove('active'));
         
         document.getElementById(panelId).classList.add('active');
         btnElement.classList.add('active');
-        
-        document.getElementById('panel-title').innerText = btnElement.innerText;
+        document.getElementById('panel-title').innerText = btnElement.innerText.trim();
+
+        // Staggered Entrance for tables
+        if(typeof gsap !== 'undefined') {
+            gsap.from(`#${panelId} tbody tr`, { y: 20, opacity: 0, stagger: 0.05, duration: 0.4, ease: "power2.out" });
+        }
 
         if(panelId === 'users-panel') loadUsers();
         if(panelId === 'tickets-panel') loadTickets();
+        if(panelId === 'leads-panel') loadLeads();
     }
 
-    // Authenticate and Load Data on Startup
+    // Detail Panel Logic
+    let currentRecordContext = null; 
+
+    function openDetailPanel(title, metaHtml, message, contextData = null) {
+        document.getElementById('dp-title').innerText = title;
+        document.getElementById('dp-meta-content').innerHTML = metaHtml;
+        document.getElementById('dp-message-content').innerText = message || "No message payload provided in this record.";
+        
+        const replyArea = document.getElementById('dp-reply-area');
+        if (contextData) {
+            currentRecordContext = contextData;
+            replyArea.style.display = 'block';
+            document.getElementById('dp-reply-text').value = '';
+        } else {
+            replyArea.style.display = 'none';
+        }
+
+        document.getElementById('detailOverlay').classList.add('active');
+    }
+
+    function closeDetailPanel(e) {
+        if (!e || e.target.classList.contains('detail-overlay')) {
+            document.getElementById('detailOverlay').classList.remove('active');
+            currentRecordContext = null;
+        }
+    }
+
+    // --- AUTH & DATA LOGIC ---
     document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => {
             if (window.auth) {
                 auth.onAuthStateChanged(async (user) => {
                     if (user) {
-                        // Verify Admin status again just in case
                         const snap = await firebase.database().ref('users/' + user.uid).once('value');
                         if (snap.val() && snap.val().role === 'admin') {
-                            document.getElementById('admin-name').innerText = snap.val().name || "Administrator";
-                            loadUsers(); // Load initial data
+                            document.getElementById('admin-name').innerText = snap.val().name || "System Admin";
+                            loadUsers();
                         } else {
-                            adminLogout(); // Kick out non-admins
+                            adminLogout();
                         }
                     } else {
                         window.location.href = '/admin-login';
@@ -171,69 +358,163 @@
         }, 800);
     });
 
-    // Fetch Users from Firebase
+    // 1. Fetch Users
     async function loadUsers() {
         const tbody = document.getElementById('users-table-body');
         try {
-            const snapshot = await firebase.database().ref('users').once('value');
-            const users = snapshot.val();
+            const snap = await firebase.database().ref('users').once('value');
+            const data = snap.val();
             tbody.innerHTML = "";
-
-            if (users) {
-                for (let uid in users) {
-                    const u = users[uid];
-                    const date = u.joined_at ? new Date(u.joined_at).toLocaleDateString() : 'Unknown';
+            if (data) {
+                for (let key in data) {
+                    const u = data[key];
                     const roleClass = u.role === 'admin' ? 'badge admin' : 'badge member';
+                    const tr = document.createElement('tr');
                     
-                    tbody.innerHTML += `
-                        <tr>
-                            <td style="font-family:monospace; color:#64748b;">${uid.substring(0,8)}...</td>
-                            <td style="font-weight:bold;">${u.name || 'N/A'}</td>
-                            <td>${u.email}</td>
-                            <td><span class="${roleClass}">${u.role || 'user'}</span></td>
-                            <td>${date}</td>
-                        </tr>
+                    tr.innerHTML = `
+                        <td>
+                            <div style="font-weight: 700;">${u.email || 'N/A'}</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted); font-family: monospace; margin-top: 4px;">UID: ${key.substring(0,12)}...</div>
+                        </td>
+                        <td style="font-weight: 600;">${u.name || 'N/A'}</td>
+                        <td><span class="${roleClass}">${u.role || 'Client'}</span></td>
+                        <td><button class="btn-action-view">View Dossier</button></td>
                     `;
+                    
+                    tr.onclick = () => {
+                        const meta = `
+                            <div><label>Full Name</label><span>${u.name || 'N/A'}</span></div>
+                            <div><label>Email Address</label><span>${u.email}</span></div>
+                            <div><label>System UID</label><span style="font-family: monospace;">${key}</span></div>
+                            <div><label>Clearance</label><span class="${roleClass}">${u.role || 'Client'}</span></div>
+                        `;
+                        openDetailPanel("User Profile", meta, "No messaging history linked to this profile directly. Check Support Tickets or Service Leads for interactions.", null);
+                    };
+                    tbody.appendChild(tr);
                 }
-            } else {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No users found in database.</td></tr>`;
-            }
-        } catch (error) {
-            console.error("Error loading users:", error);
-            tbody.innerHTML = `<tr><td colspan="5" style="color:#ef4444; text-align:center;">Failed to load users. Permission denied or database error.</td></tr>`;
-        }
+            } else { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No users found in database.</td></tr>`; }
+        } catch (e) { tbody.innerHTML = `<tr><td colspan="4" style="color:var(--danger); text-align:center;">Permission Denied.</td></tr>`; }
     }
 
-    // Fetch Tickets from Firebase
+    // 2. Fetch Tickets
     async function loadTickets() {
         const tbody = document.getElementById('tickets-table-body');
         try {
-            // Assumes your Python route saves tickets to a 'tickets' node in Firebase Realtime DB
-            const snapshot = await firebase.database().ref('tickets').once('value');
-            const tickets = snapshot.val();
+            const snap = await firebase.database().ref('support_tickets').once('value');
+            const data = snap.val();
             tbody.innerHTML = "";
-
-            if (tickets) {
-                for (let tid in tickets) {
-                    const t = tickets[tid];
-                    const prioClass = t.priority === 'high' || t.priority === 'critical' ? 'badge high' : 'badge member';
+            if (data) {
+                Object.keys(data).reverse().forEach(key => {
+                    const t = data[key];
+                    const statClass = t.status === 'Open' ? 'badge open' : 'badge member';
+                    const prioClass = t.priority === 'High' ? 'color: var(--danger); font-weight: bold;' : 'color: var(--text-muted);';
+                    const tr = document.createElement('tr');
                     
-                    tbody.innerHTML += `
-                        <tr>
-                            <td style="font-family:monospace; color:#3b82f6;">#${tid.substring(0,6)}</td>
-                            <td style="font-weight:bold;">${t.name}</td>
-                            <td style="text-transform: capitalize;">${t.category}</td>
-                            <td><span class="${prioClass}">${t.priority}</span></td>
-                            <td>${t.subject}</td>
-                        </tr>
+                    tr.innerHTML = `
+                        <td style="color: var(--primary); font-family: monospace; font-weight: bold;">${t.ticket_id || key}</td>
+                        <td style="font-weight: 600;">${t.email}</td>
+                        <td>
+                            <span class="${statClass}" style="margin-right: 10px;">${t.status}</span>
+                            <span style="font-size: 0.8rem; text-transform: uppercase; ${prioClass}">${t.priority || 'Normal'}</span>
+                        </td>
+                        <td><button class="btn-action-view">Review</button></td>
                     `;
-                }
+                    
+                    tr.onclick = () => {
+                        const meta = `
+                            <div><label>Client Name</label><span>${t.name}</span></div>
+                            <div><label>Email</label><span>${t.email}</span></div>
+                            <div><label>Priority</label><span>${t.priority || 'Normal'}</span></div>
+                            <div><label>Date Logged</label><span>${t.timestamp ? t.timestamp.substring(0,16) : 'N/A'}</span></div>
+                        `;
+                        const context = { dbPath: `support_tickets/${key}`, email: t.email, name: t.name, type: "Support Ticket" };
+                        openDetailPanel(`Ticket: ${t.subject}`, meta, t.message, context);
+                    };
+                    tbody.appendChild(tr);
+                });
+            } else { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No active tickets.</td></tr>`; }
+        } catch (e) { tbody.innerHTML = `<tr><td colspan="4" style="color:var(--danger); text-align:center;">Database Error.</td></tr>`; }
+    }
+
+    // 3. Fetch Service Leads
+    async function loadLeads() {
+        const tbody = document.getElementById('leads-table-body');
+        try {
+            const snap = await firebase.database().ref('leads/service_requests').once('value');
+            const data = snap.val();
+            tbody.innerHTML = "";
+            if (data) {
+                Object.keys(data).reverse().forEach(key => {
+                    const l = data[key];
+                    const statClass = l.status === 'Pending' ? 'badge open' : 'badge member';
+                    const tr = document.createElement('tr');
+                    
+                    tr.innerHTML = `
+                        <td style="font-family: monospace;">${l.timestamp ? l.timestamp.substring(0,10) : 'N/A'}</td>
+                        <td>
+                            <div style="font-weight: 700;">${l.name}</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">${l.email}</div>
+                        </td>
+                        <td>
+                            <div style="color: var(--primary); font-weight: 600;">${l.service}</div>
+                            <div style="margin-top: 6px;"><span class="${statClass}">${l.status || 'Pending'}</span></div>
+                        </td>
+                        <td><button class="btn-action-view">Assess</button></td>
+                    `;
+                    
+                    tr.onclick = () => {
+                        const meta = `
+                            <div><label>Client</label><span>${l.name}</span></div>
+                            <div><label>Email</label><span>${l.email}</span></div>
+                            <div><label>Service Req</label><span style="color: var(--primary);">${l.service}</span></div>
+                            <div><label>Logged</label><span>${l.timestamp ? l.timestamp.substring(0,16) : 'N/A'}</span></div>
+                        `;
+                        const context = { dbPath: `leads/service_requests/${key}`, email: l.email, name: l.name, type: "Service Project" };
+                        openDetailPanel(`Project Lead`, meta, l.details, context);
+                    };
+                    tbody.appendChild(tr);
+                });
+            } else { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No leads found.</td></tr>`; }
+        } catch (e) { tbody.innerHTML = `<tr><td colspan="4" style="color:var(--danger); text-align:center;">Database Error.</td></tr>`; }
+    }
+
+    // 4. Send Reply & Update DB
+    async function sendAdminReply() {
+        if (!currentRecordContext) return;
+        const text = document.getElementById('dp-reply-text').value;
+        if(!text) return alert("Please type a message first.");
+
+        const btn = document.querySelector('.btn-reply');
+        btn.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Transmitting...`; 
+        btn.disabled = true;
+
+        const payload = {
+            ...currentRecordContext,
+            replyMessage: text,
+            newStatus: "In Progress" 
+        };
+
+        try {
+            const res = await fetch('/admin-reply', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            
+            if (data.success) {
+                closeDetailPanel();
+                const activeTab = document.querySelector('.admin-nav-btn.active').innerText.trim();
+                if(activeTab.includes('Tickets')) loadTickets();
+                if(activeTab.includes('Leads')) loadLeads();
             } else {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No active support tickets.</td></tr>`;
+                alert("Error: " + data.message);
             }
-        } catch (error) {
-            console.error("Error loading tickets:", error);
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Make sure your Python /submit-ticket route saves data to the 'tickets' node in Firebase!</td></tr>`;
+        } catch (e) {
+            alert("Network Error.");
+        } finally {
+            btn.innerHTML = `<i class="fas fa-paper-plane"></i> Transmit Update`; 
+            btn.disabled = false;
         }
     }
 
@@ -241,4 +522,5 @@
         if(window.auth) auth.signOut().then(() => { window.location.href = '/admin-login'; });
     }
 </script>
+
 {% endblock %}

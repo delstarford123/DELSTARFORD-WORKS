@@ -148,8 +148,6 @@ def ai_lab():
                            paypal_client_id=PAYPAL_CLIENT_ID,
                            stripe_publishable_key=STRIPE_PUBLISHABLE_KEY)
 
-@app.route('/dashboard')
-def dashboard(): return render_template('dashboard.html')
 
 @app.route('/location')
 def location(): return render_template('location.html')
@@ -467,9 +465,39 @@ def admin_page():
     if not session.get('is_admin'): return redirect(url_for('admin_login_page'))
     return render_template('admin_response.html')
 
-@app.route('/admin-dashboard')
+
+
+
+from flask import render_template, make_response
+
+@app.route('/dashboard', methods=['GET'])
+def dashboard():
+    """
+    Client Dashboard Route.
+    Serves the portal UI. Authentication is managed client-side via Firebase.
+    """
+    response = make_response(render_template('dashboard.html'))
+    # Prevent the browser from caching the dashboard to protect sensitive data after logout
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    
+    return response
+
+
+@app.route('/admin-dashboard', methods=['GET'])
 def admin_dashboard():
-    return render_template('admin_dashboard.html')
+    """
+    Admin Command Center Route.
+    Serves the secure admin UI. Role validation is handled client-side.
+    """
+    response = make_response(render_template('admin_dashboard.html'))
+    # Strict cache prevention for high-clearance administrative routes
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    
+    return response
 
 @app.route('/admin-reply', methods=['POST'])
 def admin_reply():

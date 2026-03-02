@@ -4,9 +4,8 @@
 <style>
     /* Hide public UI elements for the dashboard */
     .site-header, .site-footer { display: none !important; }
-    body { background: #020617 !important; color: #f8fafc; overflow: hidden; margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background: #020617 !important; color: #f8fafc; overflow: hidden; margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; }
 
-    /* Theme Variables */
     :root {
         --bg-main: #020617;
         --bg-panel: #0f172a;
@@ -20,23 +19,32 @@
         --warning: #f59e0b;
         --text-main: #f8fafc;
         --text-muted: #94a3b8;
+        --sidebar-width: 280px;
     }
 
     /* Scrollbar */
-    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg-main); }
     ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
     /* Admin Layout */
-    .admin-layout { display: flex; height: 100vh; width: 100vw; }
+    .admin-layout { display: flex; min-height: 100vh; width: 100%; position: relative; }
     
+    /* Mobile Menu Toggle */
+    .mobile-nav-toggle {
+        display: none; position: fixed; top: 20px; right: 20px; z-index: 1001;
+        background: var(--primary); color: white; border: none; width: 45px; height: 45px;
+        border-radius: 8px; cursor: pointer; font-size: 1.2rem;
+    }
+
     /* Sidebar */
     .admin-sidebar { 
-        width: 280px; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(20px);
-        border-right: 1px solid var(--border-light); 
-        display: flex; flex-direction: column; padding: 30px 0; z-index: 10;
+        width: var(--sidebar-width); background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px);
+        border-right: 1px solid var(--border-light); display: flex; flex-direction: column; padding: 30px 0; 
+        position: fixed; height: 100vh; left: 0; top: 0; z-index: 1000; transition: transform 0.3s ease;
     }
+    
     .sidebar-brand { padding: 0 30px; margin-bottom: 40px; display: flex; align-items: center; gap: 15px; }
     .sidebar-brand img { height: 35px; filter: drop-shadow(0 0 8px var(--primary-glow)); }
     .sidebar-brand h2 { font-size: 1.2rem; font-weight: 800; margin: 0; letter-spacing: 2px; color: var(--text-main); }
@@ -47,27 +55,26 @@
         background: transparent; border: none; color: var(--text-muted); padding: 14px 20px; 
         text-align: left; font-size: 0.95rem; font-weight: 600; border-radius: 8px; 
         cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 15px; font-family: inherit;
-        border: 1px solid transparent;
     }
     .admin-nav-btn:hover { background: rgba(255,255,255,0.03); color: var(--text-main); }
     .admin-nav-btn.active { 
         background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, transparent 100%); 
         color: var(--primary); border-left: 3px solid var(--primary); border-radius: 0 8px 8px 0;
     }
-    .admin-nav-btn i { font-size: 1.1rem; width: 20px; text-align: center; }
 
     .sidebar-footer { padding: 20px 30px; border-top: 1px solid var(--border-light); }
     .logout-btn { color: var(--text-muted); background: none; border: none; font-weight: 600; cursor: pointer; font-size: 0.95rem; display: flex; align-items: center; gap: 10px; font-family: inherit; transition: 0.3s; }
     .logout-btn:hover { color: var(--danger); }
 
-    /* Main Content Area */
-    .admin-main { flex: 1; overflow-y: auto; padding: 40px; background: var(--bg-main); position: relative; }
+    /* Main Content */
+    .admin-main { 
+        flex: 1; margin-left: var(--sidebar-width); padding: 40px; background: var(--bg-main); 
+        position: relative; min-width: 0; overflow-y: auto; height: 100vh; box-sizing: border-box;
+    }
     
-    /* Background Hex Grid (Subtle) */
     .admin-main::before {
         content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
-        background-image: radial-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px);
-        background-size: 30px 30px;
+        background-image: radial-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px); background-size: 30px 30px;
     }
 
     .admin-header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; position: relative; z-index: 1; }
@@ -82,29 +89,27 @@
     .data-card-header { padding: 20px 30px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.01); }
     .data-card-header h3 { margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--text-main); }
     .btn-refresh { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); color: var(--primary); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 700; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
-    .btn-refresh:hover { background: var(--primary); color: white; box-shadow: 0 4px 12px var(--primary-glow); transform: translateY(-1px); }
+    .btn-refresh:hover { background: var(--primary); color: white; transform: translateY(-1px); }
 
-    table { width: 100%; border-collapse: collapse; text-align: left; }
-    th, td { padding: 18px 30px; border-bottom: 1px solid var(--border-light); font-size: 0.95rem; }
+    .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; min-width: 600px; }
+    th, td { padding: 18px 20px; border-bottom: 1px solid var(--border-light); font-size: 0.9rem; }
     th { color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1.5px; background: rgba(0,0,0,0.2); }
-    
     tr { transition: background 0.2s; cursor: pointer; }
     tr:hover { background: rgba(255,255,255,0.03); }
-    tr:last-child td { border-bottom: none; }
     td { color: var(--text-main); }
     
-    /* Action Button in Rows */
     .btn-action-view { background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px 14px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; transition: 0.3s; cursor: pointer; }
     tr:hover .btn-action-view { background: var(--primary); border-color: var(--primary); color: white; }
 
     /* Badges */
-    .badge { padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; display: inline-block; text-align: center; letter-spacing: 0.5px; }
+    .badge { padding: 5px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; display: inline-block; text-align: center; letter-spacing: 0.5px; }
     .badge.admin { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
     .badge.member { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
     .badge.high { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
     .badge.open { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
 
-    /* SLIDE-OVER DETAIL PANEL (THE COMMAND CENTER) */
+    /* SLIDE-OVER DETAIL PANEL */
     .detail-overlay {
         position: fixed; inset: 0; background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(8px);
         z-index: 9999; display: flex; justify-content: flex-end; opacity: 0; visibility: hidden; transition: all 0.4s ease;
@@ -121,24 +126,19 @@
 
     .dp-header { padding: 30px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); }
     .dp-header h3 { margin: 0; font-size: 1.4rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
-    .dp-header h3 i { color: var(--primary); }
     .btn-close-dp { background: rgba(255,255,255,0.05); border: 1px solid var(--border-light); color: var(--text-muted); width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
     .btn-close-dp:hover { background: var(--danger); color: white; border-color: var(--danger); transform: rotate(90deg); }
 
     .dp-body { padding: 30px; overflow-y: auto; flex: 1; }
-    
-    /* Meta Info Grid */
     .dp-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border: 1px solid var(--border-light); margin-bottom: 30px; }
     .dp-meta div { display: flex; flex-direction: column; gap: 5px; }
     .dp-meta label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
     .dp-meta span { color: var(--text-main); font-weight: 600; font-size: 0.95rem; }
 
-    /* Message Bubbles */
     .dp-message-box { background: var(--bg-card); border-radius: 12px; padding: 25px; border: 1px solid var(--border-light); margin-bottom: 30px; position: relative; }
     .dp-message-box::before { content: "CLIENT REQUEST"; position: absolute; top: -10px; left: 20px; background: var(--bg-panel); padding: 0 10px; font-size: 0.7rem; color: var(--text-muted); font-weight: 800; letter-spacing: 1px; }
     .dp-message-box p { margin: 0; line-height: 1.7; color: #cbd5e1; font-size: 1rem; white-space: pre-wrap; }
 
-    /* Reply Area */
     .dp-action-area { padding: 30px; border-top: 1px solid var(--border-light); background: rgba(0,0,0,0.2); }
     .dp-action-area label { display: block; font-size: 0.8rem; color: var(--primary); text-transform: uppercase; font-weight: 800; margin-bottom: 10px; letter-spacing: 1px; }
     .dp-action-area textarea { 
@@ -147,41 +147,65 @@
         min-height: 120px; margin-bottom: 15px; outline: none; transition: 0.3s; box-sizing: border-box;
     }
     .dp-action-area textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
-    
     .btn-reply { 
         background: var(--primary); color: white; border: none; padding: 15px; border-radius: 10px; 
         font-weight: 800; font-size: 1rem; cursor: pointer; width: 100%; transition: all 0.3s; 
         text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 10px;
     }
-    .btn-reply:hover { background: #2563eb; box-shadow: 0 8px 20px var(--primary-glow); transform: translateY(-2px); }
-    .btn-reply:disabled { background: var(--border-color); cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-reply:hover { background: #2563eb; transform: translateY(-2px); }
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* --- RESPONSIVE QUERIES --- */
+    @media (max-width: 1024px) {
+        :root { --sidebar-width: 80px; }
+        .sidebar-brand h2, .admin-nav-btn span, .logout-btn span { display: none; }
+        .admin-nav-btn { justify-content: center; padding: 15px; }
+        .sidebar-brand { justify-content: center; padding: 0; }
+    }
+
+    @media (max-width: 768px) {
+        :root { --sidebar-width: 0px; }
+        .mobile-nav-toggle { display: block; }
+        .admin-sidebar { transform: translateX(-100%); width: 280px; }
+        .admin-sidebar.mobile-open { transform: translateX(0); }
+        .sidebar-brand h2, .admin-nav-btn span, .logout-btn span { display: inline-block; } /* restore text */
+        .admin-nav-btn { justify-content: flex-start; padding: 14px 20px; }
+        
+        .admin-main { margin-left: 0; padding: 80px 20px 20px 20px; }
+        .admin-header-top { flex-direction: column; align-items: flex-start; gap: 20px; }
+        .admin-header-top h1 { font-size: 1.7rem; }
+        .dp-meta { grid-template-columns: 1fr; }
+    }
 </style>
 
+<button class="mobile-nav-toggle" onclick="toggleMobileMenu()">
+    <i class="fas fa-bars"></i>
+</button>
+
 <div class="admin-layout">
-    <aside class="admin-sidebar">
+    <aside class="admin-sidebar" id="sidebar">
         <div class="sidebar-brand">
             <img src="{{ url_for('static', filename='images/DEL SVG.svg') }}" alt="Logo">
             <h2>DELSTARFORD<span>.</span></h2>
         </div>
         <nav class="admin-nav">
             <button class="admin-nav-btn active" onclick="switchTab('users-panel', this)">
-                <i class="fas fa-users"></i> Network Users
+                <i class="fas fa-users"></i> <span>Network Users</span>
             </button>
             <button class="admin-nav-btn" onclick="switchTab('tickets-panel', this)">
-                <i class="fas fa-ticket-alt"></i> Support Tickets
+                <i class="fas fa-ticket-alt"></i> <span>Support Tickets</span>
             </button>
             <button class="admin-nav-btn" onclick="switchTab('leads-panel', this)">
-                <i class="fas fa-bolt"></i> Service Leads
+                <i class="fas fa-bolt"></i> <span>Service Leads</span>
             </button>
             <button class="admin-nav-btn" onclick="window.location.href='/'" style="margin-top: auto;">
-                <i class="fas fa-external-link-alt"></i> Public Site
+                <i class="fas fa-external-link-alt"></i> <span>Public Site</span>
             </button>
         </nav>
         <div class="sidebar-footer">
             <button class="logout-btn" onclick="adminLogout()">
-                <i class="fas fa-power-off"></i> Terminate Session
+                <i class="fas fa-power-off"></i> <span>Terminate Session</span>
             </button>
         </div>
     </aside>
@@ -191,7 +215,7 @@
             <h1 id="panel-title">Network Users</h1>
             <div class="admin-profile">
                 <i class="fas fa-user-shield" style="color: var(--primary);"></i>
-                <span id="admin-name" style="font-weight: 600; font-size: 0.9rem;">Authorizing...</span>
+                <span id="admin-name">Authorizing...</span>
             </div>
         </div>
 
@@ -199,21 +223,23 @@
             <div class="data-card">
                 <div class="data-card-header">
                     <h3>Registered Accounts</h3>
-                    <button class="btn-refresh" onclick="loadUsers()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                    <button class="btn-refresh" onclick="loadUsers()"><i class="fas fa-sync-alt"></i></button>
                 </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>User ID / Email</th>
-                            <th>Full Name</th>
-                            <th>Clearance Level</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="users-table-body">
-                        <tr><td colspan="4" style="text-align:center; padding: 40px; color: var(--text-muted);">Fetching secure data...</td></tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>User ID / Email</th>
+                                <th>Full Name</th>
+                                <th>Clearance</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body">
+                            <tr><td colspan="4" style="text-align:center; padding: 40px; color: var(--text-muted);">Fetching secure data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -221,43 +247,43 @@
             <div class="data-card">
                 <div class="data-card-header">
                     <h3>Support Tickets</h3>
-                    <button class="btn-refresh" onclick="loadTickets()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                    <button class="btn-refresh" onclick="loadTickets()"><i class="fas fa-sync-alt"></i></button>
                 </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Ticket ID</th>
-                            <th>Client Email</th>
-                            <th>Status / Priority</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tickets-table-body">
-                        <tr><td colspan="4" style="text-align:center; padding: 40px; color: var(--text-muted);">Fetching secure data...</td></tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ticket ID</th>
+                                <th>Client Email</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tickets-table-body"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
         <div id="leads-panel" class="data-panel">
             <div class="data-card">
                 <div class="data-card-header">
-                    <h3>Service & Custom AI Leads</h3>
-                    <button class="btn-refresh" onclick="loadLeads()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                    <h3>Service Leads</h3>
+                    <button class="btn-refresh" onclick="loadLeads()"><i class="fas fa-sync-alt"></i></button>
                 </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date Logged</th>
-                            <th>Client Identity</th>
-                            <th>Requested Service</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="leads-table-body">
-                        <tr><td colspan="4" style="text-align:center; padding: 40px; color: var(--text-muted);">Fetching secure data...</td></tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Identity</th>
+                                <th>Service</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leads-table-body"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </main>
@@ -271,9 +297,7 @@
         </div>
         
         <div class="dp-body">
-            <div class="dp-meta" id="dp-meta-content">
-                </div>
-            
+            <div class="dp-meta" id="dp-meta-content"></div>
             <div class="dp-message-box">
                 <p id="dp-message-content">Loading content...</p>
             </div>
@@ -291,6 +315,15 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <script>
+    // --- MOBILE MENU LOGIC ---
+    function toggleMobileMenu() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('mobile-open');
+        const icon = document.querySelector('.mobile-nav-toggle i');
+        icon.classList.toggle('fa-bars');
+        icon.classList.toggle('fa-times');
+    }
+
     // --- UI LOGIC ---
     function switchTab(panelId, btnElement) {
         document.querySelectorAll('.data-panel').forEach(p => p.classList.remove('active'));
@@ -298,9 +331,15 @@
         
         document.getElementById(panelId).classList.add('active');
         btnElement.classList.add('active');
-        document.getElementById('panel-title').innerText = btnElement.innerText.trim();
+        
+        // Handle title update based on device width (icon only vs text)
+        const spanText = btnElement.querySelector('span');
+        document.getElementById('panel-title').innerText = spanText ? spanText.innerText.trim() : 'Dashboard';
 
-        // Staggered Entrance for tables
+        if (window.innerWidth <= 768) {
+            toggleMobileMenu();
+        }
+
         if(typeof gsap !== 'undefined') {
             gsap.from(`#${panelId} tbody tr`, { y: 20, opacity: 0, stagger: 0.05, duration: 0.4, ease: "power2.out" });
         }
@@ -310,7 +349,7 @@
         if(panelId === 'leads-panel') loadLeads();
     }
 
-    // Detail Panel Logic
+    // --- DETAIL PANEL LOGIC ---
     let currentRecordContext = null; 
 
     function openDetailPanel(title, metaHtml, message, contextData = null) {
@@ -358,7 +397,6 @@
         }, 800);
     });
 
-    // 1. Fetch Users
     async function loadUsers() {
         const tbody = document.getElementById('users-table-body');
         try {
@@ -396,7 +434,6 @@
         } catch (e) { tbody.innerHTML = `<tr><td colspan="4" style="color:var(--danger); text-align:center;">Permission Denied.</td></tr>`; }
     }
 
-    // 2. Fetch Tickets
     async function loadTickets() {
         const tbody = document.getElementById('tickets-table-body');
         try {
@@ -436,7 +473,6 @@
         } catch (e) { tbody.innerHTML = `<tr><td colspan="4" style="color:var(--danger); text-align:center;">Database Error.</td></tr>`; }
     }
 
-    // 3. Fetch Service Leads
     async function loadLeads() {
         const tbody = document.getElementById('leads-table-body');
         try {
@@ -478,7 +514,6 @@
         } catch (e) { tbody.innerHTML = `<tr><td colspan="4" style="color:var(--danger); text-align:center;">Database Error.</td></tr>`; }
     }
 
-    // 4. Send Reply & Update DB
     async function sendAdminReply() {
         if (!currentRecordContext) return;
         const text = document.getElementById('dp-reply-text').value;

@@ -2,6 +2,12 @@
 
 {% block content %}
 
+<div id="lightbox-overlay" class="lightbox">
+    <span class="close-lightbox">&times;</span>
+    <img class="lightbox-content" id="lightbox-img">
+    <div id="lightbox-caption"></div>
+</div>
+
 <section class="about-hero">
     <div class="hero-content">
         <span class="badge-pill anim-scale-up">EST. 2025 • KAKAMEGA, KENYA</span>
@@ -10,52 +16,90 @@
     </div>
 </section>
 
-<section class="container py-80">
+<section class="container py-100">
     <div class="split-grid">
         <div class="text-block">
             <h4 class="section-label anim-fade-up">WHO WE ARE</h4>
             <h2 class="section-title anim-reveal-wipe">Where Code Meets Biology.</h2>
-            <p class="anim-split-words">Born from the academic halls of <strong>MMUST</strong> and fueled by a passion for innovation, Delstarford Works began with a simple question: <em>"How can AI improve the life of a rural farmer?"</em></p>
-            <p class="anim-split-words">Today, we are a multidisciplinary technology firm. We fuse <strong>Agritech</strong>, <strong>Biotechnology</strong>, and <strong>Artificial Intelligence</strong> to create systems that are not only smart but practical for the African context.</p>
+            <div class="content-body">
+                <p class="anim-split-words">Born from the academic halls of <strong>MMUST</strong> and fueled by a passion for innovation, Delstarford Works began with a simple question: <em>"How can AI improve the life of a rural farmer?"</em></p>
+                <p class="anim-split-words">Today, we are a multidisciplinary technology firm. We fuse <strong>Agritech</strong>, <strong>Biotechnology</strong>, and <strong>Artificial Intelligence</strong> to create systems that are not only smart but practical for the African context.</p>
+            </div>
             
             <div class="values-list gsap-stagger-values">
-                <div class="v-item">
-                    <i class="fas fa-microscope"></i>
-                    <span>Precision Research</span>
-                </div>
-                <div class="v-item">
-                    <i class="fas fa-code-branch"></i>
-                    <span>Scalable Software</span>
-                </div>
-                <div class="v-item">
-                    <i class="fas fa-hand-holding-water"></i>
-                    <span>Sustainable Impact</span>
-                </div>
+                <div class="v-item"><i class="fas fa-microscope"></i><span>Precision Research</span></div>
+                <div class="v-item"><i class="fas fa-code-branch"></i><span>Scalable Software</span></div>
+                <div class="v-item"><i class="fas fa-hand-holding-water"></i><span>Sustainable Impact</span></div>
             </div>
         </div>
-        <div class="image-block gsap-unfold-3d">
-            <img src="{{ url_for('static', filename='images/BANNER.jpeg') }}" alt="What we are" class="rounded-img shadow-lg">
-        </div>
-        <div class="image-block gsap-unfold-3d">
-            <img src="{{ url_for('static', filename='images/Flyer.png') }}" alt="What we are" class="rounded-img shadow-lg">
+
+        <div class="image-stack-container">
+            <div class="image-wrapper gsap-unfold-3d">
+                <img src="{{ url_for('static', filename='images/BANNER.jpeg') }}" alt="Delstarford Works Banner" class="pro-img clickable-img shadow-lg">
+                <div class="hover-hint">Click to expand</div>
+            </div>
+            <div class="image-wrapper gsap-unfold-3d mt-4">
+                <img src="{{ url_for('static', filename='images/Flyer.png') }}" alt="Delstarford Works Flyer" class="pro-img clickable-img shadow-lg">
+                <div class="hover-hint">Click to expand</div>
+            </div>
         </div>
     </div>
 </section>
 
 <section class="leadership-section">
     <div class="container">
-        <div class="founder-card gsap-slide-up">
+        <div class="founder-card gsap-slide-up mb-80">
             <div class="founder-img-wrapper anim-scale-up">
                 <img src="{{ url_for('static', filename='images/founder.jpg') }}" alt="Delstarford Isaiah">
             </div>
             <div class="founder-info">
                 <h3 class="gsap-flip-x">Delstarford Isaiah</h3>
                 <span class="role anim-slide-left">Lead Engineer & Founder</span>
-                <p class="anim-split-words">"Technology loses its meaning if it doesn't serve the people. My mission is to democratize access to advanced AI and Biotech solutions, making them accessible to every farmer, doctor, and business owner in Kenya."</p>
+                <p class="founder-quote">"Technology loses its meaning if it doesn't serve the people. My mission is to democratize access to advanced AI and Biotech solutions for every Kenyan."</p>
                 <div class="founder-socials anim-fade-up">
-                    <a href="#"><i class="fab fa-linkedin"></i></a>
-                    <a href="#"><i class="fab fa-github"></i></a>
-                    <a href="#"><i class="fas fa-envelope"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                    <a href="#" aria-label="Email"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mb-60">
+            <h4 class="section-label anim-fade-up">EXECUTIVE BOARD</h4>
+            <h2 class="section-title anim-reveal-wipe">The Minds Behind the Vision</h2>
+        </div>
+
+        <div class="directors-grid">
+            <div class="director-card gsap-director">
+                <div class="director-img-container">
+                    <img src="{{ url_for('static', filename='images/FARMERMAN.jpeg') }}" alt="Farmerman" class="clickable-img">
+                </div>
+                <div class="director-content">
+                    <h4>Farmerman</h4>
+                    <span class="director-role">Director, Farmerman Systems</span>
+                    <p>Leading digital transformation in Zimbabwe's agricultural landscape through global Agribusiness innovation.</p>
+                </div>
+            </div>
+
+            <div class="director-card gsap-director">
+                <div class="director-img-container">
+                    <img src="{{ url_for('static', filename='images/KEVIN OKAYO.jpeg') }}" alt="Kevin Okayo" class="clickable-img">
+                </div>
+                <div class="director-content">
+                    <h4>Kevin Okayo</h4>
+                    <span class="director-role">AI Engineer & Medical Lab Scientist</span>
+                    <p>Fusing medical laboratory precision with advanced AI engineering to drive healthcare intelligence.</p>
+                </div>
+            </div>
+
+            <div class="director-card gsap-director">
+                <div class="director-img-container">
+                    <img src="{{ url_for('static', filename='images/COLLINS.jpeg') }}" alt="Dr. Collins" class="clickable-img">
+                </div>
+                <div class="director-content">
+                    <h4>Dr. Collins</h4>
+                    <span class="director-role">Medical Doctor & Software Engineer</span>
+                    <p>Developing intelligent systems for complex medical diagnostics by bridging clinical medicine and Machine Learning.</p>
                 </div>
             </div>
         </div>
@@ -66,20 +110,20 @@
     <div class="container">
         <div class="stats-grid">
             <div class="stat-box">
-                <h2><span class="anim-counter" data-target="10">0</span>+</h2>
-                <p class="anim-fade-up">Live Projects</p>
+                <div class="stat-number"><span class="anim-counter" data-target="10">0</span>+</div>
+                <p class="stat-label">Active Projects</p>
             </div>
             <div class="stat-box">
-                <h2><span class="anim-counter" data-target="3">0</span></h2>
-                <p class="anim-fade-up">Core Sectors (Agri/Med/Web)</p>
+                <div class="stat-number"><span class="anim-counter" data-target="3">0</span></div>
+                <p class="stat-label">Core Industries</p>
             </div>
             <div class="stat-box">
-                <h2><span class="anim-counter" data-target="100">0</span>%</h2>
-                <p class="anim-fade-up">Kenyan Homegrown</p>
+                <div class="stat-number"><span class="anim-counter" data-target="100">0</span>%</div>
+                <p class="stat-label">Homegrown Innovation</p>
             </div>
             <div class="stat-box">
-                <h2><span class="anim-counter" data-target="24">0</span>/7</h2>
-                <p class="anim-fade-up">System Uptime</p>
+                <div class="stat-number"><span class="anim-counter" data-target="24">0</span>/7</div>
+                <p class="stat-label">Service Reliability</p>
             </div>
         </div>
     </div>
@@ -87,230 +131,166 @@
 
 <section class="tech-stack py-80">
     <div class="container text-center">
-        <h4 class="section-label anim-fade-up">OUR ENGINE</h4>
-        <h2 class="mb-4 anim-reveal-wipe">Powered by Modern Tech</h2>
+        <h4 class="section-label anim-fade-up">OUR TECHNOLOGY ENGINE</h4>
+        <h2 class="mb-50 anim-reveal-wipe">Standardized Enterprise Stack</h2>
         <div class="tech-icons">
-            <span class="tech-pill gsap-elastic"><i class="fab fa-python"></i> Python</span>
-            <span class="tech-pill gsap-elastic"><i class="fas fa-fire"></i> Firebase</span>
-            <span class="tech-pill gsap-elastic"><i class="fas fa-flask"></i> Flask</span>
-            <span class="tech-pill gsap-elastic"><i class="fab fa-js"></i> JavaScript</span>
-            <span class="tech-pill gsap-elastic"><i class="fas fa-dna"></i> Biopython</span>
-            <span class="tech-pill gsap-elastic"><i class="fas fa-brain"></i> TensorFlow</span>
+            <div class="tech-pill gsap-elastic"><i class="fab fa-python"></i> Python</div>
+            <div class="tech-pill gsap-elastic"><i class="fas fa-fire"></i> Firebase</div>
+            <div class="tech-pill gsap-elastic"><i class="fas fa-flask"></i> Flask</div>
+            <div class="tech-pill gsap-elastic"><i class="fab fa-js"></i> JavaScript</div>
+            <div class="tech-pill gsap-elastic"><i class="fas fa-dna"></i> Biopython</div>
+            <div class="tech-pill gsap-elastic"><i class="fas fa-brain"></i> TensorFlow</div>
         </div>
     </div>
 </section>
 
 <section class="cta-banner">
     <div class="container">
-        <h2 class="anim-split-words">Ready to build the impossible?</h2>
-        <p class="anim-fade-up">Whether it's a genetic algorithm or a farm management dashboard, we are ready.</p>
-        <a href="/custom" class="btn-glow anim-bounce-in">Start Your Project</a>
+        <h2 class="anim-split-words">Partner with Delstarford Works</h2>
+        <p class="anim-fade-up">Let's discuss how our multidisciplinary expertise can scale your vision.</p>
+        <a href="/custom" class="btn-glow anim-bounce-in">Initiate Consultation</a>
     </div>
 </section>
 
+<style>
+    /* --- CORE REFINEMENTS --- */
+    :root {
+        --primary: #10b981;
+        --dark: #0f172a;
+        --slate: #475569;
+        --light: #f8fafc;
+        --dark-overlay: rgba(15, 23, 42, 0.97);
+    }
+
+    .py-100 { padding: 100px 0; }
+    .py-80 { padding: 80px 0; }
+    .mb-60 { margin-bottom: 60px; }
+    .mb-80 { margin-bottom: 80px; }
+
+    /* Hero */
+    .about-hero {
+        background: linear-gradient(rgba(15, 23, 42, 0.9), rgba(2, 6, 23, 1));
+        padding: 120px 20px;
+        text-align: center;
+        color: white;
+    }
+    .about-hero h1 { font-size: 3.5rem; font-weight: 800; margin-bottom: 20px; }
+    .highlight { color: var(--primary); }
+
+    /* Grid & Text */
+    .split-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; }
+    .section-label { color: var(--primary); font-weight: 700; letter-spacing: 1.5px; margin-bottom: 10px; }
+    .section-title { font-size: 2.5rem; font-weight: 800; color: var(--dark); margin-bottom: 24px; }
+    .values-list { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 25px; }
+    .v-item { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--slate); }
+    .v-item i { color: var(--primary); }
+
+    /* Image Display Logic (Full Image No Crop) */
+    .image-stack-container { display: flex; flex-direction: column; gap: 20px; }
+    .image-wrapper { position: relative; border-radius: 12px; overflow: hidden; cursor: zoom-in; }
+    .pro-img { width: 100%; height: auto; display: block; object-fit: contain; transition: transform 0.5s ease; }
+    .image-wrapper:hover .pro-img { transform: scale(1.03); }
+
+    /* Hover Hint */
+    .hover-hint {
+        position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(10px);
+        background: var(--primary); color: white; padding: 6px 15px; border-radius: 20px;
+        font-size: 0.75rem; font-weight: 600; opacity: 0; transition: all 0.3s ease;
+    }
+    .image-wrapper:hover .hover-hint { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* Leadership Section */
+    .leadership-section { background: var(--light); padding: 100px 0; }
+    .founder-card { 
+        background: white; display: flex; align-items: center; gap: 40px; 
+        padding: 40px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+    }
+    .founder-img-wrapper { width: 220px; height: 220px; flex-shrink: 0; border-radius: 50%; overflow: hidden; border: 4px solid var(--primary); }
+    .founder-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+    .founder-quote { font-style: italic; color: var(--slate); border-left: 3px solid var(--primary); padding-left: 20px; margin: 20px 0; }
+
+    /* Directors Grid */
+    .directors-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+    .director-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
+    .director-img-container { height: 380px; background: #eee; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: zoom-in; }
+    .director-img-container img { width: 100%; height: 100%; object-fit: contain; transition: 0.5s; }
+    .director-img-container:hover img { transform: scale(1.05); }
+    .director-content { padding: 25px; }
+    .director-role { color: var(--primary); font-weight: 700; font-size: 0.85rem; display: block; margin-bottom: 10px; }
+
+    /* Stats */
+    .stats-section { background: var(--dark); color: white; padding: 80px 0; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); text-align: center; }
+    .stat-number { font-size: 3rem; font-weight: 800; color: var(--primary); }
+    .stat-label { color: #94a3b8; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
+
+    /* Tech Stack */
+    .tech-icons { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; }
+    .tech-pill { background: white; border: 1px solid #e2e8f0; padding: 12px 25px; border-radius: 50px; font-weight: 600; }
+
+    /* CTA */
+    .cta-banner { background: var(--primary); color: white; text-align: center; padding: 100px 20px; }
+    .btn-glow { display: inline-block; background: white; color: var(--primary); padding: 18px 45px; border-radius: 50px; font-weight: 800; text-decoration: none; margin-top: 30px; }
+
+    /* Lightbox */
+    .lightbox { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: var(--dark-overlay); backdrop-filter: blur(10px); }
+    .lightbox-content { margin: auto; display: block; max-width: 90%; max-height: 85vh; position: relative; top: 50%; transform: translateY(-50%); object-fit: contain; }
+    .close-lightbox { position: absolute; top: 30px; right: 40px; color: white; font-size: 40px; cursor: pointer; }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .split-grid, .directors-grid { grid-template-columns: 1fr; }
+        .stats-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+        .founder-card { flex-direction: column; text-align: center; }
+        .image-stack-container { order: -1; }
+    }
+</style>
+
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        // Ensure GSAP plugins are registered
         gsap.registerPlugin(ScrollTrigger);
 
-        // 1. Wave Color Shift + Cascade Reveal (Hero Title)
-        const heroTitle = new SplitType('.gsap-wave-title', { types: 'chars' });
-        gsap.from(heroTitle.chars, {
-            y: 60, 
-            color: "#00FF66", 
-            opacity: 0,
-            rotation: -15,
-            stagger: { each: 0.04, from: "start" },
-            duration: 0.8, 
-            ease: "back.out(1.4)",
-            delay: 0.2
+        // --- Lightbox Logic ---
+        const lightbox = document.getElementById("lightbox-overlay");
+        const lightboxImg = document.getElementById("lightbox-img");
+        
+        document.querySelectorAll('.clickable-img').forEach(img => {
+            img.onclick = () => {
+                lightbox.style.display = "block";
+                lightboxImg.src = img.src;
+                document.body.style.overflow = "hidden";
+            }
         });
 
-        // 2. Unfold 3D (Images)
-        gsap.utils.toArray(".gsap-unfold-3d").forEach(img => {
-            gsap.from(img, {
-                scrollTrigger: { trigger: img, start: "top 80%" },
-                rotationY: -90, 
-                rotationX: 45,
-                opacity: 0, 
-                scale: 0.5,
-                transformPerspective: 800,
-                duration: 1.2, 
-                ease: "power3.out"
+        lightbox.onclick = (e) => {
+            if (e.target !== lightboxImg) {
+                lightbox.style.display = "none";
+                document.body.style.overflow = "auto";
+            }
+        };
+
+        // --- GSAP Animations ---
+        // Stagger tech stack pills
+        gsap.from(".gsap-elastic", {
+            scrollTrigger: { trigger: ".tech-icons", start: "top 90%" },
+            y: 30, opacity: 0, stagger: 0.1, duration: 0.8, ease: "power2.out"
+        });
+
+        // Counter Logic
+        document.querySelectorAll('.anim-counter').forEach(counter => {
+            const target = +counter.getAttribute('data-target');
+            gsap.to(counter, {
+                scrollTrigger: { trigger: ".stats-section", start: "top 80%" },
+                innerText: target, duration: 2, snap: { innerText: 1 }
             });
         });
 
-        // 3. Elastic Snap (Tech Pills)
-        gsap.from(".gsap-elastic", {
-            scrollTrigger: { trigger: ".tech-icons", start: "top 85%" },
-            x: -200, 
-            opacity: 0,
-            stagger: 0.1,
-            duration: 1.5, 
-            ease: "elastic.out(1, 0.3)"
-        });
-
-        // 4. Slide Up Reveal (Founder Card)
-        gsap.from(".gsap-slide-up", {
-            scrollTrigger: { trigger: ".leadership-section", start: "top 75%" },
-            yPercent: 50,
-            opacity: 0,
-            duration: 1, 
-            ease: "power3.out"
-        });
-
-        // 5. Flip-X Effect (Founder Name)
-        const founderName = new SplitType('.gsap-flip-x', { types: 'chars' });
-        gsap.from(founderName.chars, {
-            scrollTrigger: { trigger: ".gsap-flip-x", start: "top 85%" },
-            rotationX: 90, 
-            opacity: 0,
-            transformPerspective: 800,
-            stagger: 0.05,
-            duration: 1, 
-            ease: "power3.out"
-        });
-
-        // 6. Staggered Values List (Bounce Out)
-        gsap.from(".gsap-stagger-values .v-item", {
-            scrollTrigger: { trigger: ".values-list", start: "top 85%" },
-            y: 30, 
-            opacity: 0,
-            stagger: 0.2, 
-            duration: 0.8,
-            ease: "bounce.out"
+        // Directors Entrance
+        gsap.from(".gsap-director", {
+            scrollTrigger: { trigger: ".directors-grid", start: "top 85%" },
+            y: 50, opacity: 0, stagger: 0.2, duration: 1
         });
     });
 </script>
-
-<style>
-    /* --- CSS FOR ABOUT PAGE --- */
-    
-    /* Global Spacing */
-    .py-80 { padding-top: 80px; padding-bottom: 80px; }
-    .mb-4 { margin-bottom: 1.5rem; }
-    
-    /* 1. Hero */
-    .about-hero {
-        background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
-        color: white;
-        padding: 100px 20px;
-        text-align: center;
-        overflow: hidden; /* Prevents animation scrollbars */
-    }
-    .badge-pill {
-        display: inline-block;
-        background: rgba(16, 185, 129, 0.2);
-        color: #10b981;
-        padding: 5px 15px;
-        border-radius: 50px;
-        font-size: 0.8rem;
-        font-weight: 700;
-        letter-spacing: 1px;
-        margin-bottom: 15px;
-    }
-    .about-hero h1 { font-size: 3.5rem; margin: 20px 0; font-weight: 800; clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%); }
-    .highlight { color: #10b981; }
-    .hero-sub { font-size: 1.2rem; color: #94a3b8; max-width: 700px; margin: 0 auto; }
-
-    /* 2. Split Grid */
-    .split-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 50px;
-        align-items: center;
-        overflow: hidden;
-    }
-    .section-label { display: block; color: #10b981; font-weight: 700; font-size: 0.9rem; letter-spacing: 1px; margin-bottom: 10px; }
-    .section-title { font-size: 2.5rem; color: #0f172a; margin-bottom: 20px; }
-    .text-block p { color: #475569; line-height: 1.7; font-size: 1.05rem; margin-bottom: 15px; }
-    
-    .rounded-img { width: 100%; border-radius: 20px; object-fit: cover; }
-    .shadow-lg { box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
-
-    .values-list { margin-top: 30px; display: flex; gap: 20px; flex-wrap: wrap; }
-    .v-item { display: flex; align-items: center; gap: 10px; font-weight: 600; color: #334155; }
-    .v-item i { color: #10b981; }
-
-    /* 3. Founder Card */
-    .leadership-section { background: #f8fafc; padding: 80px 20px; overflow: hidden; }
-    .founder-card {
-        background: white;
-        max-width: 900px;
-        margin: 0 auto;
-        border-radius: 20px;
-        padding: 40px;
-        display: flex;
-        align-items: center;
-        gap: 40px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        border-left: 5px solid #0f172a;
-    }
-    .founder-img-wrapper {
-        flex-shrink: 0;
-        width: 200px;
-        height: 200px;
-        border-radius: 50%;
-        overflow: hidden;
-        border: 5px solid #e2e8f0;
-    }
-    .founder-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-    
-    .founder-info h3 { margin: 0; font-size: 1.8rem; color: #0f172a; clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%); }
-    .role { color: #10b981; font-weight: 700; font-size: 0.9rem; display: block; margin-bottom: 15px; }
-    .founder-info p { font-style: italic; color: #475569; font-size: 1.1rem; }
-    .founder-socials { margin-top: 20px; display: flex; gap: 15px; font-size: 1.2rem; }
-    .founder-socials a { color: #64748b; transition: 0.3s; }
-    .founder-socials a:hover { color: #0f172a; }
-
-    /* 4. Stats */
-    .stats-section { background: #0f172a; color: white; padding: 60px 0; }
-    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); text-align: center; gap: 20px; }
-    .stat-box h2 { font-size: 3rem; color: #10b981; margin: 0; }
-    .stat-box p { color: #94a3b8; margin: 5px 0 0; font-weight: 600; }
-
-    /* 5. Tech Stack */
-    .tech-icons { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-top: 30px; overflow: hidden; padding: 10px; }
-    .tech-pill {
-        background: white;
-        border: 1px solid #e2e8f0;
-        padding: 10px 20px;
-        border-radius: 50px;
-        font-weight: 600;
-        color: #334155;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    /* 6. CTA */
-    .cta-banner {
-        background: linear-gradient(45deg, #10b981, #059669);
-        color: white;
-        text-align: center;
-        padding: 80px 20px;
-    }
-    .btn-glow {
-        display: inline-block;
-        margin-top: 20px;
-        background: white;
-        color: #059669;
-        padding: 15px 40px;
-        border-radius: 50px;
-        font-weight: 800;
-        text-decoration: none;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        transition: 0.3s;
-    }
-    .btn-glow:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
-
-    /* Mobile Responsive */
-    @media (max-width: 768px) {
-        .about-hero h1 { font-size: 2.5rem; }
-        .split-grid { grid-template-columns: 1fr; }
-        .founder-card { flex-direction: column; text-align: center; }
-        .stats-grid { grid-template-columns: 1fr 1fr; }
-    }
-</style>
 
 {% endblock %}

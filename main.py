@@ -2,14 +2,13 @@ import os
 import datetime
 import smtplib
 import ssl
-import threading  # For background emails
-import random     # For ticket IDs
-import requests   # For M-Pesa API
-import base64     # For M-Pesa Password encoding
-import stripe     # pip install stripe
+import threading
+import random
+import requests
+import base64
+import stripe
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from email.mime.application import MIMEApplication # For attachments
 from werkzeug.utils import secure_filename
 
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
@@ -17,7 +16,7 @@ from dotenv import load_dotenv
 
 # Firebase Admin Imports
 import firebase_admin
-from firebase_admin import credentials, db
+from firebase_admin import credentials, db, auth as firebase_auth
 
 # ==============================================================================
 # 1. CONFIGURATION & SETUP
@@ -32,8 +31,8 @@ app.secret_key = os.getenv("FLASK_SECRET_KEY", "DELSTARFORD_SECURE_KEY_2026")
 
 # --- PAYMENT CONFIGURATION ---
 # Stripe
-stripe.api_key = os.getenv('STRIPE_SECRET_KEY') # sk_...
-STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY') # pk_...
+stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
+STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
 
 # PayPal
 PAYPAL_CLIENT_ID = os.getenv('PAYPAL_CLIENT_ID')
@@ -43,7 +42,6 @@ MPESA_CONSUMER_KEY = os.getenv('MPESA_KEY', 'mjpi9dRnBx6ZgredXiDbOK8U1gSnCds5TdJ
 MPESA_CONSUMER_SECRET = os.getenv('MPESA_SECRET', 'CPiCSfv7qWx5faY0tfHElspd1OMA9IBIlJo86snqBMtGhtglvBKPwzP2mG3d33hD')
 MPESA_PASSKEY = os.getenv('MPESA_PASSKEY', 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919')
 MPESA_SHORT_CODE = '174379' 
-# IMPORTANT: Update this with your live NGROK URL for testing
 MPESA_CALLBACK_URL = os.getenv('MPESA_CALLBACK_URL', 'https://your-ngrok-url.ngrok-free.app/callback')
 
 # --- WHITELIST CREDENTIALS (Admin) ---
@@ -59,19 +57,20 @@ SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 
 # --- FIREBASE INITIALIZATION ---
-SERVICE_ACCOUNT_KEY = os.getenv("SERVICE_ACCOUNT_KEY")
+# Automatically loads credentials based on your .env file or fallback
+SERVICE_ACCOUNT_KEY = os.getenv("SERVICE_ACCOUNT_KEY", 'service_account_key.json') 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 if not firebase_admin._apps:
     try:
-        if SERVICE_ACCOUNT_KEY and os.path.exists(SERVICE_ACCOUNT_KEY):
+        if os.path.exists(SERVICE_ACCOUNT_KEY):
             cred = credentials.Certificate(SERVICE_ACCOUNT_KEY)
             firebase_admin.initialize_app(cred, {'databaseURL': DATABASE_URL})
-            print(">> Firebase Initialized Successfully.")
+            print("✅ Firebase Initialized Successfully.")
         else:
-            print(">> WARNING: Firebase Key not found. Database features will fail.")
+            print("⚠️ WARNING: service_account_key.json not found. Database features will fail.")
     except Exception as e:
-        print(f">> Error Initializing Firebase: {e}")
+        print(f"❌ Error Initializing Firebase: {e}")
 
 # --- AI MODELS DATA ---
 AI_MODELS = [
@@ -130,110 +129,57 @@ def send_email_html(to_email, subject, html_content):
     thread.start()
     return True
 
+def safe_dict(data):
+    if isinstance(data, dict): return data
+    if isinstance(data, list): return {str(i): v for i, v in enumerate(data) if v is not None}
+    return {}
+
 # ==============================================================================
 # 3. PAGE ROUTES (View Layer)
 # ==============================================================================
 
 @app.route('/')
-def home():
-    return render_template('home.html')
+def home(): return render_template('home.html')
 
 @app.route('/services')
-def services():
-    return render_template('services.html')
+def services(): return render_template('services.html')
 
 @app.route('/ai-lab')
 def ai_lab():
-    # Pass Keys to the Frontend for Stripe/PayPal/M-Pesa handling
     return render_template('ai_lab.html', 
                            models=AI_MODELS, 
                            paypal_client_id=PAYPAL_CLIENT_ID,
                            stripe_publishable_key=STRIPE_PUBLISHABLE_KEY)
 
 @app.route('/dashboard')
-def dashboard():
-    return render_template('dashboard.html')
+def dashboard(): return render_template('dashboard.html')
 
-# --- CONTACT FORM ROUTE ---
-@app.route('/contact', methods=['GET', 'POST'])
-def contact():
-    if request.method == 'GET':
-        return render_template('contact.html')
-    
-    if request.method == 'POST':
-        try:
-            # 1. Get Data from Form
-            data = request.json # Using JSON for AJAX
-            if not data:
-                data = request.form # Fallback for standard form submit
-
-            name = data.get('name')
-            email = data.get('email')
-            subject = data.get('subject')
-            message = data.get('message')
-
-            # 2. EMAIL TO ADMIN (Notification)
-            admin_subject = f"📩 New Inquiry: {subject} from {name}"
-            admin_body = render_template('email_contact_admin.html', 
-                                         name=name, email=email, subject=subject, message=message, 
-                                         timestamp=datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
-            send_email_html(SENDER_EMAIL, admin_subject, admin_body)
-
-            # 3. EMAIL TO USER (Confirmation Receipt)
-            user_subject = "We received your message - Delstarford Works"
-            user_body = render_template('email_contact_user.html', name=name)
-            send_email_html(email, user_subject, user_body)
-
-            # 4. Save to Firebase (Optional Log)
-            try:
-                db.reference('leads/contact_form').push({
-                    'name': name, 'email': email, 'subject': subject, 'message': message,
-                    'timestamp': str(datetime.datetime.now())
-                })
-            except:
-                pass
-
-            return jsonify({"success": True, "message": "Message sent successfully!"})
-
-        except Exception as e:
-            print(f"Contact Error: {e}")
-            return jsonify({"success": False, "message": "Server error. Please try again."}), 500
-        
 @app.route('/location')
-def location():
-    return render_template('location.html')
+def location(): return render_template('location.html')
 
 @app.route('/about')
-def about():
-    return render_template('about.html')
+def about(): return render_template('about.html')
 
 @app.route('/privacy')
-def privacy():
-    return render_template('privacy.html')
+def privacy(): return render_template('privacy.html')
 
 @app.route('/case-study')
-def case_study():
-    return render_template('case_study.html')
+def case_study(): return render_template('case_study.html')
 
 @app.route('/login')
-def login():
-    return render_template('login.html')
+def login(): return render_template('login.html')
 
 @app.route('/register')
-def register_page():
-    return render_template('register.html')
+def register_page(): return render_template('register.html')
 
 @app.route('/register2')
-def register2_page():
-    return render_template('register2.html')
+def register2_page(): return render_template('register2.html')
 
 @app.route('/support')
-def support():
-    return render_template('support.html')
+def support(): return render_template('support.html')
 
 @app.route('/agreement')
-def agreement_page():
-    return render_template('agreement.html')
+def agreement_page(): return render_template('agreement.html')
 
 # ==============================================================================
 # 4. PAYMENT PROCESSING ROUTES
@@ -246,14 +192,11 @@ def pay():
     raw_phone = data.get('phone') 
     amount_str = data.get('amount')
 
-    # 1. Validation
     if not raw_phone:
          return jsonify({"error": "Phone number is required"}), 400
 
-    # 2. SANITIZE PHONE NUMBER
+    # Sanitize phone number
     clean_phone = ''.join(filter(str.isdigit, str(raw_phone)))
-
-    # Convert common Kenyan formats to 254...
     if clean_phone.startswith('07') or clean_phone.startswith('01'): 
         formatted_phone = '254' + clean_phone[1:] 
     elif clean_phone.startswith('254') and len(clean_phone) == 12: 
@@ -261,9 +204,9 @@ def pay():
     elif len(clean_phone) == 9:
         formatted_phone = '254' + clean_phone
     else: 
-        formatted_phone = clean_phone # Fallback
+        formatted_phone = clean_phone 
 
-    # 3. Handle Amount (Force 1 for Sandbox)
+    # Handle Amount (Force 1 for Sandbox)
     try:
         # In Production: amount = int(amount_str)
         amount = 1 
@@ -277,11 +220,7 @@ def pay():
     timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
     password = generate_mpesa_password(timestamp)
 
-    headers = {
-        'Authorization': f'Bearer {access_token}',
-        'Content-Type': 'application/json'
-    }
-
+    headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json'}
     payload = {
         "BusinessShortCode": MPESA_SHORT_CODE,
         "Password": password,
@@ -302,18 +241,15 @@ def pay():
         response = requests.post(stk_url, json=payload, headers=headers)
         response_data = response.json()
         
-        # Log to Firebase
         try:
-             ref = db.reference('payments/initiated')
-             ref.push({
+             db.reference('payments/initiated').push({
                  'original_input': raw_phone,
                  'formatted_phone': formatted_phone,
                  'amount': amount,
                  'response': response_data,
                  'timestamp': str(datetime.datetime.now())
              })
-        except:
-            pass 
+        except: pass 
 
         return jsonify(response_data)
     except Exception as e:
@@ -325,8 +261,7 @@ def callback():
     print(">> MPESA CALLBACK RECEIVED:", data)
     try:
         db.reference('payments/callbacks').push({'data': data, 'timestamp': str(datetime.datetime.now())})
-    except:
-        pass
+    except: pass
     return "OK"
 
 # --- STRIPE PAYMENT INTENT ---
@@ -335,7 +270,6 @@ def create_payment_intent():
     try:
         data = request.json
         amount = int(data.get('amount'))
-        
         intent = stripe.PaymentIntent.create(
             amount=amount,
             currency='kes',
@@ -346,228 +280,169 @@ def create_payment_intent():
         return jsonify(error=str(e)), 403
 
 # ==============================================================================
-# 5. ADMIN & FORM SUBMISSION ROUTES
+# 5. FORM SUBMISSION & CLIENT ROUTES
 # ==============================================================================
 
-@app.route('/admin-reply', methods=['POST'])
-def admin_reply():
+@app.route('/contact', methods=['POST'])
+def submit_contact():
     try:
-        data = request.json
-        db_path = data.get('dbPath')
-        client_email = data.get('email')
-        client_name = data.get('name')
-        new_status = data.get('newStatus')
-        reply_message = data.get('replyMessage')
-        item_type = data.get('type') 
-        
-        if db_path:
-            db.reference(db_path).update({
-                'status': new_status,
-                'last_admin_response': str(datetime.datetime.now())
+        data = request.json if request.is_json else request.form
+        name, email, subject, message = data.get('name'), data.get('email'), data.get('subject'), data.get('message')
+
+        admin_subject = f"📩 New Inquiry: {subject} from {name}"
+        admin_body = render_template('email_contact_admin.html', name=name, email=email, subject=subject, message=message, timestamp=datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
+        send_email_html(SENDER_EMAIL, admin_subject, admin_body)
+
+        user_subject = "We received your message - Delstarford Works"
+        user_body = render_template('email_contact_user.html', name=name)
+        send_email_html(email, user_subject, user_body)
+
+        try:
+            db.reference('leads/contact_form').push({
+                'name': name, 'email': email, 'subject': subject, 'message': message, 'timestamp': str(datetime.datetime.now())
             })
+        except: pass
 
-        if reply_message:
-            subject = f"Update on your Project: {new_status}"
-            html_content = f"""
-            <html><body>
-                <h2 style="color: #0f172a;">Hello {client_name},</h2>
-                <p>Status Update for your {item_type}: <strong>{new_status}</strong></p>
-                <div style="background: #f1f5f9; padding: 15px; border-left: 4px solid #10b981;">
-                    <strong>Admin Response:</strong><br>{reply_message}
-                </div>
-                <p>Regards,<br>Delstarford Works</p>
-            </body></html>
-            """
-            send_email_html(client_email, subject, html_content)
-            return jsonify({"success": True, "message": "Email sent and DB updated"})
-        else:
-            return jsonify({"success": True, "message": "DB updated (no email sent)"})
-
+        return jsonify({"success": True, "message": "Message sent successfully!"})
     except Exception as e:
-     
-       return jsonify({"success": False, "message": str(e)}), 500
+        return jsonify({"success": False, "message": "Server error. Please try again."}), 500
 
-
-@app.route('/get-clients', methods=['GET'])
-def get_clients():
+@app.route('/submit-ticket', methods=['POST'])
+def submit_ticket():
     try:
-        # 1. Fetch all relevant nodes safely
-        raw_service_reqs = db.reference('leads/service_requests').get()
-        raw_agreements = db.reference('agreements').get()
-        raw_members = db.reference('members').get()
+        data = request.form
+        db_key = f"TKT-{random.randint(1000, 9999)}"
+        display_ticket_id = f"#{db_key}"
         
-        clients = []
+        db.reference(f'support_tickets/{db_key}').set({
+            'ticket_id': display_ticket_id, 
+            'name': data.get('name'), 'email': data.get('email'),
+            'subject': data.get('subject'), 'message': data.get('message'),
+            'priority': data.get('priority'), 'category': data.get('category'),
+            'status': 'Open', 'timestamp': str(datetime.datetime.now())
+        })
+        
+        admin_html = render_template('email_ticket_admin.html', ticket_id=display_ticket_id, name=data.get('name'), email=data.get('email'), subject=data.get('subject'), message=data.get('message'))
+        send_email_html(SENDER_EMAIL, f"New Ticket {display_ticket_id}", admin_html)
+        
+        user_html = render_template('email_ticket_user.html', name=data.get('name'), ticket_id=display_ticket_id, subject=data.get('subject'))
+        send_email_html(data.get('email'), f"Support Ticket Received - {display_ticket_id}", user_html)
 
-        # 2. Helper to safely convert lists/dicts from Firebase
-        def safe_dict(data):
-            if isinstance(data, dict):
-                return data
-            if isinstance(data, list):
-                return {str(i): v for i, v in enumerate(data) if v is not None}
-            return {}
-
-        service_reqs = safe_dict(raw_service_reqs)
-        agreements = safe_dict(raw_agreements)
-        members = safe_dict(raw_members)
-
-        # 3. Format Service Requests (Leads)
-        for key, req in service_reqs.items():
-            if not isinstance(req, dict): continue
-            timestamp = str(req.get('timestamp', ''))
-            clients.append({
-                "id": str(key),
-                "name": str(req.get('name', 'Unknown')),
-                "email": str(req.get('email', 'N/A')),
-                "request": str(req.get('service', 'General Inquiry')),
-                "status": str(req.get('status', 'Pending')),
-                "date": timestamp[:10] if len(timestamp) >= 10 else "N/A",
-                "type": "lead"
-            })
-
-        # 4. Format Signed Contracts (Agreements)
-        for key, agmt in agreements.items():
-            if not isinstance(agmt, dict): continue
-            date_str = str(agmt.get('date', ''))
-            clients.append({
-                "id": str(key),
-                "name": str(agmt.get('client_name', 'Unknown')),
-                "email": "Contract Signed",
-                "request": f"Contract: {agmt.get('sector', 'General')}",
-                "status": "Approved",
-                "date": date_str[:10] if len(date_str) >= 10 else "N/A",
-                "type": "agreement"
-            })
-
-        # 5. Format Member Registrations (Clients, Partners, Developers)
-        # Passes all fields from the Onboarding Document
-        for key, member in members.items():
-            if not isinstance(member, dict): continue
-            timestamp = str(member.get('timestamp', ''))
-            
-            # Base data for the list view
-            member_data = {
-                "id": str(key),
-                "name": str(member.get('full_name', 'Unknown')),
-                "email": str(member.get('email', 'N/A')),
-                "request": f"Registration: {member.get('role', 'Member')}",
-                "status": str(member.get('status', 'Pending Review')),
-                "date": timestamp[:10] if len(timestamp) >= 10 else "N/A",
-                "type": "registration"
-            }
-            
-            # Merge all extra fields (skills, linkedin, bank_info, etc.) for the Admin Detail view
-            member_data.update(member)
-            clients.append(member_data)
-
-        # 6. Return sorted list (newest first)
-        clients.reverse()
-        return jsonify({"success": True, "clients": clients})
-
+        return jsonify({"success": True, "ticket_id": display_ticket_id})
     except Exception as e:
-        print(f"Critical Error in get-clients: {e}")
-       
-        return jsonify({"success": False, "error": f"Python Error: {str(e)}"}), 500
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route('/custom', methods=['GET', 'POST'])
+def custom_solution():
+    if request.method == 'GET': return render_template('custom.html')
     
-# Route to fetch announcements for the Updates Screen
-@app.route('/get-announcements', methods=['GET'])
-def get_announcements():
     try:
-        # 1. Fetch data from Firebase
-        ref = db.reference('announcements')
-        data = ref.get()
-
-        updates_list = []
-
-        # 2. Check if data is actually a dictionary (not None or Bool)
-        if isinstance(data, dict):
-            for key, val in data.items():
-                # Ensure val is a dictionary before assigning ID
-                if isinstance(val, dict):
-                    val['id'] = key
-                    updates_list.append(val)
-            
-            # Sort newest first
-            updates_list.reverse()
-
-        # 3. Always return a valid JSON list, even if empty
-        return jsonify({
-            "success": True, 
-            "updates": updates_list
-        })
-
-    except Exception as e:
-        print(f"Server Error: {str(e)}")
-        return jsonify({
-            "success": False, 
-            "error": str(e)
-        }), 500
-# Route for the Admin to post new announcements
-@app.route('/post-announcement', methods=['POST'])
-def post_announcement():
-    try:
-        data = request.json
-        import time
-        update_id = f"UPD-{int(time.time())}"
+        data = request.form
+        name, email, service = data.get('name'), data.get('email'), data.get('service')
         
-        db.reference(f'announcements/{update_id}').set({
-            "title": data.get('title'),
-            "description": data.get('description'),
-            "type": data.get('type', 'ANNOUNCEMENT'),
-            "date": data.get('date'),
-            "location": data.get('location', 'Remote'),
-            "priority": "High" if data.get('type') == "EVENT" else "Normal"
+        db.reference('leads/service_requests').push({
+            'name': name, 'email': email, 'service': service, 'details': data.get('details'),
+            'status': 'Pending', 'timestamp': str(datetime.datetime.now())
         })
+        
+        admin_html = render_template('email_admin.html', name=name, email=email, service=service, details=data.get('details'))
+        send_email_html(SENDER_EMAIL, f"New Lead: {service}", admin_html)
+        
+        client_html = render_template('email_client.html', name=name, service=service)
+        send_email_html(email, "We received your request", client_html)
+
         return jsonify({"success": True})
     except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
-    
-            
-@app.route('/dashboard-data', methods=['POST'])
-def get_dashboard_data():
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route('/submit-registration', methods=['POST'])
+def submit_registration():
     try:
-        data = request.json or {}
-        user_email = data.get('email')
+        data = request.form
+        role = data.get('role', 'Client')
+        email = data.get('email')
+        user_id = f"USR-{random.randint(10000, 99999)}"
         
-        if not user_email:
-            return jsonify({"error": "Email required"}), 400
+        user_profile = {
+            'user_id': user_id, 'full_name': data.get('full_name'),
+            'email': email, 'role': role,
+            'status': 'Pending Review', 'timestamp': str(datetime.datetime.now())
+        }
 
-        # Safe fetch
-        raw_requests = db.reference('leads/service_requests').get()
-        
-        # Safe convert
-        all_requests = {}
-        if isinstance(raw_requests, dict):
-            all_requests = raw_requests
-        elif isinstance(raw_requests, list):
-            all_requests = {str(i): v for i, v in enumerate(raw_requests) if v is not None}
+        if role in ['Partner', 'Developer']:
+            user_profile.update({'dob': data.get('dob'), 'nationality': data.get('nationality'), 'address': data.get('address'), 'phone': data.get('phone'), 'desired_position': data.get('desired_position'), 'skills': data.get('skills'), 'linkedin': data.get('linkedin'), 'github': data.get('github'), 'portfolio': data.get('portfolio')})
+        if role == 'Developer':
+            user_profile.update({'payment_method': data.get('payment_method'), 'bank_info': data.get('bank_info'), 'mpesa_info': data.get('mpesa_info')})
 
-        user_projects = []
-        
-        for key, proj in all_requests.items():
-            if not isinstance(proj, dict): continue
-            
-            if proj.get('email') == user_email:
-                status = str(proj.get('status', 'Pending'))
-                progress = 0.1 if status == 'Pending' else (0.6 if status == 'In Progress' else 1.0)
-                timestamp = str(proj.get('timestamp', ''))
-                
-                user_projects.append({
-                    "name": str(proj.get('service', 'Custom Request')),
-                    "type": "Requested Service",
-                    "status": status,
-                    "progress": progress,
-                    "date": timestamp[:10] if len(timestamp) >= 10 else "N/A"
-                })
+        db.reference(f'members/{user_id}').set(user_profile)
 
-        return jsonify({"success": True, "projects": user_projects})
-        
+        # File Upload handling
+        uploaded_files = []
+        for file_key in ['doc_id', 'doc_kra', 'doc_photo']:
+            file = request.files.get(file_key)
+            if file and file.filename:
+                filename = secure_filename(file.filename)
+                uploaded_files.append({'name': f"{user_id}_{filename}", 'data': file.read()})
+
+        return jsonify({"success": True, "message": "Profile saved to database."})
     except Exception as e:
-        print(f"Dashboard Data Error: {e}")
-        return jsonify({"success": False, "error": str(e)}), 500
-    
-    
-    
-    
+        print(f"Registration Error: {e}")
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route('/submit-agreement', methods=['POST'])
+def submit_agreement():
+    try:
+        data = request.form
+        client_name, sector, custom_total = data.get('client_name'), data.get('sector_select'), data.get('custom_total')
+        
+        standard_rates = {"Health": 30000, "Security": 28000, "Agriculture": 25000, "Education": 20000, "Social": 15000, "Finance": 10000}
+        total_cost = int(custom_total) if sector == "Custom" and custom_total else standard_rates.get(sector, 0)
+        
+        contract_id = f"CNT-{random.randint(10000, 99999)}"
+        db.reference(f'agreements/{contract_id}').set({
+            'contract_id': contract_id, 'client_name': client_name, 'sector': sector, 
+            'total_cost': total_cost, 'signature': data.get('signature'), 
+            'date': data.get('date'), 'timestamp': str(datetime.datetime.now())
+        })
+
+        admin_html = render_template('email_admin.html', name=client_name, email="[Contract]", service=f"Contract: {sector}", budget=total_cost, timeline="Signed", details="See DB for Signature")
+        send_email_html(SENDER_EMAIL, f"📝 Contract Signed: {client_name}", admin_html)
+        
+        client_html = render_template('email_client.html', name=client_name, service=f"Service Agreement ({contract_id})")
+        send_email_html(SENDER_EMAIL, f"Agreement Receipt - {contract_id}", client_html)
+
+        return jsonify({"success": True, "contract_id": contract_id})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route('/estimator')
+def estimator():
+    return render_template('custom.html')
+
+@app.route('/calculate-estimate', methods=['POST'])
+def calculate_estimate():
+    try:
+        data = request.json
+        BASE_PRICE = 15000  
+        model_type = data.get('modelType')
+        data_size = int(data.get('dataSize', 0)) if data.get('dataSize') else 0
+            
+        complexity = data.get('complexity', 'standard')
+        multipliers = {'standard': 1.0, 'advanced': 2.5, 'enterprise': 5.0}
+        model_adds = {'tabular': 5000, 'vision': 25000, 'nlp': 15000, 'bio': 30000}
+        
+        data_rate = (data_size / 1000) * 50
+        subtotal = (BASE_PRICE + model_adds.get(model_type, 0)) * multipliers.get(complexity, 1.0)
+        total_estimate = subtotal + data_rate
+        
+        return jsonify({"estimate": round(total_estimate, 2), "currency": "KSH", "breakdown": {"setup": subtotal, "data_processing": data_rate}})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+# ==============================================================================
+# 6. DASHBOARD & ADMIN ROUTES
+# ==============================================================================
+
 @app.route('/admin-login')
 def admin_login_page():
     if session.get('is_admin'): return redirect(url_for('admin_page'))
@@ -595,200 +470,144 @@ def admin_page():
     if not session.get('is_admin'): return redirect(url_for('admin_login_page'))
     return render_template('admin_response.html')
 
-@app.route('/submit-agreement', methods=['POST'])
-def submit_agreement():
-    try:
-        data = request.form
-        client_name = data.get('client_name')
-        sector = data.get('sector_select')
-        custom_total = data.get('custom_total')
-        signature = data.get('signature')
-        date_signed = data.get('date')
+@app.route('/admin-dashboard')
+def admin_dashboard():
+    return render_template('admin_dashboard.html')
 
-        # Standard rates logic
-        standard_rates = {
-            "Health": 30000, "Security": 28000, "Agriculture": 25000,
-            "Education": 20000, "Social": 15000, "Finance": 10000
-        }
-        
-        if sector == "Custom":
-            total_cost = int(custom_total) if custom_total else 0
-        else:
-            total_cost = standard_rates.get(sector, 0)
-        
-        contract_id = f"CNT-{random.randint(10000, 99999)}"
-        db.reference(f'agreements/{contract_id}').set({
-            'contract_id': contract_id,
-            'client_name': client_name,
-            'sector': sector,
-            'total_cost': total_cost,
-            'signature': signature,
-            'date': date_signed,
-            'timestamp': str(datetime.datetime.now())
-        })
-
-        # Admin Notification
-        admin_html = render_template('email_admin.html', name=client_name, email="[Contract]", service=f"Contract: {sector}", budget=total_cost, timeline="Signed", details="See DB for Signature")
-        send_email_html(SENDER_EMAIL, f"📝 Contract Signed: {client_name}", admin_html)
-        
-        # Client Receipt
-        client_html = render_template('email_client.html', name=client_name, service=f"Service Agreement ({contract_id})")
-        send_email_html(SENDER_EMAIL, f"Agreement Receipt - {contract_id}", client_html)
-
-        return jsonify({"success": True, "contract_id": contract_id})
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 500
-@app.route('/submit-registration', methods=['POST'])
-def submit_registration():
-    try:
-        data = request.form
-        role = data.get('role', 'Client')
-        email = data.get('email')
-        
-        # Unique ID for the user
-        user_id = f"USR-{random.randint(10000, 99999)}"
-        
-        # Build the user object based on available data
-        user_profile = {
-            'user_id': user_id,
-            'full_name': data.get('full_name'),
-            'email': email,
-            'role': role,
-            'status': 'Pending Review',
-            'timestamp': str(datetime.datetime.now())
-        }
-
-        # Add extended info for Partners and Developers
-        if role in ['Partner', 'Developer']:
-            user_profile.update({
-                'dob': data.get('dob'),
-                'nationality': data.get('nationality'),
-                'address': data.get('address'),
-                'phone': data.get('phone'),
-                'desired_position': data.get('desired_position'),
-                'skills': data.get('skills'),
-                'linkedin': data.get('linkedin'),
-                'github': data.get('github'),
-                'portfolio': data.get('portfolio'),
-            })
-
-        # Add financial info specifically for Developers
-        if role == 'Developer':
-            user_profile.update({
-                'payment_method': data.get('payment_method'),
-                'bank_info': data.get('bank_info'),
-                'mpesa_info': data.get('mpesa_info'),
-            })
-
-        # Save text data to Firebase under 'members' node
-        db.reference(f'members/{user_id}').set(user_profile)
-
-        # Handle file uploads (National ID, KRA, Photo)
-        uploaded_files = []
-        for file_key in ['doc_id', 'doc_kra', 'doc_photo']:
-            file = request.files.get(file_key)
-            if file and file.filename:
-                filename = secure_filename(file.filename)
-                uploaded_files.append({'name': f"{user_id}_{filename}", 'data': file.read()})
-
-        # (Optional) Send email to admin with attachments as backup
-        # ... [Keep your existing email logic here] ...
-
-        return jsonify({"success": True, "message": "Profile saved to database."})
-    except Exception as e:
-        print(f"Registration Error: {e}")
-        return jsonify({"success": False, "message": str(e)}), 500
-    
-@app.route('/submit-ticket', methods=['POST'])
-def submit_ticket():
-    try:
-        data = request.form
-        rand_num = random.randint(1000, 9999)
-        db_key = f"TKT-{rand_num}"
-        display_ticket_id = f"#{db_key}"
-        
-        db.reference(f'support_tickets/{db_key}').set({
-            'ticket_id': display_ticket_id, 
-            'name': data.get('name'), 'email': data.get('email'),
-            'subject': data.get('subject'), 'message': data.get('message'),
-            'priority': data.get('priority'), 'category': data.get('category'),
-            'status': 'Open', 'timestamp': str(datetime.datetime.now())
-        })
-        
-        # Admin Email
-        admin_html = render_template('email_ticket_admin.html', ticket_id=display_ticket_id, 
-                                     name=data.get('name'), email=data.get('email'), 
-                                     subject=data.get('subject'), message=data.get('message'))
-        send_email_html(SENDER_EMAIL, f"New Ticket {display_ticket_id}", admin_html)
-        
-        # User Email
-        user_html = render_template('email_ticket_user.html', name=data.get('name'), ticket_id=display_ticket_id, subject=data.get('subject'))
-        send_email_html(data.get('email'), f"Support Ticket Received - {display_ticket_id}", user_html)
-
-        return jsonify({"success": True, "ticket_id": display_ticket_id})
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 500
-
-@app.route('/custom', methods=['GET', 'POST'])
-def custom_solution():
-    if request.method == 'GET': return render_template('custom.html')
-    
-    try:
-        data = request.form
-        name = data.get('name')
-        email = data.get('email')
-        service = data.get('service')
-        
-        db.reference('leads/service_requests').push({
-            'name': name, 'email': email, 
-            'service': service, 'details': data.get('details'),
-            'status': 'Pending', # ADD THIS LINE
-            'timestamp': str(datetime.datetime.now())
-        })
-        
-        admin_html = render_template('email_admin.html', name=name, email=email, service=service, details=data.get('details'))
-        send_email_html(SENDER_EMAIL, f"New Lead: {service}", admin_html)
-        
-        client_html = render_template('email_client.html', name=name, service=service)
-        send_email_html(email, "We received your request", client_html)
-
-        return jsonify({"success": True})
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 500
-
-@app.route('/estimator')
-def estimator():
-    return render_template('custom.html')
-
-@app.route('/calculate-estimate', methods=['POST'])
-def calculate_estimate():
+@app.route('/admin-reply', methods=['POST'])
+def admin_reply():
     try:
         data = request.json
-        BASE_PRICE = 15000  
-        model_type = data.get('modelType')
-        try:
-            data_size = int(data.get('dataSize', 0))
-        except ValueError:
-            data_size = 0
-            
-        complexity = data.get('complexity', 'standard')
-        multipliers = {'standard': 1.0, 'advanced': 2.5, 'enterprise': 5.0}
-        model_adds = {'tabular': 5000, 'vision': 25000, 'nlp': 15000, 'bio': 30000}
+        db_path, client_email, client_name = data.get('dbPath'), data.get('email'), data.get('name')
+        new_status, reply_message, item_type = data.get('newStatus'), data.get('replyMessage'), data.get('type') 
         
-        data_rate = (data_size / 1000) * 50
-        subtotal = (BASE_PRICE + model_adds.get(model_type, 0)) * multipliers.get(complexity, 1.0)
-        total_estimate = subtotal + data_rate
-        
-        return jsonify({
-            "estimate": round(total_estimate, 2),
-            "currency": "KSH",
-            "breakdown": {"setup": subtotal, "data_processing": data_rate}
-        })
+        if db_path:
+            db.reference(db_path).update({'status': new_status, 'last_admin_response': str(datetime.datetime.now())})
+
+        if reply_message:
+            subject = f"Update on your Project: {new_status}"
+            html_content = f"""
+            <html><body>
+                <h2 style="color: #0f172a;">Hello {client_name},</h2>
+                <p>Status Update for your {item_type}: <strong>{new_status}</strong></p>
+                <div style="background: #f1f5f9; padding: 15px; border-left: 4px solid #10b981;">
+                    <strong>Admin Response:</strong><br>{reply_message}
+                </div>
+                <p>Regards,<br>Delstarford Works</p>
+            </body></html>
+            """
+            send_email_html(client_email, subject, html_content)
+            return jsonify({"success": True, "message": "Email sent and DB updated"})
+        else:
+            return jsonify({"success": True, "message": "DB updated (no email sent)"})
     except Exception as e:
-        return jsonify({"error": str(e)}), 400
+       return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route('/get-clients', methods=['GET'])
+def get_clients():
+    try:
+        raw_service_reqs = db.reference('leads/service_requests').get()
+        raw_agreements = db.reference('agreements').get()
+        raw_members = db.reference('members').get()
+        
+        clients = []
+        service_reqs = safe_dict(raw_service_reqs)
+        agreements = safe_dict(raw_agreements)
+        members = safe_dict(raw_members)
+
+        for key, req in service_reqs.items():
+            if not isinstance(req, dict): continue
+            timestamp = str(req.get('timestamp', ''))
+            clients.append({
+                "id": str(key), "name": str(req.get('name', 'Unknown')), "email": str(req.get('email', 'N/A')),
+                "request": str(req.get('service', 'General Inquiry')), "status": str(req.get('status', 'Pending')),
+                "date": timestamp[:10] if len(timestamp) >= 10 else "N/A", "type": "lead"
+            })
+
+        for key, agmt in agreements.items():
+            if not isinstance(agmt, dict): continue
+            date_str = str(agmt.get('date', ''))
+            clients.append({
+                "id": str(key), "name": str(agmt.get('client_name', 'Unknown')), "email": "Contract Signed",
+                "request": f"Contract: {agmt.get('sector', 'General')}", "status": "Approved",
+                "date": date_str[:10] if len(date_str) >= 10 else "N/A", "type": "agreement"
+            })
+
+        for key, member in members.items():
+            if not isinstance(member, dict): continue
+            timestamp = str(member.get('timestamp', ''))
+            member_data = {
+                "id": str(key), "name": str(member.get('full_name', 'Unknown')), "email": str(member.get('email', 'N/A')),
+                "request": f"Registration: {member.get('role', 'Member')}", "status": str(member.get('status', 'Pending Review')),
+                "date": timestamp[:10] if len(timestamp) >= 10 else "N/A", "type": "registration"
+            }
+            member_data.update(member)
+            clients.append(member_data)
+
+        clients.reverse()
+        return jsonify({"success": True, "clients": clients})
+    except Exception as e:
+        return jsonify({"success": False, "error": f"Python Error: {str(e)}"}), 500
+
+@app.route('/get-announcements', methods=['GET'])
+def get_announcements():
+    try:
+        data = db.reference('announcements').get()
+        updates_list = []
+        if isinstance(data, dict):
+            for key, val in data.items():
+                if isinstance(val, dict):
+                    val['id'] = key
+                    updates_list.append(val)
+            updates_list.reverse()
+        return jsonify({"success": True, "updates": updates_list})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/post-announcement', methods=['POST'])
+def post_announcement():
+    try:
+        data = request.json
+        import time
+        update_id = f"UPD-{int(time.time())}"
+        
+        db.reference(f'announcements/{update_id}').set({
+            "title": data.get('title'), "description": data.get('description'),
+            "type": data.get('type', 'ANNOUNCEMENT'), "date": data.get('date'),
+            "location": data.get('location', 'Remote'),
+            "priority": "High" if data.get('type') == "EVENT" else "Normal"
+        })
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/dashboard-data', methods=['POST'])
+def get_dashboard_data():
+    try:
+        user_email = request.json.get('email') if request.json else None
+        if not user_email: return jsonify({"error": "Email required"}), 400
+
+        all_requests = safe_dict(db.reference('leads/service_requests').get())
+        user_projects = []
+        
+        for key, proj in all_requests.items():
+            if isinstance(proj, dict) and proj.get('email') == user_email:
+                status = str(proj.get('status', 'Pending'))
+                progress = 0.1 if status == 'Pending' else (0.6 if status == 'In Progress' else 1.0)
+                timestamp = str(proj.get('timestamp', ''))
+                user_projects.append({
+                    "name": str(proj.get('service', 'Custom Request')), "type": "Requested Service", 
+                    "status": status, "progress": progress, "date": timestamp[:10] if len(timestamp) >= 10 else "N/A"
+                })
+
+        return jsonify({"success": True, "projects": user_projects})
+    except Exception as e:
+        print(f"Dashboard Data Error: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
 
 # ==============================================================================
-# 6. RUN SERVER
+# 7. RUN SERVER
 # ==============================================================================
 if __name__ == '__main__':
     # 'host=0.0.0.0' makes the server accessible on your local network/phone

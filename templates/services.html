@@ -1,101 +1,106 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<section class="services-hero">
+<section class="services-hero gsap-hero">
     <div class="container">
-        <h1>Global Solutions, <span class="highlight">Kenyan Roots.</span></h1>
-        <p>Expertise in Artificial Intelligence, Fullstack Engineering, and Advanced Agricultural Biotechnology.</p>
+        <h1 class="reveal-text">Global Solutions, <span class="highlight">Kenyan Roots.</span></h1>
+        <p class="reveal-subtext">Expertise in Artificial Intelligence, Fullstack Engineering, and Advanced Agricultural Biotechnology.</p>
     </div>
 </section>
 
 <section class="services-container container">
-    <div class="service-row" id="ai-engineering">
+    
+    <div class="service-row gsap-reveal-row" id="ai-engineering">
         <div class="service-text">
-            <div class="service-icon">01</div>
+            <div class="service-icon-box">01</div>
             <h2>AI & Machine Learning</h2>
             <p>We build specialized models for complex environments. From predictive pharmacology (DexaGen AI) to real-time disease detection in crops.</p>
-            <ul>
+            <ul class="service-list">
                 <li>Custom Neural Network Development</li>
                 <li>Predictive Analytics for Healthcare</li>
                 <li>Computer Vision for Mosquito Surveillance</li>
             </ul>
-            <a href="/custom" class="btn-outline">Request AI Model</a>
+            <a href="/custom" class="btn-premium">Request AI Model</a>
         </div>
-        <div class="service-image-box">
-             
+        <div class="service-image-box glass-card">
+            <i class="fas fa-brain floating-icon"></i>
+            <div class="tech-stack-badge">Python • PyTorch</div>
         </div>
     </div>
 
-    <div class="service-row reverse" id="web-dev">
-        <div class="service-image-box">
-             
-        </div>
+    <div class="service-row reverse gsap-reveal-row" id="web-dev">
         <div class="service-text">
-            <div class="service-icon">02</div>
+            <div class="service-icon-box">02</div>
             <h2>Fullstack Web Ecosystems</h2>
             <p>Scalable, secure, and professional web platforms. We don't just build sites; we build business engines with integrated banking and search tools.</p>
-            <ul>
+            <ul class="service-list">
                 <li>Enterprise SaaS Platforms</li>
                 <li>Financial Systems (IIG Smart Farmers)</li>
                 <li>API Development & Integration</li>
             </ul>
-            <a href="/custom" class="btn-outline">Build My Platform</a>
+            <a href="/custom" class="btn-premium">Build My Platform</a>
+        </div>
+        <div class="service-image-box glass-card">
+            <i class="fas fa-code floating-icon"></i>
+            <div class="tech-stack-badge">Node.js • React • Flask</div>
         </div>
     </div>
 
-    <div class="service-row" id="agri-biotech">
+    <div class="service-row gsap-reveal-row" id="agri-biotech">
         <div class="service-text">
-            <div class="service-icon">03</div>
+            <div class="service-icon-box">03</div>
             <h2>Agricultural Biotechnology</h2>
             <p>Advancing food security through science. We provide technical expertise in genetic optimization and precision livestock management.</p>
-            <ul>
+            <ul class="service-list">
                 <li>Professional Artificial Insemination (AI)</li>
                 <li>Genetic Sequence Analysis</li>
                 <li>Precision Farming Consultation</li>
             </ul>
-            <a href="/contact" class="btn-outline">Consult an Expert</a>
+            <a href="/contact" class="btn-premium">Consult an Expert</a>
         </div>
-        <div class="service-image-box">
-             
+        <div class="service-image-box glass-card">
+            <i class="fas fa-seedling floating-icon"></i>
+            <div class="tech-stack-badge">Genetics • CRISPR • AI</div>
         </div>
     </div>
 
-    <div class="service-row reverse" id="bioinformatics">
-        <div class="service-image-box">
-             
-        </div>
+    <div class="service-row reverse gsap-reveal-row" id="bioinformatics">
         <div class="service-text">
-            <div class="service-icon">04</div>
+            <div class="service-icon-box">04</div>
             <h2>Bioinformatics</h2>
             <p>Combining biology with big data. We automate genetic structure analysis and sequence drawing using Python-based NCBI integrations.</p>
-            <ul>
+            <ul class="service-list">
                 <li>Genetic Structure Mapping</li>
                 <li>Automated Sequence Analysis</li>
                 <li>Drug Interaction Prediction</li>
             </ul>
-            <a href="/ai-lab" class="btn-outline">Explore Biotech AI</a>
+            <a href="/ai-lab" class="btn-premium">Explore Biotech AI</a>
+        </div>
+        <div class="service-image-box glass-card">
+            <i class="fas fa-dna floating-icon"></i>
+            <div class="tech-stack-badge">Biopython • NCBI • BLAST</div>
         </div>
     </div>
 </section>
 
 <section class="process-section">
     <div class="container text-center">
-        <h2>Our Workflow</h2>
+        <h2 class="gsap-process-title">Our Workflow</h2>
         <div class="process-grid">
-            <div class="step">
+            <div class="step gsap-step">
                 <div class="step-num">1</div>
                 <h4>Analyze</h4>
-                <p>We study your specific biological or technical challenge.</p>
+                <p>We study your specific biological or technical challenge with precision data.</p>
             </div>
-            <div class="step">
+            <div class="step gsap-step">
                 <div class="step-num">2</div>
                 <h4>Engineer</h4>
-                <p>Our labs in Kakamega develop the custom code or genetic strategy.</p>
+                <p>Our labs in Kakamega develop custom code or advanced genetic strategies.</p>
             </div>
-            <div class="step">
+            <div class="step gsap-step">
                 <div class="step-num">3</div>
                 <h4>Deploy</h4>
-                <p>We implement the solution on-site or via the Delstarford Cloud.</p>
+                <p>We implement the solution on-site or via the robust Delstarford Cloud.</p>
             </div>
         </div>
     </div>
@@ -103,37 +108,122 @@
 
 <style>
     /* Service Layout Styles */
-    .services-hero { padding: 100px 0; background: #fff; text-align: center; }
-    .services-hero h1 { font-size: 3.5rem; margin-bottom: 20px; color: #0f172a; }
+    .services-hero { padding: 120px 0 80px; background: #fff; text-align: center; overflow: hidden; }
+    .services-hero h1 { font-size: 4rem; margin-bottom: 20px; color: #0f172a; font-weight: 800; }
+    .highlight { color: #2563eb; }
+    .reveal-subtext { font-size: 1.25rem; color: #64748b; max-width: 700px; margin: 0 auto; line-height: 1.6; }
     
-    .service-row { display: flex; align-items: center; gap: 80px; padding: 100px 0; border-bottom: 1px solid #e2e8f0; }
+    .service-row { display: flex; align-items: center; gap: 80px; padding: 120px 0; border-bottom: 1px solid #f1f5f9; visibility: hidden; }
     .service-row.reverse { flex-direction: row-reverse; }
     .service-text { flex: 1; }
-    .service-image-box { flex: 1; background: #f8fafc; border-radius: 30px; height: 350px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid #e2e8f0; }
     
-    .service-icon { font-size: 1.2rem; font-weight: bold; color: #2563eb; margin-bottom: 20px; font-family: 'Courier New', monospace; }
-    .service-text h2 { font-size: 2.5rem; margin-bottom: 20px; color: #1e293b; }
-    .service-text p { font-size: 1.1rem; color: #64748b; line-height: 1.7; margin-bottom: 25px; }
-    .service-text ul { list-style: none; padding: 0; margin-bottom: 30px; }
-    .service-text li { margin-bottom: 12px; color: #475569; padding-left: 25px; position: relative; }
-    .service-text li::before { content: "→"; position: absolute; left: 0; color: #2563eb; font-weight: bold; }
+    .service-image-box { 
+        flex: 1; 
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); 
+        border-radius: 40px; 
+        height: 400px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        overflow: hidden; 
+        border: 1px solid #e2e8f0; 
+        position: relative;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.03);
+    }
+    
+    .floating-icon { font-size: 5rem; color: #2563eb; opacity: 0.8; }
+    .tech-stack-badge { position: absolute; bottom: 20px; right: 20px; background: white; padding: 8px 16px; border-radius: 30px; font-size: 0.8rem; font-weight: 700; color: #64748b; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 
-    .btn-outline { display: inline-block; padding: 12px 30px; border: 2px solid #0f172a; border-radius: 8px; font-weight: bold; text-decoration: none; color: #0f172a; transition: 0.3s; }
-    .btn-outline:hover { background: #0f172a; color: white; }
+    .service-icon-box { font-size: 0.9rem; font-weight: 800; color: #2563eb; margin-bottom: 15px; font-family: 'Courier New', monospace; background: #eff6ff; display: inline-block; padding: 5px 15px; border-radius: 20px; }
+    .service-text h2 { font-size: 2.8rem; margin-bottom: 20px; color: #0f172a; font-weight: 700; letter-spacing: -1px; }
+    .service-text p { font-size: 1.15rem; color: #475569; line-height: 1.8; margin-bottom: 25px; }
+    
+    .service-list { list-style: none; padding: 0; margin-bottom: 35px; }
+    .service-list li { margin-bottom: 15px; color: #1e293b; padding-left: 30px; position: relative; font-weight: 500; }
+    .service-list li::before { content: "\f058"; font-family: "Font Awesome 5 Free"; font-weight: 900; position: absolute; left: 0; color: #10b981; }
+
+    .btn-premium { display: inline-block; padding: 14px 35px; background: #0f172a; border-radius: 10px; font-weight: 700; text-decoration: none; color: white; transition: 0.3s ease; box-shadow: 0 10px 20px rgba(15, 23, 42, 0.1); }
+    .btn-premium:hover { transform: translateY(-3px); background: #2563eb; box-shadow: 0 15px 30px rgba(37, 99, 235, 0.2); }
 
     /* Process Section */
-    .process-section { background: #0f172a; color: white; padding: 100px 0; margin-top: 50px; }
-    .process-section h2 { margin-bottom: 60px; font-size: 2.5rem; }
-    .process-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
-    .step-num { width: 50px; height: 50px; border: 2px solid #2563eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-weight: bold; color: #2563eb; }
-    .step h4 { font-size: 1.5rem; margin-bottom: 15px; }
-    .step p { color: #94a3b8; font-size: 0.95rem; }
+    .process-section { background: #0f172a; color: white; padding: 120px 0; margin-top: 50px; border-radius: 60px 60px 0 0; }
+    .process-section h2 { margin-bottom: 80px; font-size: 3rem; font-weight: 800; }
+    .process-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 50px; }
+    
+    .step-num { width: 60px; height: 60px; border: 2px solid #2563eb; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; font-weight: 800; color: #2563eb; font-size: 1.5rem; background: rgba(37, 99, 235, 0.1); }
+    .step h4 { font-size: 1.7rem; margin-bottom: 15px; font-weight: 700; }
+    .step p { color: #94a3b8; font-size: 1.05rem; line-height: 1.6; }
 
-    @media (max-width: 768px) {
-        .service-row, .service-row.reverse { flex-direction: column; gap: 40px; padding: 60px 0; }
-        .services-hero h1 { font-size: 2.5rem; }
+    @media (max-width: 992px) {
+        .service-row, .service-row.reverse { flex-direction: column; gap: 40px; padding: 80px 0; text-align: center; }
+        .service-list li { text-align: left; }
+        .service-image-box { width: 100%; height: 300px; }
+        .services-hero h1 { font-size: 3rem; }
         .process-grid { grid-template-columns: 1fr; }
     }
 </style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        if(typeof gsap !== 'undefined') {
+            const tl = gsap.timeline();
+
+            // Hero Animation
+            tl.from(".reveal-text", { y: 50, opacity: 0, duration: 1, ease: "power4.out" })
+              .from(".reveal-subtext", { y: 20, opacity: 0, duration: 0.8 }, "-=0.6");
+
+            // ScrollTrigger for Rows
+            gsap.utils.toArray(".gsap-reveal-row").forEach((row, i) => {
+                gsap.set(row, { visibility: "visible" });
+                
+                const isEven = i % 2 === 0;
+                
+                gsap.from(row.querySelector(".service-text"), {
+                    scrollTrigger: {
+                        trigger: row,
+                        start: "top 80%",
+                    },
+                    x: isEven ? -50 : 50,
+                    opacity: 0,
+                    duration: 1,
+                    ease: "power3.out"
+                });
+
+                gsap.from(row.querySelector(".service-image-box"), {
+                    scrollTrigger: {
+                        trigger: row,
+                        start: "top 80%",
+                    },
+                    x: isEven ? 50 : -50,
+                    opacity: 0,
+                    duration: 1,
+                    ease: "power3.out"
+                });
+
+                // Floating icon animation in images
+                gsap.to(row.querySelector(".floating-icon"), {
+                    y: -15,
+                    duration: 2,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: "sine.inOut"
+                });
+            });
+
+            // Process Stagger
+            gsap.from(".gsap-step", {
+                scrollTrigger: {
+                    trigger: ".process-grid",
+                    start: "top 85%"
+                },
+                y: 50,
+                opacity: 0,
+                stagger: 0.2,
+                duration: 0.8,
+                ease: "back.out(1.7)"
+            });
+        }
+    });
+</script>
 
 {% endblock %}

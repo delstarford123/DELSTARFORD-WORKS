@@ -1,20 +1,248 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container text-center py-50">
-    <h2>Main Headquarters</h2>
-    <p class="text-slate-500">Delstarford Works Innovation Hub</p>
-    
-    <div class="location-card">
-        <h3>Kakamega Office</h3>
-        <p>Adjacent to Masinde Muliro University of Science and Technology (MMUST)</p>
-        <p>Kakamega - Webuye Rd, Kakamega, Kenya</p>
+
+<section class="location-hero" style="overflow: hidden;">
+    <div class="container text-center">
+        <span class="hero-badge anim-scale-up">Global Reach, Local Roots</span>
         
-        <div class="map-container">
+        <h1 class="anim-reveal-wipe">Our Headquarters</h1>
+        
+        <p class="anim-split-words">Situated at the heart of Kenya's academic and technological ecosystem.</p>
+    </div>
+</section>
+
+<section class="container py-50" style="overflow: hidden;">
+    <div class="location-wrapper">
+        
+        <div class="location-details gsap-slide-left">
+            <h3 class="anim-fade-up">Kakamega Innovation Hub</h3>
+            <p class="subtitle anim-fade-up">Delstarford Works</p>
+            
+            <ul class="address-list anim-stagger-grid">
+                <li>
+                    <div class="icon-box"><i class="fas fa-map-marker-alt"></i></div>
+                    <div class="list-text">
+                        <strong>Physical Address</strong>
+                        <span>Adjacent to Masinde Muliro University (MMUST)</span>
+                        <span>Kakamega - Webuye Rd, Kakamega, Kenya</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon-box"><i class="fas fa-clock"></i></div>
+                    <div class="list-text">
+                        <strong>Operating Hours</strong>
+                        <span>Mon - Fri: 8:00 AM - 5:00 PM (EAT)</span>
+                        <span class="highlight-text">Server Support: 24/7 Active</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon-box"><i class="fas fa-envelope"></i></div>
+                    <div class="list-text">
+                        <strong>Direct Contact</strong>
+                        <span>delstarfordisaiah@gmail.com</span>
+                        <span>+254 707 605 751</span>
+                    </div>
+                </li>
+            </ul>
+            
+            <a href="https://maps.google.com/?q=Masinde+Muliro+University+Kakamega" target="_blank" class="btn-primary anim-bounce-in" style="margin-top: 20px; display: inline-flex; align-items: center; gap: 10px;">
+                <i class="fas fa-directions"></i> Get Directions
+            </a>
+        </div>
+
+        <div class="location-map gsap-slide-right">
             <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15959.032230556114!2d34.7601!3d0.2827!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x178129031d27993f%3A0x6b49e29547d7c67e!2sMasinde%20Muliro%20University%20of%20Science%20and%20Technology!5e0!3m2!1sen!2ske!4v1700000000000" 
-                width="100%" height="400" style="border:0; border-radius: 20px;" allowfullscreen="" loading="lazy">
+                src="https://maps.google.com/maps?q=Masinde+Muliro+University+Kakamega&t=&z=15&ie=UTF8&iwloc=&output=embed" 
+                width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy">
             </iframe>
         </div>
+        
     </div>
-</div>
+</section>
+
+<style>
+    /* Hero Section */
+    .location-hero {
+        padding: 80px 20px 40px;
+        background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+    }
+    .hero-badge {
+        display: inline-block;
+        background: #e0e7ff;
+        color: #4338ca;
+        padding: 6px 16px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+    }
+    .location-hero h1 {
+        font-size: 3rem;
+        color: #0f172a;
+        margin: 0 0 15px 0;
+        font-weight: 800;
+    }
+    .location-hero p {
+        color: #64748b;
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    /* Layout Wrapper */
+    .location-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1);
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    /* Left Side: Details */
+    .location-details {
+        background: #0f172a; /* Corporate Navy */
+        color: white;
+        padding: 50px 40px;
+        position: relative;
+    }
+    .location-details h3 {
+        font-size: 1.8rem;
+        margin: 0;
+        color: white;
+    }
+    .location-details .subtitle {
+        color: #3b82f6;
+        font-weight: 600;
+        margin: 5px 0 30px 0;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .address-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+    }
+    .address-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    .icon-box {
+        background: rgba(59, 130, 246, 0.15);
+        color: #3b82f6;
+        width: 45px;
+        height: 45px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+    .list-text {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .list-text strong {
+        color: #f8fafc;
+        font-size: 1.05rem;
+        margin-bottom: 2px;
+    }
+    .list-text span {
+        color: #cbd5e1;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+    .highlight-text {
+        color: #10b981 !important; /* Emerald Green */
+        font-weight: 600;
+    }
+
+    .btn-primary {
+        background: #2563eb;
+        color: white;
+        padding: 14px 28px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+    }
+    .btn-primary:hover {
+        background: #1d4ed8;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+    }
+
+    /* Right Side: Map */
+    .location-map {
+        min-height: 400px;
+        background: #e2e8f0;
+        position: relative;
+    }
+    .location-map iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 850px) {
+        .location-wrapper {
+            grid-template-columns: 1fr;
+        }
+        .location-map {
+            height: 350px;
+            min-height: auto;
+        }
+        .location-hero h1 {
+            font-size: 2.2rem;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        if(typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+            
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: ".location-wrapper",
+                    start: "top 80%"
+                }
+            });
+
+            // Slide left panel in
+            tl.from(".gsap-slide-left", {
+                x: -100,
+                opacity: 0,
+                duration: 0.8,
+                ease: "power3.out"
+            })
+            // Slide map in from right
+            .from(".gsap-slide-right", {
+                x: 100,
+                opacity: 0,
+                duration: 0.8,
+                ease: "power3.out"
+            }, "-=0.6");
+        }
+    });
+</script>
+
 {% endblock %}

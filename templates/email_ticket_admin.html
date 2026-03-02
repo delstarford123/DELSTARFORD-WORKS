@@ -1,77 +1,232 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>New Support Ticket</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Ticket Alert - Delstarford Works</title>
     <style>
-        /* RESET & BASE */
-        body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f1f5f9; color: #334155; }
-        .wrapper { width: 100%; table-layout: fixed; background-color: #f1f5f9; padding: 30px 0; }
-        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.08); border-top: 5px solid #dc2626; } /* Red Border for Alert */
+        /* Email-safe CSS Reset */
+        body, table, td, div, p, a {
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        table, td {
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100% !important;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f1f5f9;
+        }
 
-        /* HEADER */
-        .header { background-color: #0f172a; padding: 20px; text-align: center; }
-        .header h2 { color: white; margin: 10px 0 0 0; font-size: 18px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        /* Main Wrapper */
+        .wrapper {
+            width: 100%;
+            background-color: #f1f5f9;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-top: 6px solid #ef4444; /* Alert Red */
+        }
 
-        /* CONTENT */
-        .content { padding: 30px; }
-        .ticket-id-box { background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; padding: 10px; text-align: center; font-weight: bold; font-family: monospace; font-size: 16px; margin-bottom: 25px; border-radius: 4px; }
+        /* Header */
+        .header {
+            background-color: #0f172a; /* Navy */
+            padding: 30px 30px 25px;
+            text-align: center;
+        }
+        .logo {
+            display: block;
+            margin: 0 auto 15px auto;
+            max-width: 140px;
+            height: auto;
+        }
+        .header h2 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Content Area */
+        .content {
+            padding: 35px 30px;
+        }
         
-        .data-row { margin-bottom: 12px; font-size: 15px; }
-        .label { font-weight: 700; color: #64748b; width: 100px; display: inline-block; }
-        .value { color: #0f172a; font-weight: 500; }
-        .priority-badge { background: #fee2e2; color: #dc2626; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 800; text-transform: uppercase; border: 1px solid #fca5a5; }
+        /* Ticket ID Badge */
+        .ticket-id-box {
+            background-color: #fef2f2;
+            border: 1px dashed #fca5a5;
+            color: #b91c1c;
+            padding: 12px;
+            text-align: center;
+            font-weight: 700;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            border-radius: 6px;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
 
-        /* MESSAGE BOX */
-        .msg-label { display: block; margin-top: 25px; margin-bottom: 8px; font-weight: 700; color: #334155; }
-        .msg-box { background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 6px; font-size: 14px; line-height: 1.6; color: #475569; }
+        /* Data Grid */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        .data-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 15px;
+        }
+        .label {
+            font-weight: 700;
+            color: #64748b;
+            width: 30%;
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+        .value {
+            color: #0f172a;
+            font-weight: 600;
+            width: 70%;
+        }
+        .value a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+        
+        /* Priority Badge */
+        .priority-badge {
+            background-color: #fee2e2;
+            color: #dc2626;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            border: 1px solid #fca5a5;
+            display: inline-block;
+        }
 
-        /* FOOTER */
-        .footer { background-color: #f8fafc; padding: 15px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; }
+        /* Message Box */
+        .msg-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 700;
+            color: #0f172a;
+            font-size: 15px;
+        }
+        .msg-box {
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            padding: 20px;
+            border-radius: 8px;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #334155;
+            white-space: pre-wrap; /* Preserves line breaks from the user */
+        }
+
+        /* Action Buttons */
+        .action-row {
+            text-align: center;
+            margin-top: 35px;
+        }
+        .action-btn {
+            display: inline-block;
+            background-color: #2563eb;
+            color: #ffffff !important;
+            text-decoration: none;
+            padding: 14px 28px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 15px;
+            transition: background-color 0.3s ease;
+        }
+        .action-btn:hover {
+            background-color: #1e3a8a !important;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #f8fafc;
+            padding: 20px 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #94a3b8;
+            border-top: 1px solid #e2e8f0;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body>
     <div class="wrapper">
-        <div class="container">
-            
-            <div class="header">
-                <img src="https://delstarford-works.onrender.com/static/images/DEL SVG.svg" alt="Delstarford Works" width="100" style="display: block; margin: 0 auto;">
-                <h2>Support Ticket Alert</h2>
-            </div>
+        <table class="container" role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+            <tr>
+                <td class="header">
+                    <img src="https://delstarford-works.onrender.com/static/images/DEL%20SVG.svg" alt="Delstarford Works Logo" class="logo">
+                    <h2>System Alert: New Ticket</h2>
+                </td>
+            </tr>
 
-            <div class="content">
-                <div class="ticket-id-box">
-                    ID: {{ ticket_id }}
-                </div>
+            <tr>
+                <td class="content">
+                    <div class="ticket-id-box">
+                        TICKET ID: {{ ticket_id }}
+                    </div>
 
-                <div class="data-row">
-                    <span class="label">Priority:</span>
-                    <span class="priority-badge">{{ priority }}</span>
-                </div>
-                <div class="data-row">
-                    <span class="label">Category:</span>
-                    <span class="value">{{ category }}</span>
-                </div>
-                <div class="data-row">
-                    <span class="label">User:</span>
-                    <span class="value">{{ name }}</span>
-                </div>
-                <div class="data-row">
-                    <span class="label">Email:</span>
-                    <span class="value"><a href="mailto:{{ email }}" style="color: #2563eb; text-decoration: none;">{{ email }}</a></span>
-                </div>
+                    <table class="data-table" role="presentation" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td class="label">Priority</td>
+                            <td class="value"><span class="priority-badge">{{ priority }}</span></td>
+                        </tr>
+                        <tr>
+                            <td class="label">Category</td>
+                            <td class="value">{{ category }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Client Name</td>
+                            <td class="value">{{ name }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Email</td>
+                            <td class="value"><a href="mailto:{{ email }}">{{ email }}</a></td>
+                        </tr>
+                    </table>
 
-                <span class="msg-label">Subject: {{ subject }}</span>
-                <div class="msg-box">
-                    {{ message }}
-                </div>
-            </div>
+                    <div style="margin-top: 10px;">
+                        <span class="msg-label">Subject: <span style="color: #2563eb;">{{ subject }}</span></span>
+                        <div class="msg-box">{{ message }}</div>
+                    </div>
 
-            <div class="footer">
-                <p>&copy; 2026 Delstarford Works System Notification</p>
-                <p>Login to Firebase Console to manage this ticket.</p>
-            </div>
-        </div>
+                    <div class="action-row">
+                        <a href="mailto:{{ email }}?subject=Re: Ticket [{{ ticket_id }}] - {{ subject }}" class="action-btn">
+                            Reply to Client
+                        </a>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="footer">
+                    &copy; 2026 Delstarford Works System Notification.<br>
+                    Log into your Firebase Console to manage and update the status of this ticket.
+                </td>
+            </tr>
+        </table>
     </div>
 </body>
 </html>

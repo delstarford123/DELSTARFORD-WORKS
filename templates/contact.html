@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<section class="contact-hero">
+<section class="contact-hero" style="overflow: hidden;">
     <div class="container text-center">
-        <span class="hero-badge">24/7 Support</span>
-        <h1>Let's Start a Conversation</h1>
-        <p>Whether you need a custom AI model, a biotech consultation, or support for the Smart Farmers platform, our team in Kakamega is ready.</p>
+        <span class="hero-badge anim-scale-up">24/7 Support</span>
+        <h1 class="anim-reveal-wipe">Let's Start a Conversation</h1>
+        <p class="anim-split-words">Whether you need a custom AI model, a biotech consultation, or support for the Smart Farmers platform, our team in Kakamega is ready.</p>
     </div>
 </section>
 
-<section class="container py-50">
+<section class="container py-50" style="overflow: hidden;">
     <div class="contact-grid-advanced">
         
-        <div class="contact-details">
+        <div class="contact-details anim-stagger-grid">
             <div class="detail-card">
                 <div class="icon-circle email-icon"><i class="fas fa-envelope"></i></div>
                 <div>
@@ -41,7 +41,7 @@
                 </div>
             </div>
 
-            <div class="map-wrapper">
+            <div class="map-wrapper" style="overflow: hidden; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
                 <iframe 
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.691740925783!2d34.76569131475354!3d0.2827309997977053!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x17803ed65c27663f%3A0x6a0a033a39c59573!2sMasinde%20Muliro%20University%20of%20Science%20and%20Technology!5e0!3m2!1sen!2ske!4v1625567890123!5m2!1sen!2ske" 
                     width="100%" height="250" style="border:0; border-radius: 12px;" allowfullscreen="" loading="lazy">
@@ -49,14 +49,14 @@
             </div>
         </div>
 
-        <div class="contact-form-wrapper">
-            <div class="form-header">
+        <div class="contact-form-wrapper gsap-slide-right">
+            <div class="form-header anim-fade-up">
                 <h3>Send a Message</h3>
                 <p>We usually reply within 2 hours.</p>
             </div>
             
             <form id="contactForm" class="advanced-form">
-                <div class="form-group">
+                <div class="form-group anim-fade-up">
                     <label>Full Name</label>
                     <div class="input-wrapper">
                         <i class="fas fa-user"></i>
@@ -64,7 +64,7 @@
                     </div>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group anim-fade-up">
                     <label>Email Address</label>
                     <div class="input-wrapper">
                         <i class="fas fa-envelope"></i>
@@ -72,7 +72,7 @@
                     </div>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group anim-fade-up">
                     <label>Service Category</label>
                     <div class="input-wrapper">
                         <i class="fas fa-list"></i>
@@ -85,7 +85,7 @@
                     </div>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group anim-fade-up">
                     <label>Message</label>
                     <div class="input-wrapper top-align">
                         <i class="fas fa-comment-alt"></i>
@@ -93,7 +93,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn-primary w-full" id="sendBtn">
+                <button type="submit" class="btn-primary w-full anim-bounce-in" id="sendBtn">
                     <span>Send Message</span>
                     <i class="fas fa-paper-plane"></i>
                 </button>
@@ -104,6 +104,22 @@
 </section>
 
 <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        if(typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+            // Slide form from the right
+            gsap.utils.toArray(".gsap-slide-right").forEach(el => {
+                gsap.from(el, {
+                    scrollTrigger: { trigger: el, start: "top 85%" },
+                    x: 100,
+                    opacity: 0,
+                    duration: 1,
+                    ease: "power3.out"
+                });
+            });
+        }
+    });
+
+    // Existing Form Submission Logic
     document.getElementById('contactForm').addEventListener('submit', function(e) {
         e.preventDefault(); // Prevent page reload
 
@@ -138,6 +154,10 @@
                 status.innerHTML = '<span style="color: #10b981;">✅ Message Sent! We will check it shortly.</span>';
                 status.style.display = 'block';
                 document.getElementById('contactForm').reset(); // Clear form
+                // Add a little pop to the success message
+                if(typeof gsap !== 'undefined') {
+                    gsap.fromTo(status, {scale: 0.8, opacity: 0}, {scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)"});
+                }
             } else {
                 status.innerHTML = '<span style="color: #ef4444;">❌ Error sending message. Try WhatsApp.</span>';
                 status.style.display = 'block';
@@ -160,12 +180,13 @@
     .contact-details { display: flex; flex-direction: column; gap: 20px; }
     .detail-card { background: white; padding: 20px; border-radius: 12px; display: flex; align-items: center; gap: 15px; border: 1px solid #e2e8f0; transition: transform 0.2s; }
     .detail-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-    .icon-circle { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .icon-circle { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
     .email-icon { background: #eff6ff; color: #2563eb; }
     .whatsapp-icon { background: #dcfce7; color: #16a34a; }
     .loc-icon { background: #fef2f2; color: #dc2626; }
     .contact-form-wrapper { background: white; padding: 40px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-    .input-wrapper { display: flex; align-items: center; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0 15px; }
+    .input-wrapper { display: flex; align-items: center; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0 15px; transition: border-color 0.3s, box-shadow 0.3s; }
+    .input-wrapper:focus-within { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
     .input-wrapper i { color: #94a3b8; margin-right: 10px; }
     .input-wrapper input, .input-wrapper select, .input-wrapper textarea { width: 100%; border: none; background: transparent; padding: 12px 0; outline: none; color: #334155; }
     .top-align { align-items: flex-start; padding-top: 12px; }

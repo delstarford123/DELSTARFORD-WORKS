@@ -1,16 +1,17 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<section class="auth-section" style="min-height: 80vh; display: flex; align-items: center; justify-content: center; background: #f8fafc;">
-    <div class="auth-card">
+<section class="auth-section" style="min-height: 80vh; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at top right, #f1f5f9 0%, #e2e8f0 100%); overflow: hidden; padding: 20px;">
+    <div class="auth-card" id="login-container" style="visibility: hidden;">
+        
         <div class="auth-header">
-            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="DW Logo" class="auth-logo">
-            <h2>Welcome Back</h2>
-            <p>Enter your credentials to access the terminal.</p>
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="DW Logo" class="auth-logo gsap-logo">
+            <h2 class="gsap-title">Welcome Back</h2>
+            <p class="gsap-subtitle">Enter your credentials to access the terminal.</p>
         </div>
 
         <form id="loginForm" class="advanced-form">
-            <div class="form-group">
+            <div class="form-group gsap-input">
                 <label>Email Address</label>
                 <div class="input-wrapper">
                     <i class="fas fa-envelope"></i>
@@ -18,7 +19,7 @@
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group gsap-input">
                 <label>Password</label>
                 <div class="input-wrapper">
                     <i class="fas fa-lock"></i>
@@ -26,59 +27,181 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn-primary w-full" id="loginBtn">
-                Secure Login <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
+            <button type="submit" class="btn-primary w-full gsap-btn" id="loginBtn">
+                <span id="btn-text">Secure Login</span> <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
             </button>
+            
+            <p id="error-msg" style="color: #ef4444; font-size: 0.85rem; text-align: center; margin-top: 15px; display: none; font-weight: 600;"></p>
         </form>
 
-        <div class="auth-footer">
+        <div class="auth-footer gsap-footer">
             <p>New to Delstarford Works? <a href="/register2">Create an Account</a></p>
         </div>
     </div>
 </section>
 
 <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // --- 1. ENTRANCE ANIMATION TIMELINE ---
+        if(typeof gsap !== 'undefined') {
+            const tl = gsap.timeline();
+            
+            // Make card visible right before animating
+            gsap.set(".auth-card", { visibility: "visible" });
+
+            tl.from(".auth-card", { y: 40, opacity: 0, duration: 0.6, ease: "power3.out", scale: 0.95 })
+              .from(".gsap-logo", { scale: 0, rotation: -90, opacity: 0, duration: 0.5, ease: "back.out(1.7)" }, "-=0.3")
+              .from(".gsap-title", { y: 15, opacity: 0, duration: 0.4 }, "-=0.2")
+              .from(".gsap-subtitle", { y: 15, opacity: 0, duration: 0.4 }, "-=0.3")
+              .from(".gsap-input", { y: 20, opacity: 0, stagger: 0.1, duration: 0.5, ease: "power2.out" }, "-=0.2")
+              .from(".gsap-btn", { scale: 0.9, opacity: 0, duration: 0.4, ease: "back.out(1.5)" }, "-=0.2")
+              .from(".gsap-footer", { opacity: 0, duration: 0.5 }, "-=0.2");
+        }
+    });
+
+    // --- 2. FIREBASE LOGIN LOGIC ---
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
+        const btnText = document.getElementById('btn-text');
         const btn = document.getElementById('loginBtn');
+        const errorMsg = document.getElementById('error-msg');
 
         try {
-            btn.innerText = "Authenticating...";
+            // Loading State
+            btnText.innerText = "Authenticating...";
             btn.disabled = true;
+            errorMsg.style.display = "none";
+            
+            // Optional: Button pulse while loading
+            let loadingAnim;
+            if(typeof gsap !== 'undefined') {
+                loadingAnim = gsap.to(btn, { scale: 0.98, opacity: 0.8, duration: 0.4, yoyo: true, repeat: -1 });
+            }
 
             // Firebase Login
             await firebase.auth().signInWithEmailAndPassword(email, password);
             
-            // Success
-            window.location.href = "/dashboard";
+            // Stop loading animation on success
+            if(loadingAnim) loadingAnim.kill();
+            gsap.set(btn, { scale: 1, opacity: 1 });
+            btnText.innerText = "Access Granted";
+            btn.style.background = "#10b981"; // Turn green
+            
+            // Redirect to Dashboard
+            setTimeout(() => {
+                window.location.href = "/dashboard";
+            }, 500);
             
         } catch (error) {
             console.error(error);
-            alert("Access Denied: " + error.message);
-            btn.innerText = "Secure Login";
+            
+            // Restore Button
+            btnText.innerText = "Secure Login";
             btn.disabled = false;
+            
+            // Show Error
+            errorMsg.innerText = "Access Denied: Invalid email or password.";
+            errorMsg.style.display = "block";
+
+            // --- PREMIUM FEATURE: ACCESS DENIED SHAKE ANIMATION ---
+            if(typeof gsap !== 'undefined') {
+                // Kill any loading animations
+                gsap.killTweensOf(btn);
+                gsap.set(btn, { scale: 1, opacity: 1 });
+
+                // Shake the whole card
+                gsap.to("#login-container", {
+                    x: 10,
+                    duration: 0.08,
+                    yoyo: true,
+                    repeat: 5, // Shakes back and forth 5 times
+                    ease: "sine.inOut",
+                    onComplete: () => gsap.set("#login-container", {x: 0}) // Reset position
+                });
+            }
         }
     });
 </script>
 
 <style>
+    /* UI Polishing */
     .auth-card {
         background: white;
-        padding: 40px;
+        padding: 50px 40px;
         border-radius: 24px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15);
         border: 1px solid #e2e8f0;
         width: 100%;
         max-width: 450px;
+        position: relative;
     }
-    .auth-header { text-align: center; margin-bottom: 30px; }
-    .auth-logo { height: 60px; margin-bottom: 15px; }
-    .auth-header h2 { font-size: 1.8rem; color: #0f172a; margin: 0; }
-    .auth-header p { color: #64748b; font-size: 0.95rem; }
-    .auth-footer { text-align: center; margin-top: 25px; font-size: 0.9rem; color: #64748b; }
-    .auth-footer a { color: #2563eb; font-weight: 600; text-decoration: none; }
+    
+    .auth-header { text-align: center; margin-bottom: 35px; }
+    .auth-logo { height: 50px; margin-bottom: 20px; }
+    .auth-header h2 { font-size: 1.8rem; color: #0f172a; margin: 0 0 5px 0; font-weight: 800; }
+    .auth-header p { color: #64748b; font-size: 0.95rem; margin: 0; }
+    
+    /* Input Styling */
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 700; color: #475569; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    
+    .input-wrapper { 
+        display: flex; 
+        align-items: center; 
+        background: #f8fafc; 
+        border: 2px solid #e2e8f0; 
+        border-radius: 10px; 
+        padding: 0 15px; 
+        transition: all 0.3s ease; 
+    }
+    .input-wrapper:focus-within { 
+        border-color: #2563eb; 
+        background: white;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); 
+    }
+    .input-wrapper i { color: #94a3b8; margin-right: 12px; font-size: 1.1rem; }
+    .input-wrapper input { 
+        width: 100%; 
+        border: none; 
+        background: transparent; 
+        padding: 14px 0; 
+        outline: none; 
+        color: #0f172a; 
+        font-size: 1rem;
+        font-family: inherit;
+    }
+    .input-wrapper input::placeholder { color: #94a3b8; }
+
+    /* Button */
+    .btn-primary {
+        background: #2563eb;
+        color: white;
+        width: 100%;
+        padding: 15px;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 1.05rem;
+        cursor: pointer;
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        transition: all 0.3s;
+        margin-top: 10px;
+    }
+    .btn-primary:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2); }
+    .btn-primary:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* Footer */
+    .auth-footer { text-align: center; margin-top: 30px; font-size: 0.95rem; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 20px; }
+    .auth-footer a { color: #2563eb; font-weight: 700; text-decoration: none; transition: color 0.2s; }
+    .auth-footer a:hover { color: #1e3a8a; text-decoration: underline; }
+    
+    @media (max-width: 500px) {
+        .auth-card { padding: 40px 25px; border-radius: 16px; }
+    }
 </style>
 
 {% endblock %}

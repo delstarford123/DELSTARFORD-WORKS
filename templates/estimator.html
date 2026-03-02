@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="estimator-wrapper">
+<div class="estimator-wrapper" style="overflow: hidden;">
     
     <div class="estimator-container">
-        <div class="est-header">
+        <div class="est-header gsap-header">
             <div class="icon-circle">
                 <i class="fas fa-calculator"></i>
             </div>
@@ -13,9 +13,9 @@
         </div>
 
         <div class="est-grid">
-            <div class="est-controls">
+            <div class="est-controls gsap-slide-left">
                 
-                <div class="control-group">
+                <div class="control-group gsap-stagger-up">
                     <label class="control-label">
                         <i class="fas fa-brain"></i> Type of Intelligence
                     </label>
@@ -28,7 +28,7 @@
                     <p class="helper-text">Select the core technology required for your solution.</p>
                 </div>
 
-                <div class="control-group">
+                <div class="control-group gsap-stagger-up">
                     <div class="range-header">
                         <label class="control-label"><i class="fas fa-database"></i> Dataset Size</label>
                         <span class="range-value" id="sizeDisplay">50,000 Records</span>
@@ -40,7 +40,7 @@
                     </div>
                 </div>
 
-                <div class="control-group">
+                <div class="control-group gsap-stagger-up">
                     <label class="control-label"><i class="fas fa-layer-group"></i> System Complexity</label>
                     <div class="radio-cards">
                         <label class="radio-card selected" onclick="selectRadio(this)">
@@ -62,22 +62,22 @@
 
             </div>
 
-            <div class="est-summary">
+            <div class="est-summary gsap-slide-right">
                 <div class="summary-card">
-                    <h4>Estimated Investment</h4>
-                    <h1 id="totalPrice">KSH 0.00</h1>
-                    <p class="vat-note">+ VAT where applicable</p>
+                    <h4 class="gsap-summary-item">Estimated Investment</h4>
+                    <h1 id="totalPrice" class="gsap-summary-item">KSH 0</h1>
+                    <p class="vat-note gsap-summary-item">+ VAT where applicable</p>
                     
-                    <hr>
+                    <hr class="gsap-summary-item">
                     
-                    <h5>What's Included:</h5>
+                    <h5 class="gsap-summary-item">What's Included:</h5>
                     <ul class="deliverables-list" id="deliverables">
                         </ul>
 
-                    <button class="btn-primary w-100" onclick="handleLockIn()">
+                    <button class="btn-primary w-100 gsap-summary-item" onclick="handleLockIn()">
                         <i class="fas fa-file-contract"></i> Lock in Quote
                     </button>
-                    <p class="secure-note"><i class="fas fa-lock"></i> Secure request. No payment required yet.</p>
+                    <p class="secure-note gsap-summary-item"><i class="fas fa-lock"></i> Secure request. No payment required yet.</p>
                 </div>
             </div>
         </div>
@@ -142,15 +142,16 @@
     .form-select {
         width: 100%; padding: 12px; border-radius: 8px;
         border: 1px solid #cbd5e1; font-size: 1rem;
-        background-color: #f8fafc;
+        background-color: #f8fafc; outline: none; transition: 0.3s;
     }
+    .form-select:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
     .helper-text { font-size: 0.85rem; color: #64748b; margin-top: 6px; }
 
     /* Range Slider */
     .range-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
-    .range-value { font-weight: 700; color: #2563eb; }
-    .custom-range { width: 100%; cursor: pointer; }
-    .range-labels { display: flex; justify-content: space-between; font-size: 0.75rem; color: #94a3b8; }
+    .range-value { font-weight: 700; color: #2563eb; background: #eff6ff; padding: 2px 10px; border-radius: 20px; font-size: 0.9rem; }
+    .custom-range { width: 100%; cursor: pointer; accent-color: #2563eb; }
+    .range-labels { display: flex; justify-content: space-between; font-size: 0.75rem; color: #94a3b8; margin-top: 5px; }
 
     /* Radio Cards */
     .radio-cards { display: flex; flex-direction: column; gap: 15px; }
@@ -161,7 +162,7 @@
         transition: 0.2s;
     }
     .radio-card:hover { border-color: #bfdbfe; background: #eff6ff; }
-    .radio-card.selected { border-color: #2563eb; background: #eff6ff; }
+    .radio-card.selected { border-color: #2563eb; background: #eff6ff; box-shadow: 0 4px 6px rgba(37,99,235,0.1); }
     .radio-card input { display: none; } /* Hide actual radio button */
     .radio-title { display: block; font-weight: 700; color: #0f172a; }
     .radio-desc { font-size: 0.85rem; color: #64748b; }
@@ -170,7 +171,7 @@
     .est-summary { padding: 40px; background: #f1f5f9; display: flex; flex-direction: column; justify-content: center; }
     .summary-card { text-align: center; }
     .summary-card h4 { color: #64748b; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; margin-bottom: 10px; }
-    .summary-card h1 { color: #0f172a; font-size: 2.5rem; margin: 0; }
+    .summary-card h1 { color: #10b981; font-size: 2.8rem; margin: 0; }
     .vat-note { font-size: 0.8rem; color: #94a3b8; margin-bottom: 20px; }
     
     .deliverables-list { text-align: left; list-style: none; padding: 0; margin: 20px 0; }
@@ -182,7 +183,7 @@
         border: none; border-radius: 8px; font-weight: 700; cursor: pointer;
         width: 100%; transition: 0.3s; font-size: 1rem;
     }
-    .btn-primary:hover { background: #1e40af; transform: translateY(-2px); }
+    .btn-primary:hover { background: #1e40af; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(37,99,235,0.2); }
     .secure-note { font-size: 0.75rem; color: #64748b; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 6px; }
 
 </style>
@@ -200,6 +201,23 @@
         advancedMultiplier: 1.6 // 60% markup for advanced
     };
 
+    let currentDisplayedPrice = 0; // State variable for GSAP counting animation
+
+    // --- ENTRANCE ANIMATIONS ---
+    document.addEventListener("DOMContentLoaded", () => {
+        if(typeof gsap !== 'undefined') {
+            const tl = gsap.timeline();
+            
+            tl.from(".gsap-header", { y: -30, opacity: 0, duration: 0.6, ease: "power3.out" })
+              .from(".gsap-slide-left", { x: -50, opacity: 0, duration: 0.6, ease: "power3.out" }, "-=0.4")
+              .from(".gsap-slide-right", { x: 50, opacity: 0, duration: 0.6, ease: "power3.out" }, "-=0.6")
+              .from(".gsap-stagger-up", { y: 20, opacity: 0, stagger: 0.15, duration: 0.5, ease: "power2.out" }, "-=0.4")
+              .from(".gsap-summary-item", { y: 15, opacity: 0, stagger: 0.1, duration: 0.4, ease: "power2.out" }, "-=0.4");
+        }
+        
+        calculateTotal(); // Initialize calculation on load
+    });
+
     function calculateTotal() {
         // Get Inputs
         const type = document.getElementById('modelType').value;
@@ -211,7 +229,6 @@
         
         // Math
         let total = PRICING.base[type] + (size * PRICING.perRecord);
-        
         if (complexity === 'advanced') {
             total = total * PRICING.advancedMultiplier;
         }
@@ -219,8 +236,26 @@
         // Round to nearest 100 for neatness
         total = Math.ceil(total / 100) * 100;
 
-        // Render Price
-        document.getElementById('totalPrice').innerText = "KSH " + total.toLocaleString();
+        // Render Price with GSAP Number Counter Animation
+        if(typeof gsap !== 'undefined') {
+            gsap.to({ val: currentDisplayedPrice }, {
+                val: total,
+                duration: 0.6,
+                ease: "power2.out",
+                onUpdate: function() {
+                    document.getElementById('totalPrice').innerText = "KSH " + Math.round(this.targets()[0].val).toLocaleString();
+                },
+                onComplete: function() {
+                    currentDisplayedPrice = total;
+                    // Add a tiny bounce effect when it finishes counting
+                    gsap.fromTo("#totalPrice", { scale: 1.05 }, { scale: 1, duration: 0.2, ease: "back.out(2)" });
+                }
+            });
+        } else {
+            // Fallback
+            document.getElementById('totalPrice').innerText = "KSH " + total.toLocaleString();
+            currentDisplayedPrice = total;
+        }
 
         // Render Deliverables List based on selection
         updateDeliverables(type, complexity);
@@ -239,23 +274,29 @@
             items.push("98% Target Accuracy", "REST API Deployment", "Cloud Integration (AWS/GCP)", "3 Months Priority Support");
         }
 
-        list.innerHTML = items.map(item => `<li><i class="fas fa-check-circle"></i> ${item}</li>`).join('');
+        list.innerHTML = items.map(item => `<li class="gsap-list-stagger"><i class="fas fa-check-circle"></i> ${item}</li>`).join('');
+        
+        // Animate the list items sliding in dynamically
+        if(typeof gsap !== 'undefined') {
+            gsap.from(".gsap-list-stagger", { x: -10, opacity: 0, stagger: 0.05, duration: 0.3, ease: "power1.out" });
+        }
     }
 
     // Handle Radio Selection Styling
     function selectRadio(element) {
         document.querySelectorAll('.radio-card').forEach(el => el.classList.remove('selected'));
         element.classList.add('selected');
+        
+        // Optional UI Feedback: Tiny click pop effect
+        if(typeof gsap !== 'undefined') {
+            gsap.fromTo(element, {scale: 0.98}, {scale: 1, duration: 0.2, ease: "back.out(2)"});
+        }
     }
-
-    // Initialize on load
-    document.addEventListener('DOMContentLoaded', calculateTotal);
 
     function handleLockIn() {
         const price = document.getElementById('totalPrice').innerText;
-        // You can replace this alert with a redirect to your contact page
-        // window.location.href = `/contact?quote=${price}`;
-        alert(`Success! We have generated a quote request for ${price}. Connecting to WhatsApp...`);
+        // Redirect to contact page, appending the estimated quote in the URL
+        window.location.href = `/contact?quote=${encodeURIComponent(price)}`;
     }
 </script>
 

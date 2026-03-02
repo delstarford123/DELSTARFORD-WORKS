@@ -1,25 +1,167 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message Received - Delstarford Works</title>
     <style>
-        body { font-family: sans-serif; background-color: #f1f5f9; padding: 40px 0; }
-        .card { max-width: 500px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; }
-        h1 { color: #0f172a; margin-bottom: 10px; }
-        p { color: #475569; line-height: 1.6; }
-        .btn { display: inline-block; margin-top: 20px; padding: 12px 25px; background: #2563eb; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; }
+        /* Email-safe CSS Reset */
+        body, table, td, div, p, a {
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        table, td {
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100% !important;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f1f5f9;
+        }
+
+        /* Main Container */
+        .wrapper {
+            width: 100%;
+            background-color: #f1f5f9;
+            padding: 40px 20px;
+        }
+        .main-table {
+            background-color: #ffffff;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 600px;
+            border-spacing: 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-top: 6px solid #10b981; /* Emerald Green for Success */
+        }
+
+        /* Header */
+        .header {
+            background-color: #0f172a; /* Navy */
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .logo {
+            display: block;
+            margin: 0 auto;
+            max-width: 150px;
+            height: auto;
+        }
+
+        /* Content Area */
+        .content {
+            padding: 40px 35px;
+            text-align: center;
+            color: #334155;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        .success-icon {
+            margin: 0 auto 20px auto;
+            width: 64px;
+            height: auto;
+        }
+        .content h1 {
+            color: #0f172a;
+            margin-top: 0;
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        .content p {
+            margin: 0 0 15px 0;
+        }
+
+        /* Highlight Box */
+        .highlight-box {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        /* WhatsApp Button */
+        .whatsapp-btn {
+            display: inline-block;
+            background-color: #10b981;
+            color: #ffffff !important;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 15px;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        .whatsapp-btn:hover {
+            background-color: #059669 !important;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #f8fafc;
+            padding: 25px 35px;
+            text-align: center;
+            font-size: 13px;
+            color: #64748b;
+            border-top: 1px solid #e2e8f0;
+        }
+        .footer a {
+            color: #94a3b8;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        .footer a:hover {
+            color: #2563eb;
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
-    <div class="card">
-        <img src="https://img.icons8.com/color/96/000000/checked-checkbox.png" alt="Success" width="64">
-        <h1>Message Received!</h1>
-        <p>Hello <strong>{{ name }}</strong>,</p>
-        <p>Thanks for reaching out to Delstarford Works. We have received your inquiry and our team is reviewing it.</p>
-        <p>You can expect a response within <strong>2-4 business hours</strong>.</p>
-        
-        <p style="margin-top: 30px; font-size: 14px; color: #94a3b8;">
-            Urgent? <a href="https://wa.me/254707605751" style="color: #10b981; text-decoration: none;">Chat on WhatsApp</a>
-        </p>
+    <div class="wrapper">
+        <table class="main-table" role="presentation" border="0" cellpadding="0" cellspacing="0">
+            
+            <tr>
+                <td class="header">
+                    <img src="https://delstarford-works.onrender.com/static/images/DEL%20SVG.svg" alt="Delstarford Works" class="logo">
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="content">
+                    <img src="https://img.icons8.com/color/96/000000/checked-checkbox.png" alt="Success" class="success-icon">
+                    <h1>Message Received!</h1>
+                    
+                    <p>Hello <strong>{{ name }}</strong>,</p>
+                    <p>Thank you for reaching out to Delstarford Works. We have successfully received your inquiry, and our engineering team is reviewing your details.</p>
+                    <p>You can expect a personalized response from us within <strong>2 to 4 business hours</strong>.</p>
+                    
+                    <div class="highlight-box">
+                        <p style="margin-bottom: 5px; color: #475569; font-size: 14px;">Have an urgent project requirement?</p>
+                        <a href="https://wa.me/254707605751" class="whatsapp-btn">Chat with us on WhatsApp</a>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="footer">
+                    <p style="margin: 0 0 10px 0;">&copy; 2026 Delstarford Works. All rights reserved.</p>
+                    <div>
+                        <a href="https://delstarfordworks.co.ke">Website</a>
+                        <a href="https://delstarfordworks.co.ke/services">Our Services</a>
+                        <a href="https://delstarfordworks.co.ke/support">Support</a>
+                    </div>
+                </td>
+            </tr>
+
+        </table>
     </div>
 </body>
 </html>

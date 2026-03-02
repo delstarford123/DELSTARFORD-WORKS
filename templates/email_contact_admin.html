@@ -1,52 +1,199 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Web Inquiry - Delstarford Works</title>
     <style>
-        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f8fafc; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 8px; border: 1px solid #e2e8f0; }
-        .header { border-bottom: 2px solid #2563eb; padding-bottom: 15px; margin-bottom: 20px; }
-        .header h2 { color: #1e293b; margin: 0; }
-        .badge { background: #e0e7ff; color: #4338ca; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
-        .field { margin-bottom: 15px; }
-        .label { font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase; }
-        .value { font-size: 16px; color: #334155; margin-top: 5px; }
-        .message-box { background: #f1f5f9; padding: 15px; border-left: 4px solid #2563eb; border-radius: 4px; margin-top: 20px; }
-        .footer { margin-top: 30px; font-size: 12px; color: #94a3b8; text-align: center; }
-        .action-btn { display: inline-block; background: #2563eb; color: #ffffff; text-decoration: none; padding: 10px 20px; border-radius: 5px; margin-top: 20px; font-weight: bold; }
+        /* Email-safe CSS Reset */
+        body, table, td, div, p, a {
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        table, td {
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100% !important;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f1f5f9;
+        }
+
+        /* Main Wrapper */
+        .wrapper {
+            width: 100%;
+            background-color: #f1f5f9;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-top: 6px solid #2563eb; /* Corporate Blue */
+        }
+        
+        /* Header */
+        .header {
+            background: #ffffff;
+            padding: 35px 30px 25px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: center;
+        }
+        .logo {
+            display: block;
+            margin: 0 auto 15px auto;
+            max-width: 140px;
+            height: auto;
+        }
+        .header h2 {
+            color: #0f172a;
+            margin: 0 0 12px 0;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .badge {
+            display: inline-block;
+            background: #e0e7ff;
+            color: #4338ca;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Content Area */
+        .content {
+            padding: 35px 30px;
+        }
+        .field {
+            margin-bottom: 25px;
+        }
+        .label {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .value {
+            font-size: 16px;
+            color: #0f172a;
+            font-weight: 500;
+        }
+        .value a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+        
+        /* Message Box */
+        .message-box {
+            background: #f8fafc;
+            padding: 20px;
+            border-left: 4px solid #2563eb;
+            border-radius: 6px;
+            margin-top: 5px;
+            color: #334155;
+            font-size: 15px;
+            line-height: 1.6;
+            white-space: pre-wrap; /* Keeps paragraph breaks intact */
+        }
+
+        /* Action Buttons */
+        .action-row {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #e2e8f0;
+        }
+        .action-btn {
+            display: inline-block;
+            background-color: #2563eb;
+            color: #ffffff !important;
+            text-decoration: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            margin: 0 5px 10px;
+            transition: background-color 0.3s ease; /* Safe hover animation */
+        }
+        .action-btn.secondary {
+            background-color: #10b981; /* Emerald Green */
+        }
+        .action-btn:hover {
+            background-color: #1e3a8a !important;
+        }
+        .action-btn.secondary:hover {
+            background-color: #059669 !important;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #f8fafc;
+            padding: 20px 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #94a3b8;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h2>New Web Inquiry</h2>
-            <span class="badge">{{ timestamp }}</span>
-        </div>
+    <div class="wrapper">
+        <table class="container" role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+            <tr>
+                <td class="header">
+                    <img src="https://delstarford-works.onrender.com/static/images/DEL%20SVG.svg" alt="Delstarford Works" class="logo">
+                    <h2>New Web Inquiry</h2>
+                    <span class="badge">{{ timestamp }}</span>
+                </td>
+            </tr>
 
-        <div class="field">
-            <div class="label">From</div>
-            <div class="value"><strong>{{ name }}</strong> (<a href="mailto:{{ email }}">{{ email }}</a>)</div>
-        </div>
+            <tr>
+                <td class="content">
+                    <div class="field">
+                        <span class="label">Sender Details</span>
+                        <div class="value"><strong>{{ name }}</strong> &lt;<a href="mailto:{{ email }}">{{ email }}</a>&gt;</div>
+                    </div>
 
-        <div class="field">
-            <div class="label">Category</div>
-            <div class="value">{{ subject }}</div>
-        </div>
+                    <div class="field">
+                        <span class="label">Inquiry Category</span>
+                        <div class="value" style="color: #2563eb; font-weight: 600;">{{ subject }}</div>
+                    </div>
 
-        <div class="field">
-            <div class="label">Message</div>
-            <div class="message-box">
-                {{ message }}
-            </div>
-        </div>
+                    <div class="field">
+                        <span class="label">Client Message</span>
+                        <div class="message-box">{{ message }}</div>
+                    </div>
 
-        <div style="text-align: center;">
-            <a href="mailto:{{ email }}?subject=Re: {{ subject }} - Delstarford Works" class="action-btn">Reply via Email</a>
-            <a href="tel:{{ phone }}" class="action-btn" style="background: #10b981; margin-left: 10px;">Call Client</a>
-        </div>
+                    <div class="action-row">
+                        <a href="mailto:{{ email }}?subject=Re: {{ subject }} - Delstarford Works" class="action-btn">
+                            Reply via Email
+                        </a>
+                        <a href="tel:{{ phone }}" class="action-btn secondary">
+                            Call Client
+                        </a>
+                    </div>
+                </td>
+            </tr>
 
-        <div class="footer">
-            Sent from Delstarford Contact Form System
-        </div>
+            <tr>
+                <td class="footer">
+                    Secure Notification from Delstarford Works Contact System<br>
+                    &copy; 2026 Delstarford Works.
+                </td>
+            </tr>
+        </table>
     </div>
 </body>
 </html>

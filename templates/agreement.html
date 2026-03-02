@@ -3,21 +3,21 @@
 {% block content %}
 
 <div class="agreement-wrapper">
-    <div class="contract-container">
+    <div class="contract-container anim-fade-up">
         
         <div class="contract-header">
-            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Delstarford Works" class="contract-logo">
-            <h1>Service Agreement & Pricing Schedule</h1>
-            <p>Premium Model Development & Analytical Solutions</p>
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Delstarford Works" class="contract-logo anim-scale-up">
+            <h1 class="anim-reveal-wipe">Service Agreement & Pricing Schedule</h1>
+            <p class="anim-split-words">Premium Model Development & Analytical Solutions</p>
         </div>
 
         <form id="agreementForm">
             
             <div class="contract-section">
-                <h3>1. Service Pricing Schedule</h3>
-                <p>At Delstarford Works, we believe in transparent pricing. Our payment structure is milestone-based to ensure satisfaction at every stage.</p>
+                <h3 class="anim-slide-left">1. Service Pricing Schedule</h3>
+                <p class="anim-fade-up">At Delstarford Works, we believe in transparent pricing. Our payment structure is milestone-based to ensure satisfaction at every stage.</p>
                 
-                <div class="payment-structure-box">
+                <div class="payment-structure-box anim-stagger-grid">
                     <div class="milestone">
                         <span class="ms-percent">30%</span>
                         <span class="ms-label">Initial Deposit</span>
@@ -35,11 +35,11 @@
                     </div>
                 </div>
 
-                <h4>Standard Industry Rates</h4>
+                <h4 class="anim-fade-up">Standard Industry Rates</h4>
                 <div class="table-responsive">
                     <table class="pricing-table">
                         <thead>
-                            <tr>
+                            <tr class="anim-fade-up">
                                 <th>Select</th>
                                 <th>Industry Sector</th>
                                 <th>Total Cost (KSH)</th>
@@ -48,7 +48,7 @@
                                 <th>End (50%)</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="gsap-table-rows">
                             <tr>
                                 <td><input type="radio" name="sector_select" value="Health" onclick="setStandardPrice(30000)"></td>
                                 <td><strong>Health Solutions</strong></td>
@@ -129,8 +129,8 @@
             </div>
 
             <div class="contract-section">
-                <h3>2. Deliverables & Value Proposition</h3>
-                <ul class="deliverables-list">
+                <h3 class="anim-slide-left">2. Deliverables & Value Proposition</h3>
+                <ul class="deliverables-list gsap-list-stagger">
                     <li><i class="fas fa-search"></i> <strong>Requirement Analysis:</strong> Dedicated problem statement session.</li>
                     <li><i class="fas fa-code"></i> <strong>Model Development:</strong> Custom algorithm or database design.</li>
                     <li><i class="fas fa-vial"></i> <strong>Testing & Validation:</strong> Rigorous accuracy checks.</li>
@@ -140,8 +140,8 @@
             </div>
 
             <div class="contract-section">
-                <h3>3. Terms & Conditions</h3>
-                <div class="terms-scroll-box">
+                <h3 class="anim-slide-left">3. Terms & Conditions</h3>
+                <div class="terms-scroll-box anim-reveal-wipe">
                     <p><strong>1. Scope of Work:</strong> Delstarford Works agrees to provide model development services as discussed.</p>
                     <p><strong>2. Payment Terms:</strong> Work commences only upon receipt of the Phase 1 (30%) deposit. Final deliverables are released upon Phase 3 (50%) payment.</p>
                     <p><strong>3. Timeline:</strong> Timelines are estimated. Delstarford Works will communicate technical delays immediately.</p>
@@ -153,9 +153,9 @@
             </div>
 
             <div class="contract-section signature-section">
-                <h3>Acceptance & Signature</h3>
+                <h3 class="anim-slide-left">Acceptance & Signature</h3>
                 
-                <div class="form-row">
+                <div class="form-row anim-fade-up">
                     <div class="form-group">
                         <label>Client Full Name</label>
                         <input type="text" name="client_name" required>
@@ -166,15 +166,15 @@
                     </div>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group anim-fade-up">
                     <label>Digital Signature (Type Full Name to Sign)</label>
                     <input type="text" name="signature" class="signature-input" placeholder="/s/ Sarah" required>
                     <p class="legal-disclaimer">By typing your name above, you agree to the Terms & Conditions and Pricing Schedule outlined in this document.</p>
                 </div>
 
                 <div class="action-buttons">
-                    <button type="submit" class="btn-sign">Submit Agreement</button>
-                    <button type="button" class="btn-print" onclick="window.print()">Download PDF</button>
+                    <button type="submit" class="btn-sign anim-bounce-in">Submit Agreement</button>
+                    <button type="button" class="btn-print anim-bounce-in" onclick="window.print()">Download PDF</button>
                 </div>
                 <p id="formMessage" class="form-message"></p>
             </div>
@@ -185,7 +185,7 @@
 
 <style>
     /* Styling */
-    .agreement-wrapper { padding: 40px 20px; background: #f1f5f9; }
+    .agreement-wrapper { padding: 40px 20px; background: #f1f5f9; overflow: hidden; }
     .contract-container { max-width: 850px; margin: 0 auto; background: white; padding: 50px; border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
     
     .contract-header { text-align: center; border-bottom: 2px solid #0f172a; padding-bottom: 30px; margin-bottom: 30px; }
@@ -239,6 +239,39 @@
 </style>
 
 <script>
+    // --- GSAP CUSTOM ANIMATIONS FOR AGREEMENT PAGE ---
+    document.addEventListener("DOMContentLoaded", () => {
+        if(typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+            
+            // 1. Table Rows Stagger Slide-In
+            gsap.from(".gsap-table-rows tr", {
+                scrollTrigger: {
+                    trigger: ".pricing-table",
+                    start: "top 85%"
+                },
+                x: -30,
+                opacity: 0,
+                stagger: 0.1,
+                duration: 0.6,
+                ease: "power2.out"
+            });
+
+            // 2. Deliverables List Pop-In
+            gsap.from(".gsap-list-stagger li", {
+                scrollTrigger: {
+                    trigger: ".deliverables-list",
+                    start: "top 85%"
+                },
+                y: 20,
+                opacity: 0,
+                stagger: 0.15,
+                duration: 0.6,
+                ease: "back.out(1.7)"
+            });
+        }
+    });
+
+    // --- EXISTING FORM LOGIC ---
     // Set Today's Date
     document.getElementById('todayDate').valueAsDate = new Date();
 
@@ -250,7 +283,12 @@
     }
 
     function enableCustomBudget() {
-        document.getElementById('customPanel').style.display = 'block';
+        const panel = document.getElementById('customPanel');
+        panel.style.display = 'block';
+        // Add a quick pop animation to the custom panel when it opens
+        if(typeof gsap !== 'undefined') {
+            gsap.fromTo(panel, {scale: 0.95, opacity: 0}, {scale: 1, opacity: 1, duration: 0.3, ease: "back.out(1.7)"});
+        }
     }
 
     function calculateSplits() {

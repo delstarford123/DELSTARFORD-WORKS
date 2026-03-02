@@ -1,29 +1,262 @@
 <footer class="main-footer">
-    <div class="container grid-4">
-        <div>
-            <h4 class="logo">DW</h4>
-            <p>Solving the world's biology and tech puzzles from Kenya.</p>
+    <div class="container grid-4 gsap-footer-grid">
+        
+        <div class="gsap-footer-col brand-col">
+            <div class="footer-logo">
+                <img src="{{ url_for('static', filename='images/DEL SVG.svg') }}" alt="DW" width="40" style="margin-right: 10px;">
+                <h4>DELSTARFORD</h4>
+            </div>
+            <p class="footer-desc">Solving the world's biology and tech puzzles from Kakamega, Kenya to the global stage.</p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                <a href="#"><i class="fab fa-github"></i></a>
+            </div>
         </div>
-        <div>
+
+        <div class="gsap-footer-col">
             <h5>Solutions</h5>
-            <ul> 
+            <ul class="footer-links"> 
                 <li><a href="/ai-lab">AI Marketplace</a></li>
-                <li><a href="/services">Agri-Biotech</a></li>
-                <li><a href="/services">Web Systems</a></li>
+                <li><a href="/services">Agri-Biotech Algorithms</a></li>
+                <li><a href="/services">Enterprise Web Systems</a></li>
             </ul>
         </div>
-        <div>
+
+        <div class="gsap-footer-col">
             <h5>Company</h5>
-            <ul>
+            <ul class="footer-links">
                 <li><a href="/about">Our Story</a></li>
-                <li><a href="/location">Locations</a></li>
+                <li><a href="/dashboard">Client Portal</a></li>
+                <li><a href="/support">Support Center</a></li>
                 <li><a href="/privacy">Privacy Policy</a></li>
+                <li><a href="/admin-login" style="color: #ef4444; font-weight: 600;"><i class="fas fa-lock" style="font-size: 0.8rem; margin-right: 5px;"></i> Admin Portal</a></li>
             </ul>
         </div>
-        <div>
+
+        <div class="gsap-footer-col">
             <h5>Newsletter</h5>
-            <input type="email" placeholder="Email address">
-            <button class="btn-small">Subscribe</button>
+            <p class="footer-sm-text">Get the latest AI and Biotech insights delivered to your inbox.</p>
+            <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Subscribed successfully!');">
+                <input type="email" placeholder="Email address" required>
+                <button type="submit" class="btn-small-sub"><i class="fas fa-paper-plane"></i></button>
+            </form>
+        </div>
+
+    </div>
+    
+    <div class="footer-bottom gsap-footer-bottom">
+        <div class="container">
+            <p>&copy; 2026 Delstarford Works. All rights reserved.</p>
+            <p>Built with precision in Kenya.</p>
         </div>
     </div>
 </footer>
+
+<style>
+    /* Footer Base Styling */
+    .main-footer {
+        background: #0f172a; /* Deep Navy */
+        color: #f8fafc;
+        padding-top: 60px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        border-top: 1px solid #1e293b;
+        overflow: hidden;
+    }
+    
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .grid-4 {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1fr 1fr;
+        gap: 40px;
+        margin-bottom: 50px;
+    }
+
+    /* Column Typography */
+    .main-footer h5 {
+        color: #ffffff;
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+    .footer-desc {
+        color: #94a3b8;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 20px;
+    }
+    .footer-sm-text {
+        color: #94a3b8;
+        font-size: 0.85rem;
+        margin-bottom: 15px;
+        line-height: 1.5;
+    }
+
+    /* Brand Setup */
+    .footer-logo {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    .footer-logo h4 {
+        margin: 0;
+        font-size: 1.4rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+    }
+    
+    /* Social Links */
+    .social-links {
+        display: flex;
+        gap: 15px;
+    }
+    .social-links a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 35px;
+        height: 35px;
+        background: rgba(255,255,255,0.05);
+        color: #cbd5e1;
+        border-radius: 50%;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    .social-links a:hover {
+        background: #2563eb;
+        color: white;
+        transform: translateY(-3px);
+    }
+
+    /* List Links */
+    .footer-links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .footer-links li {
+        margin-bottom: 12px;
+    }
+    .footer-links a {
+        color: #94a3b8;
+        text-decoration: none;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+    .footer-links a:hover {
+        color: #10b981; /* Emerald */
+        transform: translateX(5px); /* Slide right slightly on hover */
+    }
+
+    /* Newsletter Input */
+    .newsletter-form {
+        display: flex;
+        gap: 0;
+    }
+    .newsletter-form input {
+        flex: 1;
+        padding: 12px 15px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid #334155;
+        color: white;
+        border-radius: 6px 0 0 6px;
+        outline: none;
+        font-family: inherit;
+        transition: border-color 0.3s;
+    }
+    .newsletter-form input:focus {
+        border-color: #2563eb;
+    }
+    .btn-small-sub {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 0 20px;
+        border-radius: 0 6px 6px 0;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    .btn-small-sub:hover {
+        background: #1d4ed8;
+    }
+
+    /* Footer Bottom */
+    .footer-bottom {
+        background: #020617; /* Darker Navy */
+        padding: 20px 0;
+        border-top: 1px solid #1e293b;
+    }
+    .footer-bottom .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .footer-bottom p {
+        margin: 0;
+        color: #64748b;
+        font-size: 0.85rem;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 900px) {
+        .grid-4 {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+    @media (max-width: 600px) {
+        .grid-4 {
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
+        .footer-logo {
+            justify-content: center;
+        }
+        .social-links {
+            justify-content: center;
+        }
+        .footer-bottom .container {
+            flex-direction: column;
+            gap: 10px;
+            text-align: center;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        if(typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+            
+            // Staggered fade up for the footer columns
+            gsap.from(".gsap-footer-col", {
+                scrollTrigger: {
+                    trigger: ".main-footer",
+                    start: "top 90%", // Triggers when the top of the footer hits 90% of the viewport height
+                },
+                y: 40,
+                opacity: 0,
+                stagger: 0.15,
+                duration: 0.8,
+                ease: "power2.out"
+            });
+
+            // Fade up the bottom copyright bar slightly after the columns
+            gsap.from(".gsap-footer-bottom", {
+                scrollTrigger: {
+                    trigger: ".main-footer",
+                    start: "top 80%", 
+                },
+                opacity: 0,
+                duration: 1,
+                delay: 0.5,
+                ease: "power2.inOut"
+            });
+        }
+    });
+</script>

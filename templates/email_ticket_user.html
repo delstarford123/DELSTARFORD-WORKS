@@ -1,79 +1,232 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Support Ticket Created</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Ticket Created - Delstarford Works</title>
     <style>
-        /* RESET & BASE */
-        body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f1f5f9; color: #334155; }
-        .wrapper { width: 100%; table-layout: fixed; background-color: #f1f5f9; padding: 40px 0; }
-        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 5px solid #2563eb; } /* Blue Border for Support */
+        /* Email-safe CSS Reset */
+        body, table, td, div, p, a {
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        table, td {
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100% !important;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f1f5f9;
+        }
 
-        /* HEADER */
-        .header { background-color: #0f172a; padding: 30px; text-align: center; }
-        .tagline { color: #94a3b8; font-size: 11px; margin-top: 8px; text-transform: uppercase; letter-spacing: 1.5px; }
+        /* Main Container */
+        .wrapper {
+            width: 100%;
+            background-color: #f1f5f9;
+            padding: 40px 20px;
+        }
+        .main-table {
+            background-color: #ffffff;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 600px;
+            border-spacing: 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-top: 6px solid #2563eb; /* Corporate Blue for Support */
+        }
 
-        /* CONTENT */
-        .content { padding: 40px 30px; }
-        
-        /* TICKET ID BOX */
-        .ticket-box { background-color: #eff6ff; border: 2px dashed #bfdbfe; color: #1e40af; padding: 20px; text-align: center; border-radius: 8px; margin: 25px 0; }
-        .ticket-label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #60a5fa; margin-bottom: 5px; }
-        .ticket-number { font-size: 28px; font-weight: 800; display: block; letter-spacing: 1px; }
+        /* Header */
+        .header {
+            background-color: #0f172a; /* Navy */
+            padding: 35px 20px;
+            text-align: center;
+        }
+        .logo {
+            display: block;
+            margin: 0 auto;
+            max-width: 150px;
+            height: auto;
+        }
+        .tagline {
+            color: #94a3b8;
+            font-size: 12px;
+            margin-top: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
 
-        /* DETAILS */
-        .details-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
-        .details-table td { padding: 10px 0; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
-        .details-label { font-weight: 700; color: #64748b; width: 80px; }
-        .status-badge { background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        /* Content Area */
+        .content {
+            padding: 40px 35px;
+            color: #334155;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        .content h2 {
+            color: #0f172a;
+            margin-top: 0;
+            font-size: 22px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
 
-        /* FOOTER */
-        .footer { background-color: #f8fafc; padding: 20px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; }
-        .btn { display: inline-block; background: #0f172a; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-size: 14px; font-weight: 600; margin-top: 10px; }
+        /* Ticket ID Box */
+        .ticket-box {
+            background-color: #eff6ff;
+            border: 2px dashed #bfdbfe;
+            padding: 25px;
+            text-align: center;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+        .ticket-label {
+            display: block;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #3b82f6;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        .ticket-number {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1e3a8a;
+            display: block;
+            letter-spacing: 1px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        /* Details Table */
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+        .details-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 15px;
+        }
+        .details-table tr:last-child td {
+            border-bottom: none;
+        }
+        .details-label {
+            font-weight: 700;
+            color: #64748b;
+            width: 35%;
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+        .status-badge {
+            background-color: #dcfce7;
+            color: #166534;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+
+        /* Action Button */
+        .btn-container {
+            text-align: center;
+            margin: 35px 0 10px 0;
+        }
+        .btn {
+            background-color: #0f172a;
+            color: #ffffff !important;
+            padding: 14px 30px;
+            border-radius: 6px;
+            font-weight: 600;
+            display: inline-block;
+            text-decoration: none;
+            font-size: 15px;
+            transition: background-color 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #1e293b !important;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #f8fafc;
+            padding: 25px 35px;
+            text-align: center;
+            font-size: 13px;
+            color: #64748b;
+            border-top: 1px solid #e2e8f0;
+            line-height: 1.5;
+        }
+        .footer a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
     <div class="wrapper">
-        <div class="container">
+        <table class="main-table" role="presentation" border="0" cellpadding="0" cellspacing="0">
             
-            <div class="header">
-                <img src="https://delstarford-works.onrender.com/static/images/logo.png" alt="Delstarford Works" width="130" style="display: block; margin: 0 auto;">
-                <div class="tagline">Support & Engineering Team</div>
-            </div>
+            <tr>
+                <td class="header">
+                    <img src="https://delstarford-works.onrender.com/static/images/DEL%20SVG.svg" alt="Delstarford Works Logo" class="logo">
+                    <div class="tagline">Engineering & Support Team</div>
+                </td>
+            </tr>
 
-            <div class="content">
-                <h2 style="color: #0f172a; margin-top: 0; font-size: 20px;">Support Request Received</h2>
-                <p>Hello {{ name }},</p>
-                <p>We have received your support request. A ticket has been created in our system and assigned to an engineer.</p>
-                
-                <div class="ticket-box">
-                    <span class="ticket-label">Ticket Reference ID</span>
-                    <span class="ticket-number">{{ ticket_id }}</span>
-                </div>
+            <tr>
+                <td class="content">
+                    <h2>Support Request Received</h2>
+                    <p>Hello {{ name }},</p>
+                    <p>We have successfully received your support request. A ticket has been generated in our system and routed to our engineering team for review.</p>
+                    
+                    <div class="ticket-box">
+                        <span class="ticket-label">Ticket Reference ID</span>
+                        <span class="ticket-number">{{ ticket_id }}</span>
+                    </div>
 
-                <table class="details-table">
-                    <tr>
-                        <td class="details-label">Status:</td>
-                        <td><span class="status-badge">Open</span></td>
-                    </tr>
-                    <tr>
-                        <td class="details-label">Subject:</td>
-                        <td style="font-weight: 600; color: #0f172a;">{{ subject }}</td>
-                    </tr>
-                </table>
+                    <table class="details-table" role="presentation" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td class="details-label">Current Status</td>
+                            <td><span class="status-badge">Open</span></td>
+                        </tr>
+                        <tr>
+                            <td class="details-label">Subject</td>
+                            <td style="font-weight: 600; color: #0f172a;">{{ subject }}</td>
+                        </tr>
+                    </table>
 
-                <p style="font-size: 14px; color: #475569;">Our engineering team typically reviews new tickets within 24 hours. You will receive an email update as soon as the status changes.</p>
-                
-                <center>
-                    <a href="https://delstarford-works.onrender.com/support" class="btn">View Help Center</a>
-                </center>
-            </div>
+                    <p style="font-size: 14px; color: #64748b; text-align: center;">Our team typically reviews new tickets within 24 hours. You will receive an email update as soon as the status changes, or you can track it via your client dashboard.</p>
+                    
+                    <div class="btn-container">
+                        <a href="https://delstarfordworks.co.ke/dashboard" class="btn">View Dashboard</a>
+                    </div>
+                </td>
+            </tr>
 
-            <div class="footer">
-                <p>&copy; 2026 Delstarford Works. All rights reserved.</p>
-                <p>Kakamega, Kenya | <a href="mailto:delstarfordisaiah@gmail.com" style="color: #64748b;">Contact Support</a></p>
-            </div>
-        </div>
+            <tr>
+                <td class="footer">
+                    <p style="margin: 0 0 10px 0;">&copy; 2026 Delstarford Works. All rights reserved.</p>
+                    <p style="margin: 0;">Kakamega, Kenya | <a href="mailto:delstarfordisaiah@gmail.com">Contact Support</a></p>
+                </td>
+            </tr>
+
+        </table>
     </div>
 </body>
 </html>

@@ -1,16 +1,16 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <div class="estimator-wrapper">
-    <div class="estimator-box">
+    <div class="estimator-box anim-fade-up">
         
-        <div class="est-header">
+        <div class="est-header gsap-slide-right">
             <h3><i class="fas fa-calculator"></i> AI Investment Estimator</h3>
             <p>Calculate the projected cost for your custom engineering solution.</p>
         </div>
 
         <div class="est-body">
             
-            <div class="input-group">
+            <div class="input-group anim-fade-up" style="animation-delay: 0.1s;">
                 <label class="input-label">Core Technology</label>
                 <div class="select-wrapper">
                     <select id="modelType" onchange="updatePrice()">
@@ -23,7 +23,7 @@
                 </div>
             </div>
 
-            <div class="input-group">
+            <div class="input-group anim-fade-up" style="animation-delay: 0.2s;">
                 <div class="label-flex">
                     <label class="input-label">Dataset Size</label>
                     <span class="value-badge"><span id="sizeLabel">50,000</span> Records</span>
@@ -37,7 +37,7 @@
                 </div>
             </div>
 
-            <div class="input-group">
+            <div class="input-group anim-fade-up" style="animation-delay: 0.3s;">
                 <label class="input-label">System Architecture</label>
                 <div class="complexity-grid">
                     <label class="complexity-card">
@@ -69,18 +69,18 @@
                 </div>
             </div>
 
-            <div class="price-display-area">
+            <div class="price-display-area anim-scale-up" style="animation-delay: 0.4s;">
                 <span>Estimated Investment</span>
-                <h2 id="totalPrice">KSH 0.00</h2>
+                <h2 id="totalPrice">KSH 0</h2>
                 <div class="loader" id="priceLoader"></div>
             </div>
 
-            <button class="btn-lock-quote" onclick="submitToFirebase()">
+            <button class="btn-lock-quote anim-bounce-in" style="animation-delay: 0.5s;" onclick="submitToFirebase()">
                 <span>Lock in this Quote</span>
                 <i class="fas fa-arrow-right"></i>
             </button>
             
-            <p class="disclaimer">*Estimate subject to final technical review.</p>
+            <p class="disclaimer anim-fade-up" style="animation-delay: 0.6s;">*Estimate subject to final technical review.</p>
         </div>
     </div>
 </div>
@@ -254,27 +254,33 @@
 </style>
 
 <script>
-// Keep existing logic but add UI polish
 let debounceTimer;
+let currentDisplayedPrice = 0; // Keep track of the current price for GSAP animations
+
+// Entrance Animation for Header (Triggers on load)
+document.addEventListener("DOMContentLoaded", () => {
+    if(typeof gsap !== 'undefined') {
+        gsap.from(".gsap-slide-right", {
+            x: -50,
+            opacity: 0,
+            duration: 0.8,
+            ease: "power3.out"
+        });
+    }
+});
 
 async function updatePrice() {
-    // 1. Show loading state
     const priceText = document.getElementById('totalPrice');
-    const loader = document.getElementById('priceLoader');
-    
-    priceText.style.opacity = '0.5';
-    // Optional: Show a spinner if you want
-    
     const payload = {
         modelType: document.getElementById('modelType').value,
         dataSize: document.getElementById('dataSize').value,
         complexity: document.querySelector('input[name="complexity"]:checked').value
     };
 
-    // Update Label UI
+    // Update Dataset Label UI immediately
     document.getElementById('sizeLabel').innerText = Number(payload.dataSize).toLocaleString();
 
-    // Debounce network requests (wait 300ms after user stops sliding)
+    // Debounce network requests (wait 200ms after user stops sliding)
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(async () => {
         try {
@@ -285,10 +291,30 @@ async function updatePrice() {
             });
             
             const data = await response.json();
+            const newPrice = data.estimate;
             
-            // Update Price with animation effect
-            priceText.innerText = `KSH ${data.estimate.toLocaleString()}`;
-            priceText.style.opacity = '1';
+            // GSAP Dynamic Number Counter Animation
+            if(typeof gsap !== 'undefined') {
+                gsap.to({ val: currentDisplayedPrice }, {
+                    val: newPrice,
+                    duration: 0.8,
+                    ease: "power2.out",
+                    onUpdate: function() {
+                        // Update the text dynamically as it counts up/down
+                        priceText.innerText = `KSH ${Math.round(this.targets()[0].val).toLocaleString()}`;
+                    },
+                    onComplete: function() {
+                        currentDisplayedPrice = newPrice;
+                        // Add a small satisfying pop when the number finishes counting
+                        gsap.fromTo(priceText, {scale: 1.1}, {scale: 1, duration: 0.3, ease: "back.out(2)"});
+                    }
+                });
+            } else {
+                // Fallback if GSAP fails to load
+                priceText.innerText = `KSH ${newPrice.toLocaleString()}`;
+                currentDisplayedPrice = newPrice;
+            }
+
         } catch (error) {
             console.error(error);
             priceText.innerText = "Calc Error";
@@ -296,6 +322,6 @@ async function updatePrice() {
     }, 200);
 }
 
-// Initial call
+// Initial call to set the price on load
 updatePrice();
 </script>

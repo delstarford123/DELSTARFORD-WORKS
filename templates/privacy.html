@@ -2,24 +2,26 @@
 
 {% block content %}
 
-<div class="privacy-header">
+<div class="privacy-header" style="overflow: hidden;">
     <div class="container">
-        <h1>Privacy Policy</h1>
-        <p>Your trust is the foundation of our innovation.</p>
-        <span class="last-updated">Last Updated: January 8, 2026</span>
+        <h1 class="anim-reveal-wipe">Privacy Policy</h1>
+        
+        <p class="anim-split-words">Your trust is the foundation of our innovation.</p>
+        
+        <span class="last-updated anim-scale-up" style="animation-delay: 0.4s;">Last Updated: January 8, 2026</span>
     </div>
 </div>
 
 <div class="container privacy-content-wrapper">
-    <div class="privacy-card">
+    <div class="privacy-card anim-fade-up">
         
-        <section>
+        <section class="gsap-policy-section">
             <h3>1. Introduction</h3>
             <p>Welcome to <strong>Delstarford Works</strong> ("we," "our," or "us"). We are committed to protecting your personal information and your right to privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website, use our AI Lab, or engage our agricultural technologies.</p>
             <p>By accessing or using our services, you signify that you have read, understood, and agree to our collection, storage, use, and disclosure of your personal information as described in this Privacy Policy.</p>
         </section>
 
-        <section>
+        <section class="gsap-policy-section">
             <h3>2. Information We Collect</h3>
             <p>We collect information that identifies, relates to, describes, references, is capable of being associated with, or could reasonably be linked, directly or indirectly, with a particular consumer or device.</p>
             <ul>
@@ -30,7 +32,7 @@
             </ul>
         </section>
 
-        <section>
+        <section class="gsap-policy-section">
             <h3>3. How We Use Your Information</h3>
             <p>We use the data we collect to engineer better solutions for you:</p>
             <ul>
@@ -41,13 +43,13 @@
             </ul>
         </section>
 
-        <section>
+        <section class="gsap-policy-section">
             <h3>4. Data Storage and Security</h3>
             <p>We utilize industry-standard security measures to protect your data. Our backend is hosted on secure cloud infrastructure (Render) and our database utilizes Google Firebase's real-time encryption standards.</p>
             <p>However, please note that no electronic transmission over the Internet or information storage technology can be guaranteed to be 100% secure, so we cannot promise or guarantee that hackers, cybercriminals, or other unauthorized third parties will not be able to defeat our security.</p>
         </section>
 
-        <section>
+        <section class="gsap-policy-section">
             <h3>5. Sharing Your Information</h3>
             <p>We <strong>never</strong> sell your personal data. We may share information only in the following situations:</p>
             <ul>
@@ -56,7 +58,7 @@
             </ul>
         </section>
 
-        <section>
+        <section class="gsap-policy-section">
             <h3>6. Your Rights</h3>
             <p>Depending on your location, you have the right to:</p>
             <ul>
@@ -67,7 +69,7 @@
             <p>To exercise these rights, please contact us using the information below.</p>
         </section>
 
-        <section>
+        <section class="gsap-policy-section">
             <h3>7. Contact Us</h3>
             <p>If you have questions or comments about this policy, you may email us at:</p>
             <div class="contact-box">
@@ -163,6 +165,12 @@
         padding: 20px;
         border-radius: 10px;
         border-left: 4px solid #2563eb;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .contact-box:hover {
+        transform: translateX(5px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
 
     .contact-box p {
@@ -184,5 +192,27 @@
         }
     }
 </style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        if(typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+            
+            // Gently fade and slide up each section as the user scrolls down
+            gsap.utils.toArray(".gsap-policy-section").forEach((section) => {
+                gsap.from(section, {
+                    scrollTrigger: {
+                        trigger: section,
+                        start: "top 85%", // Triggers when top of section hits 85% down the viewport
+                        toggleActions: "play none none reverse" // Reverses if they scroll back up
+                    },
+                    y: 30,
+                    opacity: 0,
+                    duration: 0.8,
+                    ease: "power2.out"
+                });
+            });
+        }
+    });
+</script>
 
 {% endblock %}

@@ -1,36 +1,36 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-
-<section class="auth-section" style="min-height: 85vh; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at top left, #f1f5f9 0%, #e2e8f0 100%); overflow: hidden; padding: 40px 20px;">
+<section class="auth-section">
     <div class="auth-card" id="register-container" style="visibility: hidden;">
         
         <div class="auth-header">
+            <img src="{{ url_for('static', filename='images/DEL SVG.svg') }}" alt="DW Logo" class="auth-logo gsap-logo">
             <h2 class="gsap-title">Initialize Account</h2>
-            <p class="gsap-subtitle">Join the network to access AI models and tools.</p>
+            <p class="gsap-subtitle">Join the consortium to access enterprise AI tools.</p>
         </div>
 
         <form id="registerForm" class="advanced-form">
             <div class="form-group gsap-photo" style="text-align: center; margin-bottom: 30px;">
-                <label style="display: block; margin-bottom: 12px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 0.5px;">Passport Photo</label>
-                <div onclick="document.getElementById('reg-photo').click()" class="photo-upload-circle" id="photo-circle">
+                <label style="display: block; margin-bottom: 12px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;">Profile Avatar</label>
+                
+                <div onclick="document.getElementById('reg-photo').click()" class="photo-upload-circle" id="photo-circle" title="Click to upload photo">
                     <img id="photo-preview" src="" style="width: 100%; height: 100%; object-fit: cover; display: none;">
                     <div id="photo-placeholder" style="text-align: center; color: #94a3b8; transition: color 0.3s;">
-                        <i class="fas fa-camera" style="font-size: 1.8rem;"></i>
+                        <i class="fas fa-camera" style="font-size: 1.5rem;"></i>
+                        <span style="display: block; font-size: 0.65rem; margin-top: 5px; font-weight: 600; text-transform: uppercase;">Upload</span>
                     </div>
                 </div>
+                
                 <input type="file" id="reg-photo" accept="image/*" style="display: none;" onchange="previewImage(this)">
-                <p style="font-size: 0.8rem; color: #64748b; margin-top: 8px;">Click to upload (Max 500KB)</p>
+                <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 10px;">Max size: 500KB (Optional)</p>
             </div>
 
             <div class="form-group gsap-input">
-                <label>Full Name</label>
+                <label>Full Legal Name</label>
                 <div class="input-wrapper">
-                    <i class="fas fa-user"></i>
-                    <input type="text" id="reg-name" placeholder="John Doe" required>
+                    <i class="fas fa-user-tie"></i>
+                    <input type="text" id="reg-name" placeholder="e.g. John Doe" required>
                 </div>
             </div>
 
@@ -38,78 +38,72 @@
                 <label>Email Address</label>
                 <div class="input-wrapper">
                     <i class="fas fa-envelope"></i>
-                    <input type="email" id="reg-email" placeholder="name@example.com" required>
+                    <input type="email" id="reg-email" placeholder="name@company.com" required>
                 </div>
             </div>
 
             <div class="form-group gsap-input">
-                <label>Create Password</label>
+                <label>Secure Password</label>
                 <div class="input-wrapper">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="reg-password" placeholder="Min. 6 characters" required>
+                    <i class="fas fa-shield-alt"></i>
+                    <input type="password" id="reg-password" placeholder="Minimum 6 characters" required>
                 </div>
             </div>
 
-            <button type="submit" class="btn-primary w-full gsap-btn" id="regBtn">
-                <span id="btn-text">Create Account</span> <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
+            <p class="terms-text gsap-input">By initializing an account, you agree to the <a href="/privacy">Delstarford Works Terms of Service</a> and Data Privacy Policy.</p>
+
+            <button type="submit" class="btn-primary w-full" id="regBtn">
+                <span id="btn-text">Create Account</span> <i class="fas fa-arrow-right"></i>
             </button>
             
-            <p id="error-msg" style="color: #ef4444; font-size: 0.85rem; text-align: center; margin-top: 15px; display: none; font-weight: 600;"></p>
+            <p id="error-msg" style="color: #ef4444; font-size: 0.85rem; text-align: center; margin-top: 15px; display: none; font-weight: 600; padding: 10px; background: #fef2f2; border-radius: 8px; border: 1px solid #fecaca;"></p>
         </form>
 
         <div class="auth-footer gsap-footer">
-            <p>Already have an ID? <a href="/login">Log In</a></p>
+            <p>Already a member? <a href="/login">Access Terminal</a></p>
         </div>
     </div>
 </section>
 
 <script>
-    // --- 0. INITIALIZE FIREBASE ---
-    // GO TO FIREBASE CONSOLE -> PROJECT SETTINGS -> GENERAL -> SCROLL DOWN TO "YOUR APPS"
-    // COPY THE CONFIG OBJECT HERE:
-    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyCdbCJvC2-WdaEMQc_ZGaggqA_-SMf1DYU",
-  authDomain: "delstarford-works.firebaseapp.com",
-  databaseURL: "https://delstarford-works-default-rtdb.firebaseio.com",
-  projectId: "delstarford-works",
-  storageBucket: "delstarford-works.firebasestorage.app",
-  messagingSenderId: "735702460296",
-  appId: "1:735702460296:web:8534ca0b1e86cc6a76bc3d",
-  measurementId: "G-DHSQPE2MZW"
-};
-
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-
+    // --- 1. ENTRANCE ANIMATION TIMELINE ---
     document.addEventListener("DOMContentLoaded", () => {
         if(typeof gsap !== 'undefined') {
             const tl = gsap.timeline();
+            
+            // Ensure card is visible before animation starts
             gsap.set(".auth-card", { visibility: "visible" });
+            
             tl.from(".auth-card", { y: 40, opacity: 0, duration: 0.6, ease: "power3.out", scale: 0.95 })
-              .from(".gsap-title", { y: 15, opacity: 0, duration: 0.4 }, "-=0.3")
+              .from(".gsap-logo", { scale: 0, rotation: -90, opacity: 0, duration: 0.5, ease: "back.out(1.7)" }, "-=0.3")
+              .from(".gsap-title", { y: 15, opacity: 0, duration: 0.4 }, "-=0.2")
               .from(".gsap-subtitle", { y: 15, opacity: 0, duration: 0.4 }, "-=0.3")
               .from(".gsap-photo", { scale: 0.8, opacity: 0, duration: 0.5, ease: "back.out(1.5)" }, "-=0.2")
               .from(".gsap-input", { y: 20, opacity: 0, stagger: 0.1, duration: 0.5, ease: "power2.out" }, "-=0.2")
-              .from(".gsap-btn", { scale: 0.9, opacity: 0, duration: 0.4, ease: "back.out(1.5)" }, "-=0.2")
+              // Removed .gsap-btn animation line here so the button stays visible!
               .from(".gsap-footer", { opacity: 0, duration: 0.5 }, "-=0.2");
         }
     });
 
+    // --- 2. IMAGE PREVIEW LOGIC ---
     function previewImage(input) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
+            
+            // Check file size (500KB limit)
             if (input.files[0].size > 500000) {
-                alert("File is too large! Please upload an image under 500KB.");
+                alert("Image too large. Please select an image under 500KB to ensure fast database syncing.");
                 input.value = "";
                 return;
             }
+            
             reader.onload = function(e) {
                 const preview = document.getElementById('photo-preview');
                 preview.src = e.target.result;
                 preview.style.display = 'block';
                 document.getElementById('photo-placeholder').style.display = 'none';
+                
+                // Pop animation on successful load
                 if(typeof gsap !== 'undefined') {
                     gsap.fromTo("#photo-circle", {scale: 0.8}, {scale: 1, duration: 0.4, ease: "back.out(2)"});
                 }
@@ -118,21 +112,32 @@ const firebaseConfig = {
         }
     }
 
+    // --- 3. REGISTRATION LOGIC ---
     document.getElementById('registerForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const name = document.getElementById('reg-name').value;
-        const email = document.getElementById('reg-email').value;
+        
+        const name = document.getElementById('reg-name').value.trim();
+        const email = document.getElementById('reg-email').value.trim();
         const password = document.getElementById('reg-password').value;
         const photoInput = document.getElementById('reg-photo');
+        
         const btn = document.getElementById('regBtn');
         const btnText = document.getElementById('btn-text');
         const errorMsg = document.getElementById('error-msg');
 
+        let loadingAnim; 
+
         try {
-            btnText.innerText = "Processing...";
+            btnText.innerText = "Provisioning Setup...";
             btn.disabled = true;
             errorMsg.style.display = "none";
             
+            // Start loading pulse animation
+            if(typeof gsap !== 'undefined') {
+                loadingAnim = gsap.to(btn, { scale: 0.98, opacity: 0.8, duration: 0.4, yoyo: true, repeat: -1 });
+            }
+            
+            // Process Image or Assign Default Avatar
             let photoURL = "";
             if (photoInput.files[0]) {
                 photoURL = await new Promise((resolve, reject) => {
@@ -142,14 +147,18 @@ const firebaseConfig = {
                     reader.readAsDataURL(photoInput.files[0]);
                 });
             } else {
-                photoURL = "https://ui-avatars.com/api/?name=" + encodeURIComponent(name) + "&background=random";
+                // Professional fallback avatar using initials
+                photoURL = "https://ui-avatars.com/api/?name=" + encodeURIComponent(name) + "&background=0f172a&color=ffffff&bold=true";
             }
 
+            // 1. Create Auth User
             const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
             const user = userCredential.user;
 
+            // 2. Update Auth Profile
             await user.updateProfile({ displayName: name, photoURL: photoURL });
 
+            // 3. Save to Realtime Database
             await firebase.database().ref('users/' + user.uid).set({
                 name: name,
                 email: email,
@@ -158,24 +167,166 @@ const firebaseConfig = {
                 joined_at: new Date().toISOString()
             });
 
-            btnText.innerText = "Success!";
-            btn.style.background = "#10b981";
+            // Stop loading animation and show success
+            if(loadingAnim) loadingAnim.kill();
+            gsap.set(btn, { scale: 1, opacity: 1 });
+            btnText.innerText = "Account Created!";
+            btn.style.background = "#10b981"; // Turn green
+            btn.style.boxShadow = "0 10px 25px -5px rgba(16, 185, 129, 0.4)";
+            
+            // Redirect to Dashboard
             setTimeout(() => { window.location.href = "/dashboard"; }, 1000);
             
         } catch (error) {
-            btnText.innerText = "Create Account";
-            btn.disabled = false;
-            errorMsg.innerText = error.message;
-            errorMsg.style.display = "block";
+            console.error(error);
+            
+            // Stop loading animation on failure
             if(typeof gsap !== 'undefined') {
+                if(loadingAnim) loadingAnim.kill();
+                gsap.set(btn, { scale: 1, opacity: 1 });
                 gsap.to("#register-container", { x: 10, duration: 0.08, yoyo: true, repeat: 5 });
             }
+            
+            btnText.innerText = "Create Account";
+            btn.disabled = false;
+            
+            // Professional Error Handling
+            if (error.code === 'auth/email-already-in-use') {
+                errorMsg.innerHTML = '<i class="fas fa-exclamation-circle"></i> This email is already registered in our system. Please proceed to login.';
+            } else if (error.code === 'auth/weak-password') {
+                errorMsg.innerHTML = '<i class="fas fa-shield-alt"></i> Security alert: Password must be at least 6 characters.';
+            } else {
+                errorMsg.innerText = error.message;
+            }
+            
+            errorMsg.style.display = "block";
         }
     });
 </script>
 
 <style>
-    /* ... (All your CSS from the original prompt) ... */
+    /* --- AUTH LAYOUT --- */
+    .auth-section {
+        min-height: calc(100vh - 80px);
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        background: radial-gradient(circle at top left, #f1f5f9 0%, #e2e8f0 100%); 
+        padding: 40px 20px;
+        box-sizing: border-box;
+    }
+
+    .auth-card {
+        background: white; 
+        padding: 50px 40px; 
+        border-radius: 24px;
+        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15); 
+        border: 1px solid #e2e8f0;
+        width: 100%; 
+        max-width: 500px; 
+        position: relative;
+        box-sizing: border-box;
+    }
+    
+    .auth-header { text-align: center; margin-bottom: 30px; }
+    .auth-logo { height: 45px; margin-bottom: 15px; }
+    .auth-header h2 { font-size: 1.8rem; color: #0f172a; margin: 0 0 5px 0; font-weight: 800; letter-spacing: -0.5px; }
+    .auth-header p { color: #64748b; font-size: 0.95rem; margin: 0; }
+    
+    /* Profile Photo Upload Circle */
+    .photo-upload-circle {
+        width: 90px; height: 90px; margin: 0 auto; border-radius: 50%; 
+        background: #f8fafc; display: flex; align-items: center; justify-content: center; 
+        overflow: hidden; cursor: pointer; border: 2px dashed #cbd5e1; 
+        position: relative; transition: all 0.3s ease;
+    }
+    .photo-upload-circle:hover { border-color: #2563eb; background: #eff6ff; }
+    .photo-upload-circle:hover #photo-placeholder { color: #2563eb !important; transform: scale(1.05); }
+
+    /* Input Styling */
+    .form-group { margin-bottom: 20px; width: 100%; box-sizing: border-box; }
+    .form-group label { display: block; font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    
+    .input-wrapper { 
+        display: flex; align-items: center; background: #f8fafc; border: 2px solid #e2e8f0; 
+        border-radius: 10px; padding: 0 15px; transition: all 0.3s ease; width: 100%; box-sizing: border-box;
+    }
+    .input-wrapper:focus-within { border-color: #2563eb; background: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+    .input-wrapper i { color: #94a3b8; margin-right: 12px; font-size: 1.1rem; }
+    .input-wrapper input { 
+        width: 100%; border: none; background: transparent; padding: 14px 0; 
+        outline: none; color: #0f172a; font-size: 1rem; font-family: inherit; font-weight: 500;
+    }
+    .input-wrapper input::placeholder { color: #cbd5e1; font-weight: 400; }
+
+    /* Terms Text */
+    .terms-text {
+        font-size: 0.75rem;
+        color: #64748b;
+        text-align: center;
+        margin-top: 10px;
+        margin-bottom: 20px;
+        line-height: 1.5;
+    }
+    .terms-text a { color: #2563eb; font-weight: 600; text-decoration: none; }
+    .terms-text a:hover { text-decoration: underline; }
+
+    /* --- PREMIUM BLUE BUTTON --- */
+    .btn-primary {
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        color: #ffffff;
+        width: 100%;
+        padding: 16px;
+        border: none;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 1.05rem;
+        letter-spacing: 0.5px;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-primary i { transition: transform 0.3s ease; margin-left: 10px; }
+
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px -5px rgba(37, 99, 235, 0.6);
+        background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
+    }
+
+    .btn-primary:hover i { transform: translateX(6px); }
+
+    .btn-primary::after {
+        content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+        background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0) 100%);
+        transform: skewX(-25deg); transition: all 0.7s ease;
+    }
+    
+    .btn-primary:hover::after { left: 200%; }
+
+    .btn-primary:disabled {
+        background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none;
+    }
+    .btn-primary:disabled::after { display: none; }
+
+    /* Footer */
+    .auth-footer { text-align: center; margin-top: 30px; font-size: 0.95rem; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 20px; }
+    .auth-footer a { color: #2563eb; font-weight: 700; text-decoration: none; transition: color 0.2s; }
+    .auth-footer a:hover { color: #1e3a8a; text-decoration: underline; }
+    
+    /* --- MOBILE RESPONSIVENESS --- */
+    @media (max-width: 500px) {
+        .auth-section { padding: 20px 15px; } 
+        .auth-card { padding: 30px 25px; border-radius: 16px; } 
+        .auth-header h2 { font-size: 1.5rem; } 
+        .photo-upload-circle { width: 80px; height: 80px; } 
+    }
 </style>
 
 {% endblock %}

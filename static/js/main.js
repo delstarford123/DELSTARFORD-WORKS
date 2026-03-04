@@ -5,9 +5,7 @@
 
 // 1. INITIALIZE FIREBASE (Safety Check)
 if (typeof firebase !== 'undefined' && !firebase.apps.length) {
-    // If config isn't loaded from HTML, this prevents a crash, 
-    // but relies on base.html having the config.
-    console.warn("Firebase config not found in main.js scope. Relying on base.html.");
+    console.warn("Firebase config not found in main.js scope. Relying on base.html initialization.");
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -17,13 +15,16 @@ document.addEventListener('DOMContentLoaded', () => {
     initNavigation();
     initScrollAnimations();
 
-    // B. Run Page-Specific Scripts (Only if elements exist)
+    // B. Run Page-Specific Scripts (Only execute if the elements exist on the current page)
     if (document.getElementById('totalPrice')) initPriceEstimator();
-    if (document.getElementById('project-status')) initDashboard();
     if (document.getElementById('requestForm')) initContactForm();
-    if (document.getElementById('contactForm')) initGeneralContactForm();
+    
+    // Safety check in case initGeneralContactForm is defined in another file
+    if (document.getElementById('contactForm') && typeof initGeneralContactForm === 'function') {
+        initGeneralContactForm();
+    }
 
-    // C. AUTHENTICATION LOGIC (The Fix for the Loop)
+    // C. AUTHENTICATION LOGIC
     if (typeof firebase !== 'undefined') {
         const auth = firebase.auth();
         
@@ -34,8 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Define which pages REQUIRE login
             const protectedPages = ['/dashboard', '/admin', '/ai-lab-secure'];
-
-            // Check if current page is protected
             const isProtected = protectedPages.some(page => currentPath.includes(page));
 
             if (user) {
@@ -43,12 +42,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log("User Logged In:", user.email);
 
                 // 1. If on Login page, send them to Dashboard (Quality of Life)
-                if (currentPath === '/login') {
+                if (currentPath === '/login' || currentPath === '/register') {
                     window.location.href = "/dashboard";
                     return;
                 }
 
-                // 2. Unlock Dashboard UI
+                // 2. Unlock Dashboard UI if it exists on this page
                 if (securityScreen) securityScreen.style.display = 'none';
                 if (mainDashboard) mainDashboard.style.display = 'flex';
 
@@ -66,7 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.location.href = "/login";
                 } else {
                     // 2. If on Public page (Home, Login, etc), DO NOTHING.
-                    // Just hide the loader so they can see the page
                     if (securityScreen) securityScreen.style.display = 'none';
                 }
             }
@@ -92,6 +90,8 @@ function initNavigation() {
 
 // Fade-in Animations
 function initScrollAnimations() {
+    if (typeof IntersectionObserver === 'undefined') return;
+
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -104,7 +104,6 @@ function initScrollAnimations() {
     document.querySelectorAll('.scroll-trigger, .hero-content').forEach(el => observer.observe(el));
 }
 
-// Dashboard Data Population
 // Dashboard Data Population (with Auto-Setup for New Users)
 function initRealDashboard(user) {
     if (!document.getElementById('project-status-text')) return;
@@ -113,12 +112,11 @@ function initRealDashboard(user) {
     const uid = user.uid;
 
     // 1. PROFILE NAME FIX
-    // New email logins often have a null 'displayName'. We fix this by using the email prefix.
     const nameEl = document.getElementById('display-name');
     const emailEl = document.getElementById('display-email');
     
-    // Extract "delstarford" from "delstarford@gmail.com" if display name is missing
-    const fallbackName = user.email.split('@')[0]; 
+    // Extract "delstarford" from "delstarford@gmail.com" safely
+    const fallbackName = user.email ? user.email.split('@')[0] : "User"; 
     const finalName = user.displayName || fallbackName.charAt(0).toUpperCase() + fallbackName.slice(1);
 
     if(nameEl) nameEl.innerText = finalName;
@@ -144,11 +142,12 @@ function initRealDashboard(user) {
                     }
                 },
                 licenses: {
-                    starter_pack: "Free Tier" // Give them 1 fake license to look good
-                }
+                    starter_pack: "Free Tier" 
+                },
+                role: 'member' // Assign basic role securely
             });
             
-            // Also set a default project status
+            // Set a default project status
             db.ref(`active_projects/${uid}`).set({
                 status: "Pending Setup",
                 progress: 10,
@@ -157,7 +156,7 @@ function initRealDashboard(user) {
         }
     });
 
-    // 3. LISTEN FOR LIVE DATA (Existing Logic)
+    // 3. LISTEN FOR LIVE DATA
     
     // Projects
     db.ref(`active_projects/${uid}`).on('value', (s) => {
@@ -165,11 +164,9 @@ function initRealDashboard(user) {
         const statusText = document.getElementById('project-status-text');
         const progressBar = document.getElementById('project-progress');
         
-        // Handle null data gracefully
         if(statusText) statusText.innerText = d ? (d.status || "Active") : "No Active Projects";
         if(progressBar) progressBar.style.width = d ? (d.progress + "%") : "0%";
         
-        // Color coding based on status
         if (statusText && d) {
             statusText.className = "font-bold " + (d.status === "Completed" ? "text-green-600" : "text-blue-600");
         }
@@ -178,7 +175,6 @@ function initRealDashboard(user) {
     // Licenses
     db.ref(`users/${uid}/licenses`).on('value', s => {
         const el = document.getElementById('license-count');
-        // Count the keys in the object
         if(el) el.innerText = s.exists() ? Object.keys(s.val()).length : 0;
     });
 
@@ -187,17 +183,16 @@ function initRealDashboard(user) {
         const rows = document.getElementById('activity-rows');
         if (!rows) return;
         
-        rows.innerHTML = ""; // Clear existing rows
+        rows.innerHTML = ""; 
         
         if (!s.exists()) {
             rows.innerHTML = `<tr><td colspan="3" class="text-center text-gray-500 py-4">No recent activity.</td></tr>`;
             return;
         }
         
-        // Firebase objects are not arrays, we must convert them
         const acts = [];
         s.forEach(c => {
-            acts.unshift(c.val()); // Add to start of array (newest first)
+            acts.unshift(c.val()); 
         });
 
         acts.forEach(a => {
@@ -221,56 +216,60 @@ function initContactForm() {
         const btn = document.getElementById('submitBtn');
         const spinner = document.getElementById('btnSpinner');
         const msg = document.getElementById('formMessage');
-        const btnText = btn.querySelector('span');
+        const btnText = btn ? btn.querySelector('span') : null;
 
-        if(btn.disabled) return;
+        if(btn && btn.disabled) return;
         
-        btn.disabled = true;
+        if(btn) btn.disabled = true;
         if(btnText) btnText.textContent = "Processing...";
         if(spinner) spinner.style.display = 'block';
         if(msg) msg.textContent = "";
 
         const formData = new FormData(form);
+
         try {
             // Save to Firebase first
             if(firebase.auth().currentUser) {
                 const uid = firebase.auth().currentUser.uid;
-                firebase.database().ref(`leads/${uid}`).push(Object.fromEntries(formData));
+                firebase.database().ref(`leads/service_requests/${uid}`).push(Object.fromEntries(formData));
             }
 
-            // Send Email via Python
-            // Ensure it hits the root domain
-const response = await fetch(window.location.origin + '/custom', { 
-    method: 'POST', 
-    body: formData 
-});
+            // Send Email via Python backend
+            const response = await fetch(window.location.origin + '/custom', { 
+                method: 'POST', 
+                body: formData 
+            });
+            
             if (!response.ok) throw new Error('Network error');
             
             const result = await response.json();
             if(msg) {
-                msg.textContent = result.message || "Request Sent!";
+                msg.textContent = result.message || "Request Sent Successfully!";
                 msg.className = "form-message success";
+                msg.style.color = "#10b981"; // Green
             }
             form.reset();
+
         } catch (error) {
             console.error(error);
             if(msg) {
                 msg.textContent = "Error sending request. Please try again.";
                 msg.className = "form-message error";
+                msg.style.color = "#ef4444"; // Red
             }
-            btn.disabled = false; // Allow retry
+            if(btn) btn.disabled = false; 
             if(btnText) btnText.textContent = "Send Request";
         } finally {
             if(spinner) spinner.style.display = 'none';
-            if(btn.disabled && btnText) btnText.textContent = "Sent";
+            if(btn && btn.disabled && btnText) btnText.textContent = "Sent";
         }
     });
 }
 
 // Price Estimator Logic
 function initPriceEstimator() {
-    // Re-attach listeners to ensure they work
     const els = ['modelType', 'dataSize', 'complexity'];
+    
     els.forEach(id => {
         const el = document.getElementById(id);
         if(el) el.addEventListener(el.type === 'range' ? 'input' : 'change', calculateTotal);
@@ -280,7 +279,7 @@ function initPriceEstimator() {
         r.addEventListener('change', calculateTotal);
     });
     
-    // Run once
+    // Run once on load to establish baseline
     calculateTotal();
 }
 
@@ -295,7 +294,8 @@ function calculateTotal() {
     const type = typeEl.value;
     const complexity = compEl.value;
 
-    document.getElementById('sizeDisplay').innerText = size.toLocaleString() + " Records";
+    const sizeDisplay = document.getElementById('sizeDisplay');
+    if(sizeDisplay) sizeDisplay.innerText = size.toLocaleString() + " Records";
 
     // Pricing Model
     const base = { 'tabular': 45000, 'vision': 120000, 'nlp': 95000, 'bio': 180000 };
@@ -303,8 +303,11 @@ function calculateTotal() {
     if(complexity === 'advanced') total *= 1.6;
 
     total = Math.ceil(total / 100) * 100;
-    document.getElementById('totalPrice').innerText = "KSH " + total.toLocaleString();
+    
+    const priceDisplay = document.getElementById('totalPrice');
+    if(priceDisplay) priceDisplay.innerText = "KSH " + total.toLocaleString();
 }
+
 /**
  * Global Logout Function
  * 1. Signs out of Firebase
@@ -316,19 +319,11 @@ window.handleLogout = function() {
     firebase.auth().signOut()
         .then(() => {
             console.log("User signed out.");
-            // Optional: Clear session storage if you used it
             sessionStorage.clear();
-            // Redirect immediately
             window.location.href = "/login";
         })
         .catch((error) => {
             console.error("Logout Error:", error);
             alert("Error signing out. Please try again.");
         });
-};
-// Global Logout
-window.handleLogout = function() {
-    firebase.auth().signOut().then(() => {
-        window.location.href = "/login";
-    });
 };

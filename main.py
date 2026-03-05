@@ -175,22 +175,65 @@ def support(): return render_template('support.html')
 
 @app.route('/agreement')
 def agreement_page(): return render_template('agreement.html')
+import os
+import requests
+import base64
+import datetime
+from flask import request, jsonify
+from requests.auth import HTTPBasicAuth
+from firebase_admin import db # Ensure db is imported if it isn't already at the top of your file
+import stripe # Ensure stripe is imported if it isn't already
+
+# Ensure Stripe uses the secret key from your .env
+stripe.api_key = os.environ.get('SECRET_KEY')
 
 # ==============================================================================
-# 4. PAYMENT PROCESSING ROUTES
+# 4. PAYMENT PROCESSING CONFIGURATION & HELPERS
 # ==============================================================================
 
+# Pull credentials securely from the .env file
+MPESA_CONSUMER_KEY = os.environ.get('CONSUMER_KEY')
+MPESA_CONSUMER_SECRET = os.environ.get('CONSUMER_SECRET')
+MPESA_SHORT_CODE = os.environ.get('BUSINESS_SHORT_CODE')
+MPESA_PASSKEY = os.environ.get('PASSKEY')
+MPESA_CALLBACK_URL = os.environ.get('CALLBACK_URL')
+
+def get_mpesa_access_token():
+    """Authenticates with Daraja to get a temporary access token."""
+    api_url = "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
+    try:
+        # HTTPBasicAuth automatically handles the required Base64 encoding of Key:Secret
+        response = requests.get(api_url, auth=HTTPBasicAuth(MPESA_CONSUMER_KEY, MPESA_CONSUMER_SECRET))
+        response.raise_for_status() # Will raise an exception for 400/500 errors
+        return response.json()['access_token']
+    except Exception as e:
+        print(f"❌ Error getting M-Pesa token: {e}")
+        if 'response' in locals() and response is not None:
+            print(f"Safaricom Response: {response.text}")
+        return None
+
+def generate_mpesa_password(timestamp):
+    """Generates the Base64 encoded password required for STK Push."""
+    data_to_encode = MPESA_SHORT_CODE + MPESA_PASSKEY + timestamp
+    encoded_string = base64.b64encode(data_to_encode.encode())
+    return encoded_string.decode('utf-8')
+
+
+# ==============================================================================
+# 5. PAYMENT PROCESSING ROUTES
+# ==============================================================================
 # --- M-PESA STK PUSH ---
 @app.route('/pay', methods=['POST'])
 def pay():
     data = request.json
     raw_phone = data.get('phone') 
-    amount_str = data.get('amount')
+    cart_total = data.get('amount', 1)
+    cart_items = data.get('items', []) 
 
     if not raw_phone:
          return jsonify({"error": "Phone number is required"}), 400
 
-    # Sanitize phone number
+    # Sanitize phone number into 254XXXXXXXXX format
     clean_phone = ''.join(filter(str.isdigit, str(raw_phone)))
     if clean_phone.startswith('07') or clean_phone.startswith('01'): 
         formatted_phone = '254' + clean_phone[1:] 
@@ -201,21 +244,26 @@ def pay():
     else: 
         formatted_phone = clean_phone 
 
-    # Handle Amount (Force 1 for Sandbox)
+    # Handle Amount
     try:
-        # In Production: amount = int(amount_str)
-        amount = 1 
+        amount = int(cart_total)
+        if amount <= 0: amount = 1
     except:
         amount = 1 
-
+        
+    # Authenticate with Daraja
     access_token = get_mpesa_access_token()
     if not access_token:
-        return jsonify({"error": "Failed to authenticate with Safaricom"}), 500
+        return jsonify({"error": "Failed to authenticate with Safaricom. Check console logs."}), 500
 
     timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
     password = generate_mpesa_password(timestamp)
 
-    headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json'}
+    headers = {
+        'Authorization': f'Bearer {access_token}', 
+        'Content-Type': 'application/json'
+    }
+    
     payload = {
         "BusinessShortCode": MPESA_SHORT_CODE,
         "Password": password,
@@ -226,37 +274,87 @@ def pay():
         "PartyB": MPESA_SHORT_CODE,
         "PhoneNumber": formatted_phone, 
         "CallBackURL": MPESA_CALLBACK_URL,
-        "AccountReference": "DELSTARFORD",
-        "TransactionDesc": "AI Model Purchase"
+        "AccountReference": "D.S.W LTD",
+        "TransactionDesc": f"Order of {len(cart_items)} AI Models"
     }
 
     stk_url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
     
     try:
         response = requests.post(stk_url, json=payload, headers=headers)
-        response_data = response.json()
         
+        # --- NEW: BULLETPROOF ERROR CATCHING ---
         try:
-             db.reference('payments/initiated').push({
-                 'original_input': raw_phone,
-                 'formatted_phone': formatted_phone,
-                 'amount': amount,
-                 'response': response_data,
-                 'timestamp': str(datetime.datetime.now())
-             })
-        except: pass 
+            response_data = response.json()
+        except Exception:
+            print("=======================================")
+            print(f"❌ SAFARICOM API REJECTED THE REQUEST")
+            print(f"Status Code: {response.status_code}")
+            print(f"Raw Response: {response.text}")
+            print(f"Payload Sent: {payload}")
+            print("=======================================")
+            return jsonify({"error": "Safaricom API is temporarily down or rejected the payload. Check terminal."}), 500
+        # ---------------------------------------
 
-        return jsonify(response_data)
+        # Log the Pending Order securely into Firebase
+        if response_data.get('ResponseCode') == '0':
+            checkout_request_id = response_data.get('CheckoutRequestID')
+            try:
+                 db.reference(f'payments/initiated/{checkout_request_id}').set({
+                     'phone_number': formatted_phone,
+                     'amount_billed': amount,
+                     'items_purchased': cart_items,  
+                     'status': 'Pending Verification',
+                     'timestamp': str(datetime.datetime.now())
+                 })
+            except Exception as firebase_err: 
+                 print("Firebase Error:", firebase_err) 
+                 
+            return jsonify(response_data)
+        else:
+            # If Daraja returns a clean JSON error message
+            print("Daraja Error:", response_data)
+            return jsonify({"error": response_data.get('errorMessage', 'Failed to initiate STK push')}), 400
+            
     except Exception as e:
+        print(f"STK Push Error: {e}")
         return jsonify({"error": str(e)}), 500
-
+    
+    
+# --- M-PESA CALLBACK ---
 @app.route('/callback', methods=['POST'])
 def callback():
     data = request.json
     print(">> MPESA CALLBACK RECEIVED:", data)
+    
     try:
-        db.reference('payments/callbacks').push({'data': data, 'timestamp': str(datetime.datetime.now())})
-    except: pass
+        stk_callback = data.get('Body', {}).get('stkCallback', {})
+        checkout_request_id = stk_callback.get('CheckoutRequestID')
+        result_code = stk_callback.get('ResultCode')
+        
+        if checkout_request_id:
+            # Save raw callback
+            db.reference(f'payments/callbacks/{checkout_request_id}').set({
+                'payload': data, 
+                'timestamp': str(datetime.datetime.now())
+            })
+            
+            # Update original order status
+            order_ref = db.reference(f'payments/initiated/{checkout_request_id}')
+            if result_code == 0:
+                order_ref.update({
+                    'status': 'Payment Successful', 
+                    'result_desc': stk_callback.get('ResultDesc')
+                })
+            else:
+                order_ref.update({
+                    'status': 'Payment Failed', 
+                    'failure_reason': stk_callback.get('ResultDesc')
+                })
+                
+    except Exception as e: 
+        print("Error processing callback:", e)
+        
     return "OK"
 
 # --- STRIPE PAYMENT INTENT ---
@@ -264,7 +362,12 @@ def callback():
 def create_payment_intent():
     try:
         data = request.json
-        amount = int(data.get('amount'))
+        amount = int(data.get('amount', 0))
+        
+        if amount <= 0:
+            return jsonify(error="Invalid amount"), 400
+            
+        # Stripe accepts KES as a zero-decimal currency (KSh 100 = 100)
         intent = stripe.PaymentIntent.create(
             amount=amount,
             currency='kes',
@@ -272,8 +375,8 @@ def create_payment_intent():
         )
         return jsonify({'clientSecret': intent.client_secret})
     except Exception as e:
+        print(f"Stripe Error: {e}")
         return jsonify(error=str(e)), 403
-
 # ==============================================================================
 # 5. FORM SUBMISSION & CLIENT ROUTES
 # ==============================================================================
@@ -515,20 +618,33 @@ def admin_page():
 
 from flask import render_template, make_response
 
+from flask import render_template, make_response
+import logging
+
+# ==============================================================================
+# CLIENT DASHBOARD ROUTE
+# ==============================================================================
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
     """
-    Client Dashboard Route.
-    Serves the portal UI. Authentication is managed client-side via Firebase.
+    Secure Client Dashboard Route.
+    Serves the portal UI. Authentication and data fetching are strictly 
+    managed client-side via Firebase to ensure real-time syncing.
     """
-    response = make_response(render_template('dashboard.html'))
-    # Prevent the browser from caching the dashboard to protect sensitive data after logout
-    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-    response.headers["Pragma"] = "no-cache"
-    response.headers["Expires"] = "0"
-    
-    return response
-
+    try:
+        response = make_response(render_template('dashboard.html'))
+        
+        # Security: Strictly prevent browser caching to protect sensitive 
+        # financial and API data on shared devices after logout.
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+        
+        return response
+        
+    except Exception as e:
+        logging.error(f"Failed to load dashboard: {e}")
+        return make_response("System Error: Dashboard temporarily unavailable. Please contact support.", 500)
 
 @app.route('/admin-dashboard', methods=['GET'])
 def admin_dashboard():

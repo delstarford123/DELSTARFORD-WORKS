@@ -6,12 +6,12 @@
     .site-header, .site-footer { display: none !important; }
     
     body { 
-        background: #f1f5f9 !important; /* Light slate background */
+        background: #f1f5f9 !important; 
         color: #0f172a; 
-        overflow: hidden; 
         margin: 0; 
         font-family: 'Plus Jakarta Sans', sans-serif; 
-        min-height: 100vh; 
+        min-height: 100vh;
+        overflow-x: hidden; 
     }
 
     :root {
@@ -39,13 +39,10 @@
     /* Admin Layout */
     .admin-layout { display: flex; min-height: 100vh; width: 100%; position: relative; }
     
-    /* Mobile Menu Toggle */
-    .mobile-nav-toggle {
-        display: none; position: fixed; top: 20px; right: 20px; z-index: 1001;
-        background: var(--primary); color: white; border: none; width: 45px; height: 45px;
-        border-radius: 8px; cursor: pointer; font-size: 1.2rem;
-        box-shadow: 0 4px 10px rgba(37,99,235,0.3);
-    }
+    /* Mobile App Bar (Hidden on Desktop) */
+    .mobile-dash-header { display: none; }
+    .sidebar-overlay { display: none; }
+    .sidebar-header-mobile { display: none; }
 
     /* Sidebar (Light Theme) */
     .admin-sidebar { 
@@ -60,7 +57,7 @@
     .sidebar-brand h2 { font-size: 1.2rem; font-weight: 800; margin: 0; letter-spacing: 1px; color: var(--text-main); }
     .sidebar-brand h2 span { color: var(--primary); }
     
-    .admin-nav { display: flex; flex-direction: column; gap: 8px; padding: 0 15px; flex: 1; }
+    .admin-nav { display: flex; flex-direction: column; gap: 8px; padding: 0 15px; flex: 1; overflow-y: auto;}
     .admin-nav-btn { 
         background: transparent; border: none; color: var(--text-muted); padding: 14px 20px; 
         text-align: left; font-size: 0.95rem; font-weight: 600; border-radius: 8px; 
@@ -74,17 +71,10 @@
 
     .sidebar-footer { padding: 20px 15px; border-top: 1px solid var(--border-light); display: flex; flex-direction: column; gap: 10px; }
     
-    /* Premium Action Buttons in Sidebar */
-    .btn-public {
-        background: #f8fafc; border: 1px solid #e2e8f0; color: #0f172a; padding: 12px 20px; border-radius: 8px;
-        font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: 0.2s;
-    }
+    .btn-public { background: #f8fafc; border: 1px solid #e2e8f0; color: #0f172a; padding: 12px 20px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: 0.2s; }
     .btn-public:hover { background: #e2e8f0; }
 
-    .logout-btn { 
-        background: #fee2e2; border: 1px solid #fecaca; color: #991b1b; padding: 12px 20px; border-radius: 8px;
-        font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: 0.2s;
-    }
+    .logout-btn { background: #fee2e2; border: 1px solid #fecaca; color: #991b1b; padding: 12px 20px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: 0.2s; }
     .logout-btn:hover { background: #ef4444; color: white; box-shadow: 0 4px 10px rgba(239,68,68,0.2); transform: translateY(-1px); }
 
     /* Main Content */
@@ -102,20 +92,32 @@
     .admin-header-top h1 { font-size: 2.2rem; margin: 0; font-weight: 800; letter-spacing: -0.5px; color: var(--text-main); }
     .admin-profile { display: flex; align-items: center; gap: 12px; background: white; padding: 8px 16px; border-radius: 30px; border: 1px solid var(--border-light); box-shadow: 0 2px 5px rgba(0,0,0,0.02); font-weight: 600;}
 
+    /* System Stats Grid */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; position: relative; z-index: 1; }
+    .stat-card { background: white; padding: 25px; border-radius: 16px; border: 1px solid var(--border-light); display: flex; align-items: center; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
+    .icon-box { width: 55px; height: 55px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0;}
+    .blue { background: #eff6ff; color: #2563eb; }
+    .green { background: #dcfce7; color: #166534; }
+    .orange { background: #ffedd5; color: #c2410c; }
+    .purple { background: #f3e8ff; color: #9333ea; }
+    .stat-num { display: block; font-size: 1.8rem; font-weight: 800; color: var(--text-main); line-height: 1; margin-bottom: 5px; }
+    .stat-label { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;}
+
     /* Data Tables */
     .data-panel { display: none; animation: fadeIn 0.4s ease; position: relative; z-index: 1; }
     .data-panel.active { display: block; }
     
-    .data-card { background: var(--bg-panel); border-radius: 16px; border: 1px solid var(--border-light); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+    .data-card { background: var(--bg-panel); border-radius: 16px; border: 1px solid var(--border-light); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 30px;}
     .data-card-header { padding: 20px 30px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; background: #f8fafc; }
     .data-card-header h3 { margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--text-main); }
     
     .btn-refresh { background: #eff6ff; border: 1px solid #bfdbfe; color: var(--primary); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 700; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
     .btn-refresh:hover { background: var(--primary); color: white; transform: translateY(-1px); box-shadow: 0 4px 10px rgba(37,99,235,0.2);}
 
+    /* Super Responsive Table Setup */
     .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    table { width: 100%; border-collapse: collapse; min-width: 600px; }
-    th, td { padding: 18px 20px; border-bottom: 1px solid var(--border-light); font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; min-width: 700px; }
+    th, td { padding: 18px 20px; border-bottom: 1px solid var(--border-light); font-size: 0.9rem; white-space: nowrap; }
     th { color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; background: #ffffff; }
     tr { transition: background 0.2s; cursor: pointer; }
     tr:hover { background: #f8fafc; }
@@ -126,101 +128,130 @@
 
     /* Badges */
     .badge { padding: 5px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; display: inline-block; text-align: center; letter-spacing: 0.5px; }
-    .badge.admin { background: rgba(59, 130, 246, 0.15); color: #2563eb; border: 1px solid rgba(59, 130, 246, 0.3); }
-    .badge.member { background: rgba(16, 185, 129, 0.15); color: #059669; border: 1px solid rgba(16, 185, 129, 0.3); }
-    .badge.high { background: rgba(239, 68, 68, 0.15); color: #dc2626; border: 1px solid rgba(239, 68, 68, 0.3); }
-    .badge.open { background: rgba(245, 158, 11, 0.15); color: #d97706; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge.admin { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+    .badge.member { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+    .badge.success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+    .badge.high { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    .badge.open { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
 
     /* SLIDE-OVER DETAIL PANEL */
-    .detail-overlay {
-        position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
-        z-index: 9999; display: flex; justify-content: flex-end; opacity: 0; visibility: hidden; transition: all 0.4s ease;
-    }
+    .detail-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 9999; display: flex; justify-content: flex-end; opacity: 0; visibility: hidden; transition: all 0.4s ease; }
     .detail-overlay.active { opacity: 1; visibility: visible; }
-    
-    .detail-panel {
-        width: 550px; max-width: 100%; height: 100%; background: var(--bg-panel);
-        border-left: 1px solid var(--border-light); box-shadow: -10px 0 30px rgba(0,0,0,0.1);
-        transform: translateX(100%); transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-        display: flex; flex-direction: column;
-    }
+    .detail-panel { width: 550px; max-width: 100%; height: 100%; background: var(--bg-panel); border-left: 1px solid var(--border-light); box-shadow: -10px 0 30px rgba(0,0,0,0.1); transform: translateX(100%); transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1); display: flex; flex-direction: column; overflow-y: auto;}
     .detail-overlay.active .detail-panel { transform: translateX(0); }
 
-    .dp-header { padding: 30px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; background: #f8fafc; }
-    .dp-header h3 { margin: 0; font-size: 1.4rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
+    .dp-header { padding: 25px 30px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; background: #f8fafc; position: sticky; top:0; z-index: 10;}
+    .dp-header h3 { margin: 0; font-size: 1.2rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
     .btn-close-dp { background: white; border: 1px solid #cbd5e1; color: var(--text-muted); width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
     .btn-close-dp:hover { background: var(--danger); color: white; border-color: var(--danger); transform: rotate(90deg); }
 
-    .dp-body { padding: 30px; overflow-y: auto; flex: 1; }
+    .dp-body { padding: 30px; flex: 1; }
     .dp-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid var(--border-light); margin-bottom: 30px; }
-    .dp-meta div { display: flex; flex-direction: column; gap: 5px; }
+    .dp-meta div { display: flex; flex-direction: column; gap: 5px; overflow: hidden;}
     .dp-meta label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
-    .dp-meta span { color: var(--text-main); font-weight: 600; font-size: 0.95rem; }
+    .dp-meta span { color: var(--text-main); font-weight: 600; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     .dp-message-box { background: white; border-radius: 12px; padding: 25px; border: 1px solid var(--border-light); margin-bottom: 30px; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.02);}
-    .dp-message-box::before { content: "CLIENT REQUEST"; position: absolute; top: -10px; left: 20px; background: white; padding: 0 10px; font-size: 0.7rem; color: var(--primary); font-weight: 800; letter-spacing: 1px; border: 1px solid var(--border-light); border-radius: 4px;}
-    .dp-message-box p { margin: 0; line-height: 1.7; color: #334155; font-size: 1rem; white-space: pre-wrap; }
+    .dp-message-box::before { content: "RECORD PAYLOAD"; position: absolute; top: -10px; left: 20px; background: white; padding: 0 10px; font-size: 0.7rem; color: var(--primary); font-weight: 800; letter-spacing: 1px; border: 1px solid var(--border-light); border-radius: 4px;}
+    .dp-message-box p { margin: 0; line-height: 1.7; color: #334155; font-size: 0.95rem; white-space: pre-wrap; word-break: break-word;}
 
     .dp-action-area { padding: 30px; border-top: 1px solid var(--border-light); background: #f8fafc; }
     .dp-action-area label { display: block; font-size: 0.8rem; color: var(--primary); text-transform: uppercase; font-weight: 800; margin-bottom: 10px; letter-spacing: 1px; }
-    .dp-action-area textarea { 
-        width: 100%; background: white; border: 1px solid #cbd5e1; color: var(--text-main); 
-        padding: 18px; border-radius: 12px; font-family: inherit; font-size: 0.95rem; resize: vertical; 
-        min-height: 120px; margin-bottom: 15px; outline: none; transition: 0.3s; box-sizing: border-box;
-    }
+    .dp-action-area textarea { width: 100%; background: white; border: 1px solid #cbd5e1; color: var(--text-main); padding: 18px; border-radius: 12px; font-family: inherit; font-size: 0.95rem; resize: vertical; min-height: 120px; margin-bottom: 15px; outline: none; transition: 0.3s; box-sizing: border-box; }
     .dp-action-area textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
-    .btn-reply { 
-        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; border: none; padding: 15px; border-radius: 10px; 
-        font-weight: 800; font-size: 1rem; cursor: pointer; width: 100%; transition: all 0.3s; 
-        text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 10px;
-        box-shadow: 0 4px 10px rgba(37,99,235,0.3);
-    }
+    .btn-reply { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; border: none; padding: 15px; border-radius: 10px; font-weight: 800; font-size: 1rem; cursor: pointer; width: 100%; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 10px rgba(37,99,235,0.3); }
     .btn-reply:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(37,99,235,0.4); }
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* --- RESPONSIVE QUERIES --- */
+    /* --- MOBILE RESPONSIVENESS --- */
     @media (max-width: 1024px) {
         :root { --sidebar-width: 80px; }
         .sidebar-brand h2, .admin-nav-btn span, .btn-public span, .logout-btn span { display: none; }
         .admin-nav-btn, .btn-public, .logout-btn { justify-content: center; padding: 15px; }
         .sidebar-brand { justify-content: center; padding: 0; }
+        .sidebar-brand img { margin: 0; }
     }
 
     @media (max-width: 768px) {
         :root { --sidebar-width: 0px; }
-        .mobile-nav-toggle { display: block; }
-        .admin-sidebar { transform: translateX(-100%); width: 280px; }
-        .admin-sidebar.mobile-open { transform: translateX(0); }
+        
+        /* Activate Mobile App Header */
+        .mobile-dash-header { display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; background: white; border-bottom: 1px solid var(--border-light); position: fixed; top: 0; left: 0; right: 0; z-index: 900; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .menu-toggle { background: none; border: none; font-size: 1.2rem; color: var(--text-main); cursor: pointer; padding: 5px;}
+        .mobile-brand { font-weight: 800; color: var(--text-main); letter-spacing: 1px; font-size: 1rem; }
+        .mobile-avatar { width: 32px; height: 32px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; }
+        
+        /* Mobile Sidebar Overlay */
+        .sidebar-overlay { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 990; opacity: 0; visibility: hidden; transition: 0.3s; }
+        .sidebar-overlay.active { opacity: 1; visibility: visible; }
+        
+        /* Hide Desktop Elements */
+        .admin-header-top { display: none; } 
+        
+        /* Sidebar slide-in mechanics */
+        .admin-sidebar { position: fixed; left: -280px; top: 0; bottom: 0; width: 280px; z-index: 1000; box-shadow: none; padding: 0; }
+        .admin-sidebar.active { left: 0; box-shadow: 4px 0 15px rgba(0,0,0,0.2); }
+        
+        /* Restore Sidebar Text for Mobile */
         .sidebar-brand h2, .admin-nav-btn span, .btn-public span, .logout-btn span { display: inline-block; } 
         .admin-nav-btn, .btn-public, .logout-btn { justify-content: flex-start; padding: 14px 20px; }
+        .sidebar-brand { justify-content: flex-start; padding: 20px; margin-bottom: 10px; border-bottom: 1px solid var(--border-light);}
         
-        .admin-main { margin-left: 0; padding: 80px 20px 20px 20px; }
-        .admin-header-top { flex-direction: column; align-items: flex-start; gap: 20px; }
-        .admin-header-top h1 { font-size: 1.7rem; }
+        /* Mobile Close Button inside Sidebar */
+        .sidebar-header-mobile { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid var(--border-light); background: #f8fafc;}
+        .sidebar-header-mobile h3 { margin: 0; color: var(--text-main); font-size: 1.1rem; }
+        .sidebar-header-mobile button { background: none; border: none; font-size: 1.2rem; color: var(--text-muted); cursor: pointer; }
+
+        /* Adjust Main Content Area */
+        .admin-main { margin-left: 0; padding: 80px 15px 20px 15px; } /* 80px top padding prevents hiding under fixed header */
+        
+        /* Refine Cards & Tables */
+        .stats-grid { grid-template-columns: 1fr; gap: 15px; }
+        .data-card { border-radius: 12px; }
+        .data-card-header { flex-direction: column; align-items: flex-start; gap: 15px; padding: 15px; }
+        .data-card-header button { width: 100%; justify-content: center; }
         .dp-meta { grid-template-columns: 1fr; }
+        .dp-header { padding: 20px; }
+        .dp-body { padding: 20px; }
+        .dp-action-area { padding: 20px; }
     }
 </style>
 
-<button class="mobile-nav-toggle" onclick="toggleMobileMenu()">
-    <i class="fas fa-bars"></i>
-</button>
+<div class="mobile-dash-header">
+    <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <span class="mobile-brand">DW ADMIN</span>
+    <div class="mobile-avatar"><i class="fas fa-user-shield"></i></div>
+</div>
 
 <div class="admin-layout">
+    
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
     <aside class="admin-sidebar" id="sidebar">
+        <div class="sidebar-header-mobile">
+            <h3>Admin Menu</h3>
+            <button onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
+        </div>
         <div class="sidebar-brand">
             <img src="{{ url_for('static', filename='images/DEL SVG.svg') }}" alt="Logo">
             <h2>DELSTARFORD<span>.</span></h2>
         </div>
         <nav class="admin-nav">
-            <button class="admin-nav-btn active" onclick="switchTab('users-panel', this)">
-                <i class="fas fa-users"></i> <span>Network Users</span>
+            <button class="admin-nav-btn active" onclick="switchTab('overview-panel', this)">
+                <i class="fas fa-chart-pie"></i> <span>System Command</span>
             </button>
-            <button class="admin-nav-btn" onclick="switchTab('tickets-panel', this)">
-                <i class="fas fa-ticket-alt"></i> <span>Support Tickets</span>
+            <button class="admin-nav-btn" onclick="switchTab('orders-panel', this)">
+                <i class="fas fa-shopping-cart"></i> <span>Marketplace Sales</span>
             </button>
             <button class="admin-nav-btn" onclick="switchTab('leads-panel', this)">
-                <i class="fas fa-bolt"></i> <span>Service Leads</span>
+                <i class="fas fa-bolt"></i> <span>Custom Projects</span>
+            </button>
+            <button class="admin-nav-btn" onclick="switchTab('tickets-panel', this)">
+                <i class="fas fa-ticket-alt"></i> <span>Support Desk</span>
+            </button>
+            <button class="admin-nav-btn" onclick="switchTab('users-panel', this)">
+                <i class="fas fa-users"></i> <span>Network Users</span>
             </button>
         </nav>
         <div class="sidebar-footer">
@@ -235,32 +266,95 @@
 
     <main class="admin-main">
         <div class="admin-header-top">
-            <h1 id="panel-title">Network Users</h1>
+            <h1 id="panel-title">System Command</h1>
             <div class="admin-profile">
                 <i class="fas fa-user-shield" style="color: var(--primary);"></i>
                 <span id="admin-name">Authorizing...</span>
             </div>
         </div>
 
-        <div id="users-panel" class="data-panel active">
+        <div id="overview-panel" class="data-panel active">
+            <div class="stats-grid">
+                <div class="stat-card gsap-stat-card">
+                    <div class="icon-box green"><i class="fas fa-wallet"></i></div>
+                    <div class="stat-data">
+                        <span class="stat-num" id="stat-revenue">KSh 0</span>
+                        <span class="stat-label">AI Sales Revenue</span>
+                    </div>
+                </div>
+                <div class="stat-card gsap-stat-card">
+                    <div class="icon-box blue"><i class="fas fa-users"></i></div>
+                    <div class="stat-data">
+                        <span class="stat-num" id="stat-users">0</span>
+                        <span class="stat-label">Registered Clients</span>
+                    </div>
+                </div>
+                <div class="stat-card gsap-stat-card">
+                    <div class="icon-box purple"><i class="fas fa-layer-group"></i></div>
+                    <div class="stat-data">
+                        <span class="stat-num" id="stat-leads">0</span>
+                        <span class="stat-label">Custom Projects</span>
+                    </div>
+                </div>
+                <div class="stat-card gsap-stat-card">
+                    <div class="icon-box orange"><i class="fas fa-life-ring"></i></div>
+                    <div class="stat-data">
+                        <span class="stat-num" id="stat-tickets">0</span>
+                        <span class="stat-label">Open Tickets</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="data-card" style="margin-top: 30px;">
+                <div class="data-card-header">
+                    <h3>Command Center Active</h3>
+                </div>
+                <div style="padding: 20px; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+                    <p>Welcome to the Delstarford Works Admin Terminal. All systems are operating normally. Use the sidebar to track Marketplace sales via M-Pesa/Stripe, review incoming custom project requests, manage client support tickets, and oversee network accounts.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="orders-panel" class="data-panel">
             <div class="data-card">
                 <div class="data-card-header">
-                    <h3>Registered Accounts</h3>
-                    <button class="btn-refresh" onclick="loadUsers()"><i class="fas fa-sync-alt"></i></button>
+                    <h3>Marketplace Sales</h3>
+                    <button class="btn-refresh" onclick="loadOrders()"><i class="fas fa-sync-alt"></i> Refresh Data</button>
                 </div>
                 <div class="table-responsive">
                     <table>
                         <thead>
                             <tr>
-                                <th>User ID / Email</th>
-                                <th>Full Name</th>
-                                <th>Clearance</th>
+                                <th>Date / Order ID</th>
+                                <th>Client Identity</th>
+                                <th>Models Purchased</th>
+                                <th>Amount / Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody id="users-table-body">
-                            <tr><td colspan="4" style="text-align:center; padding: 40px; color: var(--text-muted);">Fetching secure data...</td></tr>
-                        </tbody>
+                        <tbody id="orders-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="leads-panel" class="data-panel">
+            <div class="data-card">
+                <div class="data-card-header">
+                    <h3>Custom Project Leads</h3>
+                    <button class="btn-refresh" onclick="loadLeads()"><i class="fas fa-sync-alt"></i> Refresh Data</button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Identity</th>
+                                <th>Service Requested</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leads-table-body"></tbody>
                     </table>
                 </div>
             </div>
@@ -270,7 +364,7 @@
             <div class="data-card">
                 <div class="data-card-header">
                     <h3>Support Tickets</h3>
-                    <button class="btn-refresh" onclick="loadTickets()"><i class="fas fa-sync-alt"></i></button>
+                    <button class="btn-refresh" onclick="loadTickets()"><i class="fas fa-sync-alt"></i> Refresh Data</button>
                 </div>
                 <div class="table-responsive">
                     <table>
@@ -288,27 +382,28 @@
             </div>
         </div>
 
-        <div id="leads-panel" class="data-panel">
+        <div id="users-panel" class="data-panel">
             <div class="data-card">
                 <div class="data-card-header">
-                    <h3>Service Leads</h3>
-                    <button class="btn-refresh" onclick="loadLeads()"><i class="fas fa-sync-alt"></i></button>
+                    <h3>Registered Accounts</h3>
+                    <button class="btn-refresh" onclick="loadUsers()"><i class="fas fa-sync-alt"></i> Refresh Data</button>
                 </div>
                 <div class="table-responsive">
                     <table>
                         <thead>
                             <tr>
-                                <th>Date</th>
-                                <th>Identity</th>
-                                <th>Service</th>
+                                <th>User ID / Email</th>
+                                <th>Full Name</th>
+                                <th>Clearance</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody id="leads-table-body"></tbody>
+                        <tbody id="users-table-body"></tbody>
                     </table>
                 </div>
             </div>
         </div>
+
     </main>
 </div>
 
@@ -328,7 +423,7 @@
 
         <div class="dp-action-area" id="dp-reply-area" style="display: none;">
             <label>Admin Response Node</label>
-            <textarea id="dp-reply-text" placeholder="Type your response... This will automatically email the client and update their dashboard."></textarea>
+            <textarea id="dp-reply-text" placeholder="Type your response... This will automatically update the client's dashboard."></textarea>
             <button class="btn-reply" onclick="sendAdminReply()">
                 <i class="fas fa-paper-plane"></i> Transmit Update
             </button>
@@ -338,16 +433,22 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <script>
-    // --- MOBILE MENU LOGIC ---
-    function toggleMobileMenu() {
+    // --- UI LOGIC ---
+    function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
-        sidebar.classList.toggle('mobile-open');
-        const icon = document.querySelector('.mobile-nav-toggle i');
-        icon.classList.toggle('fa-bars');
-        icon.classList.toggle('fa-times');
+        const overlay = document.getElementById('sidebarOverlay');
+        
+        sidebar.classList.toggle('active');
+        overlay.classList.toggle('active');
+        
+        // Prevent background scrolling on mobile when sidebar is open
+        if (sidebar.classList.contains('active')) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
     }
 
-    // --- UI LOGIC ---
     function switchTab(panelId, btnElement) {
         document.querySelectorAll('.data-panel').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.admin-nav-btn').forEach(b => b.classList.remove('active'));
@@ -356,16 +457,24 @@
         btnElement.classList.add('active');
         
         const spanText = btnElement.querySelector('span');
-        document.getElementById('panel-title').innerText = spanText ? spanText.innerText.trim() : 'Dashboard';
+        const titleText = spanText ? spanText.innerText.trim() : 'Dashboard';
+        
+        // Update Desktop Header
+        document.getElementById('panel-title').innerText = titleText;
+        // Update Mobile Header
+        document.querySelector('.mobile-brand').innerText = titleText.toUpperCase();
 
         if (window.innerWidth <= 768) {
-            toggleMobileMenu();
+            toggleSidebar(); // Close sidebar after selecting on mobile
         }
 
         if(typeof gsap !== 'undefined') {
-            gsap.from(`#${panelId} tbody tr`, { y: 20, opacity: 0, stagger: 0.05, duration: 0.4, ease: "power2.out" });
+            gsap.from(`#${panelId} tbody tr, #${panelId} .stat-card`, { y: 20, opacity: 0, stagger: 0.05, duration: 0.4, ease: "power2.out" });
         }
 
+        // Load data dynamically based on tab
+        if(panelId === 'overview-panel') loadAllStats();
+        if(panelId === 'orders-panel') loadOrders();
         if(panelId === 'users-panel') loadUsers();
         if(panelId === 'tickets-panel') loadTickets();
         if(panelId === 'leads-panel') loadLeads();
@@ -377,17 +486,16 @@
     function openDetailPanel(title, metaHtml, message, contextData = null) {
         document.getElementById('dp-title').innerText = title;
         document.getElementById('dp-meta-content').innerHTML = metaHtml;
-        document.getElementById('dp-message-content').innerText = message || "No message payload provided in this record.";
+        document.getElementById('dp-message-content').innerText = message || "No message payload provided.";
         
         const replyArea = document.getElementById('dp-reply-area');
-        if (contextData) {
+        if (contextData && contextData.allowReply) {
             currentRecordContext = contextData;
             replyArea.style.display = 'block';
             document.getElementById('dp-reply-text').value = '';
         } else {
             replyArea.style.display = 'none';
         }
-
         document.getElementById('detailOverlay').classList.add('active');
     }
 
@@ -398,7 +506,7 @@
         }
     }
 
-    // --- AUTH & DATA LOGIC ---
+    // --- AUTH & DATA INITIALIZATION ---
     document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => {
             if (window.auth) {
@@ -407,7 +515,7 @@
                         const snap = await firebase.database().ref('users/' + user.uid).once('value');
                         if (snap.val() && snap.val().role === 'admin') {
                             document.getElementById('admin-name').innerText = snap.val().name || "System Admin";
-                            loadUsers();
+                            loadAllStats(); // Load stats for the default Overview panel
                         } else {
                             adminLogout();
                         }
@@ -419,43 +527,157 @@
         }, 800);
     });
 
-    async function loadUsers() {
-        const tbody = document.getElementById('users-table-body');
+    // --- DATA LOADERS ---
+    
+    // 1. OVERVIEW STATS
+    async function loadAllStats() {
+        const db = firebase.database();
         try {
-            const snap = await firebase.database().ref('users').once('value');
+            // Users
+            const usersSnap = await db.ref('users').once('value');
+            const totalUsers = usersSnap.val() ? Object.keys(usersSnap.val()).length : 0;
+            animateCounter('stat-users', totalUsers);
+
+            // Leads
+            const leadsSnap = await db.ref('leads/service_requests').once('value');
+            const totalLeads = leadsSnap.val() ? Object.keys(leadsSnap.val()).length : 0;
+            animateCounter('stat-leads', totalLeads);
+
+            // Tickets
+            const ticketsSnap = await db.ref('support_tickets').once('value');
+            let openTickets = 0;
+            if (ticketsSnap.val()) {
+                Object.values(ticketsSnap.val()).forEach(t => {
+                    if(t.status !== 'Closed' && t.status !== 'Resolved') openTickets++;
+                });
+            }
+            animateCounter('stat-tickets', openTickets);
+
+            // Sales Revenue
+            const ordersSnap = await db.ref('payments/initiated').once('value');
+            let totalRev = 0;
+            if (ordersSnap.val()) {
+                Object.values(ordersSnap.val()).forEach(o => {
+                    if (o.status === 'Payment Successful' && o.amount_billed) {
+                        totalRev += parseInt(o.amount_billed);
+                    }
+                });
+            }
+            
+            // Format Currency
+            const el = document.getElementById('stat-revenue');
+            gsap.to({val: 0}, { val: totalRev, duration: 1.5, ease: "power2.out", onUpdate: function() { 
+                el.innerText = "KSh " + Math.round(this.targets()[0].val).toLocaleString(); 
+            }});
+
+        } catch(e) { console.error("Stat Load Error", e); }
+    }
+
+    function animateCounter(id, value) {
+        const el = document.getElementById(id);
+        gsap.to({val: 0}, { val: value, duration: 1.5, ease: "power2.out", onUpdate: function() { el.innerText = Math.round(this.targets()[0].val); } });
+    }
+
+    // 2. ORDERS (MARKETPLACE SALES)
+    async function loadOrders() {
+        const tbody = document.getElementById('orders-table-body');
+        try {
+            const snap = await firebase.database().ref('payments/initiated').once('value');
             const data = snap.val();
             tbody.innerHTML = "";
             if (data) {
-                for (let key in data) {
-                    const u = data[key];
-                    const roleClass = u.role === 'admin' ? 'badge admin' : 'badge member';
+                Object.keys(data).reverse().forEach(key => {
+                    const o = data[key];
+                    const status = o.status || "Pending";
+                    let statClass = 'badge success'; // green
+                    if (status.includes('Failed') || status.includes('Cancelled')) statClass = 'badge high'; // red
+                    if (status.includes('Pending')) statClass = 'badge open'; // yellow
+
+                    let purchasedNames = "AI Model";
+                    if (o.items_purchased && Array.isArray(o.items_purchased)) {
+                        purchasedNames = o.items_purchased.map(i => i.name).join(", ");
+                    }
+
                     const tr = document.createElement('tr');
-                    
                     tr.innerHTML = `
                         <td>
-                            <div style="font-weight: 700;">${u.email || 'N/A'}</div>
-                            <div style="font-size: 0.75rem; color: var(--text-muted); font-family: monospace; margin-top: 4px;">UID: ${key.substring(0,12)}...</div>
+                            <div style="font-family: monospace; color: var(--primary); font-weight: bold; font-size:0.85rem;">${key.substring(0,10)}...</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">${o.timestamp ? o.timestamp.substring(0,10) : 'N/A'}</div>
                         </td>
-                        <td style="font-weight: 600;">${u.name || 'N/A'}</td>
-                        <td><span class="${roleClass}">${u.role || 'Client'}</span></td>
-                        <td><button class="btn-action-view">View Dossier</button></td>
+                        <td>
+                            <div style="font-weight: 700;">${o.phone_number || 'N/A'}</div>
+                        </td>
+                        <td><div style="font-size: 0.85rem; color: var(--text-muted); max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${purchasedNames}</div></td>
+                        <td>
+                            <div style="font-family: monospace; font-weight: bold; margin-bottom: 5px;">KSh ${o.amount_billed}</div>
+                            <span class="${statClass}">${status}</span>
+                        </td>
+                        <td><button class="btn-action-view">Inspect</button></td>
                     `;
                     
                     tr.onclick = () => {
                         const meta = `
-                            <div><label>Full Name</label><span>${u.name || 'N/A'}</span></div>
-                            <div><label>Email Address</label><span>${u.email}</span></div>
-                            <div><label>System UID</label><span style="font-family: monospace;">${key}</span></div>
-                            <div><label>Clearance</label><span class="${roleClass}">${u.role || 'Client'}</span></div>
+                            <div><label>Order ID</label><span style="font-family:monospace; font-size:0.8rem;">${key}</span></div>
+                            <div><label>Phone Number</label><span>${o.phone_number}</span></div>
+                            <div><label>Amount Billed</label><span style="color: var(--success);">KSh ${o.amount_billed}</span></div>
+                            <div><label>Status</label><span class="${statClass}">${status}</span></div>
                         `;
-                        openDetailPanel("User Profile", meta, "No messaging history linked to this profile directly. Check Support Tickets or Service Leads for interactions.", null);
+                        
+                        let itemsListHtml = "No items detailed.";
+                        if (o.items_purchased && Array.isArray(o.items_purchased)) {
+                            itemsListHtml = o.items_purchased.map(i => `- ${i.name} (${i.formatted})`).join("\n");
+                        }
+                        const messageBoxContent = `ITEMS PURCHASED:\n${itemsListHtml}\n\nTRANSACTION LOGS:\n${o.result_desc || o.failure_reason || 'Waiting for Payment Gateway response...'}`;
+                        
+                        openDetailPanel(`Marketplace Order`, meta, messageBoxContent, { allowReply: false });
                     };
                     tbody.appendChild(tr);
-                }
-            } else { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No users found in database.</td></tr>`; }
-        } catch (e) { tbody.innerHTML = `<tr><td colspan="4" style="color:var(--danger); text-align:center; padding:30px;"><i class="fas fa-lock"></i> Permission Denied.<br><span style="font-size:0.8rem;color:var(--text-muted);">Please update your Firebase Rules.</span></td></tr>`; }
+                });
+            } else { tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 30px;">No orders processed yet.</td></tr>`; }
+        } catch (e) { tbody.innerHTML = `<tr><td colspan="5" style="color:var(--danger); text-align:center;">Permission Denied.</td></tr>`; }
     }
 
+    // 3. CUSTOM PROJECTS (LEADS)
+    async function loadLeads() {
+        const tbody = document.getElementById('leads-table-body');
+        try {
+            const snap = await firebase.database().ref('leads/service_requests').once('value');
+            const data = snap.val();
+            tbody.innerHTML = "";
+            if (data) {
+                Object.keys(data).reverse().forEach(key => {
+                    const l = data[key];
+                    const statClass = l.status === 'Pending' ? 'badge open' : 'badge member';
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td style="font-family: monospace;">${l.timestamp ? l.timestamp.substring(0,10) : 'N/A'}</td>
+                        <td>
+                            <div style="font-weight: 700;">${l.name}</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">${l.email}</div>
+                        </td>
+                        <td>
+                            <div style="color: var(--primary); font-weight: 600;">${l.service}</div>
+                            <div style="margin-top: 6px;"><span class="${statClass}">${l.status || 'Pending Review'}</span></div>
+                        </td>
+                        <td><button class="btn-action-view">Assess</button></td>
+                    `;
+                    tr.onclick = () => {
+                        const meta = `
+                            <div><label>Client Name</label><span>${l.name}</span></div>
+                            <div><label>Email Address</label><span>${l.email}</span></div>
+                            <div><label>Service Requested</label><span style="color: var(--primary);">${l.service}</span></div>
+                            <div><label>Budget Estimate</label><span>${l.budget || 'N/A'}</span></div>
+                        `;
+                        const context = { dbPath: `leads/service_requests/${key}`, allowReply: true };
+                        openDetailPanel(`Custom Project Request`, meta, l.details, context);
+                    };
+                    tbody.appendChild(tr);
+                });
+            } else { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 30px;">No leads found.</td></tr>`; }
+        } catch (e) { tbody.innerHTML = `<tr><td colspan="4" style="color:var(--danger); text-align:center;">Database Error.</td></tr>`; }
+    }
+
+    // 4. TICKETS
     async function loadTickets() {
         const tbody = document.getElementById('tickets-table-body');
         try {
@@ -468,9 +690,8 @@
                     const statClass = t.status === 'Open' ? 'badge open' : 'badge member';
                     const prioClass = t.priority === 'High' ? 'color: var(--danger); font-weight: bold;' : 'color: var(--text-muted);';
                     const tr = document.createElement('tr');
-                    
                     tr.innerHTML = `
-                        <td style="color: var(--primary); font-family: monospace; font-weight: bold;">${t.ticket_id || key}</td>
+                        <td style="color: var(--primary); font-family: monospace; font-weight: bold;">${t.ticket_id || key.substring(0,8)}</td>
                         <td style="font-weight: 600;">${t.email}</td>
                         <td>
                             <span class="${statClass}" style="margin-right: 10px;">${t.status}</span>
@@ -478,62 +699,56 @@
                         </td>
                         <td><button class="btn-action-view">Review</button></td>
                     `;
-                    
                     tr.onclick = () => {
                         const meta = `
                             <div><label>Client Name</label><span>${t.name}</span></div>
-                            <div><label>Email</label><span>${t.email}</span></div>
-                            <div><label>Priority</label><span>${t.priority || 'Normal'}</span></div>
+                            <div><label>Client Email</label><span>${t.email}</span></div>
+                            <div><label>Priority Level</label><span style="text-transform:capitalize;">${t.priority || 'Normal'}</span></div>
                             <div><label>Date Logged</label><span>${t.timestamp ? t.timestamp.substring(0,16) : 'N/A'}</span></div>
                         `;
-                        const context = { dbPath: `support_tickets/${key}`, email: t.email, name: t.name, type: "Support Ticket" };
+                        const context = { dbPath: `support_tickets/${key}`, allowReply: true };
                         openDetailPanel(`Ticket: ${t.subject}`, meta, t.message, context);
                     };
                     tbody.appendChild(tr);
                 });
-            } else { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No active tickets.</td></tr>`; }
+            } else { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 30px;">No active tickets.</td></tr>`; }
         } catch (e) { tbody.innerHTML = `<tr><td colspan="4" style="color:var(--danger); text-align:center;">Database Error.</td></tr>`; }
     }
 
-    async function loadLeads() {
-        const tbody = document.getElementById('leads-table-body');
+    // 5. USERS
+    async function loadUsers() {
+        const tbody = document.getElementById('users-table-body');
         try {
-            const snap = await firebase.database().ref('leads/service_requests').once('value');
+            const snap = await firebase.database().ref('users').once('value');
             const data = snap.val();
             tbody.innerHTML = "";
             if (data) {
-                Object.keys(data).reverse().forEach(key => {
-                    const l = data[key];
-                    const statClass = l.status === 'Pending' ? 'badge open' : 'badge member';
+                for (let key in data) {
+                    const u = data[key];
+                    const roleClass = u.role === 'admin' ? 'badge admin' : 'badge member';
                     const tr = document.createElement('tr');
-                    
                     tr.innerHTML = `
-                        <td style="font-family: monospace;">${l.timestamp ? l.timestamp.substring(0,10) : 'N/A'}</td>
                         <td>
-                            <div style="font-weight: 700;">${l.name}</div>
-                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">${l.email}</div>
+                            <div style="font-weight: 700;">${u.email || 'N/A'}</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted); font-family: monospace; margin-top: 4px;">UID: ${key.substring(0,12)}...</div>
                         </td>
-                        <td>
-                            <div style="color: var(--primary); font-weight: 600;">${l.service}</div>
-                            <div style="margin-top: 6px;"><span class="${statClass}">${l.status || 'Pending'}</span></div>
-                        </td>
-                        <td><button class="btn-action-view">Assess</button></td>
+                        <td style="font-weight: 600;">${u.name || 'N/A'}</td>
+                        <td><span class="${roleClass}">${u.role || 'Client'}</span></td>
+                        <td><button class="btn-action-view">View Dossier</button></td>
                     `;
-                    
                     tr.onclick = () => {
                         const meta = `
-                            <div><label>Client</label><span>${l.name}</span></div>
-                            <div><label>Email</label><span>${l.email}</span></div>
-                            <div><label>Service Req</label><span style="color: var(--primary);">${l.service}</span></div>
-                            <div><label>Logged</label><span>${l.timestamp ? l.timestamp.substring(0,16) : 'N/A'}</span></div>
+                            <div><label>Full Name</label><span>${u.name || 'N/A'}</span></div>
+                            <div><label>Email Address</label><span>${u.email}</span></div>
+                            <div><label>System UID</label><span style="font-family: monospace;">${key}</span></div>
+                            <div><label>Clearance Level</label><span class="${roleClass}">${u.role || 'Client'}</span></div>
                         `;
-                        const context = { dbPath: `leads/service_requests/${key}`, email: l.email, name: l.name, type: "Service Project" };
-                        openDetailPanel(`Project Lead`, meta, l.details, context);
+                        openDetailPanel("User Profile", meta, "Profile active. Check Support Tickets or Custom Projects to view client interactions.", { allowReply: false });
                     };
                     tbody.appendChild(tr);
-                });
-            } else { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No leads found.</td></tr>`; }
-        } catch (e) { tbody.innerHTML = `<tr><td colspan="4" style="color:var(--danger); text-align:center;">Database Error.</td></tr>`; }
+                }
+            } else { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 30px;">No users found.</td></tr>`; }
+        } catch (e) { tbody.innerHTML = `<tr><td colspan="4" style="color:var(--danger); text-align:center;">Permission Denied.</td></tr>`; }
     }
 
     async function sendAdminReply() {
@@ -545,30 +760,21 @@
         btn.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Transmitting...`; 
         btn.disabled = true;
 
-        const payload = {
-            ...currentRecordContext,
-            replyMessage: text,
-            newStatus: "In Progress" 
-        };
-
         try {
-            const res = await fetch('/admin-reply', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+            await firebase.database().ref(currentRecordContext.dbPath).update({
+                last_admin_response: text,
+                status: "In Progress", 
+                updated_at: new Date().toISOString()
             });
-            const data = await res.json();
+
+            closeDetailPanel();
             
-            if (data.success) {
-                closeDetailPanel();
-                const activeTab = document.querySelector('.admin-nav-btn.active').innerText.trim();
-                if(activeTab.includes('Tickets')) loadTickets();
-                if(activeTab.includes('Leads')) loadLeads();
-            } else {
-                alert("Error: " + data.message);
-            }
+            const activeTabId = document.querySelector('.data-panel.active').id;
+            if(activeTabId === 'tickets-panel') loadTickets();
+            if(activeTabId === 'leads-panel') loadLeads();
+
         } catch (e) {
-            alert("Network Error.");
+            alert("Database Error: " + e.message);
         } finally {
             btn.innerHTML = `<i class="fas fa-paper-plane"></i> Transmit Update`; 
             btn.disabled = false;

@@ -1,65 +1,433 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<section class="hero-section" style="padding: 80px 20px; background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%); overflow: hidden;">
-    <div class="hero-content" style="max-width: 800px; margin: 0 auto; text-align: center;">
-        <span class="hero-badge anim-scale-up" style="display: inline-block; background: #e0e7ff; color: #4338ca; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Delstarford AI Lab</span>
-        
-        <h1 class="anim-decode" style="font-size: 3rem; margin-top: 20px; color: #0f172a;">Marketplace of <span class="highlight" style="color: #2563eb;">Intelligence</span></h1>
-        
-        <p class="anim-split-words" style="font-size: 1.1rem; color: #64748b; margin-top: 15px;">Production-ready models for Agriculture, Biotech, and Fintech. Proven algorithms deployed to your server in less than 24 hours.</p>
-    </div>
+<style>
+    :root {
+        --mp-primary: #2563eb;
+        --mp-dark: #0f172a;
+        --mp-success: #10b981;
+        --mp-danger: #ef4444;
+        --mp-bg: #f8fafc;
+    }
+
+    body { background: var(--mp-bg); }
+
+    /* Flash Sale Banner */
+    .flash-banner {
+        background: linear-gradient(90deg, #ef4444, #f59e0b);
+        color: white; text-align: center; padding: 10px; font-weight: 700;
+        font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase;
+        position: relative; z-index: 100;
+    }
+
+    /* Floating Cart Button */
+    .floating-cart {
+        position: fixed; top: 100px; right: 30px; background: var(--mp-dark);
+        color: white; width: 60px; height: 60px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2); cursor: pointer; z-index: 900;
+        transition: transform 0.3s;
+    }
+    .floating-cart:hover { transform: scale(1.1); }
+    .cart-badge {
+        position: absolute; top: -5px; right: -5px; background: var(--mp-danger);
+        color: white; font-size: 0.8rem; font-weight: bold; width: 24px; height: 24px;
+        border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        border: 2px solid var(--mp-bg);
+    }
+
+    /* Slide-out Cart Panel */
+    .cart-overlay {
+        position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
+        z-index: 1000; display: flex; justify-content: flex-end; opacity: 0; visibility: hidden; transition: 0.3s;
+    }
+    .cart-overlay.active { opacity: 1; visibility: visible; }
+    
+    .cart-panel {
+        width: 100%; max-width: 400px; background: white; height: 100%;
+        transform: translateX(100%); transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+    }
+    .cart-overlay.active .cart-panel { transform: translateX(0); }
+
+    .cart-header { padding: 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+    .cart-header h2 { margin: 0; font-size: 1.5rem; color: var(--mp-dark); }
+    .cart-items { padding: 20px; overflow-y: auto; flex: 1; }
+    
+    .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f1f5f9; }
+    .cart-item-info h4 { margin: 0 0 5px 0; font-size: 1rem; color: var(--mp-dark); }
+    .cart-item-info p { margin: 0; color: var(--mp-success); font-weight: 700; }
+    .remove-item { background: none; border: none; color: var(--mp-danger); cursor: pointer; font-size: 1.2rem; }
+
+    .cart-footer { padding: 20px; border-top: 1px solid #e2e8f0; background: #f8fafc; }
+    .cart-total { display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 800; margin-bottom: 15px; color: var(--mp-dark); }
+    .btn-checkout { background: var(--mp-primary); color: white; width: 100%; padding: 15px; border: none; border-radius: 10px; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2); text-transform: uppercase; }
+    .btn-checkout:hover { background: #1d4ed8; transform: translateY(-2px); }
+
+    /* Marketplace Grid Enhancements */
+    .marketplace-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; padding: 40px 20px; max-width: 1250px; margin: 0 auto; }
+    
+    .product-card {
+        background: white; border-radius: 16px; border: 1px solid #e2e8f0; padding: 25px;
+        transition: all 0.3s; position: relative; display: flex; flex-direction: column; overflow: hidden;
+    }
+    .product-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); border-color: var(--mp-primary); }
+    
+    .category-tag { background: #f1f5f9; color: #475569; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; width: fit-content; margin-bottom: 10px; display: inline-block;}
+    
+    /* Impulse Triggers */
+    .urgency-tag { position: absolute; top: 15px; right: -30px; background: var(--mp-danger); color: white; font-size: 0.7rem; font-weight: 800; padding: 5px 35px; transform: rotate(45deg); letter-spacing: 1px; z-index: 10;}
+    .social-proof { display: flex; align-items: center; gap: 5px; font-size: 0.85rem; color: #f59e0b; margin-bottom: 10px; }
+    .social-proof span { color: #64748b; font-weight: 600; margin-left: 5px; }
+    
+    .price-container { margin: 15px 0; display: flex; align-items: baseline; gap: 10px;}
+    .price-strike { text-decoration: line-through; color: #94a3b8; font-size: 0.9rem; }
+    .price-current { color: var(--mp-success); font-weight: 800; font-size: 1.4rem; }
+
+    .btn-add-cart { background: var(--mp-dark); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: auto; }
+    .btn-add-cart:hover { background: var(--mp-primary); }
+
+    /* Audio Button */
+    .voice-btn { border: none; background: #2563eb; color: white; border-radius: 50px; padding: 12px 25px; font-size: 0.9rem; font-weight: 600; box-shadow: 0 4px 15px rgba(37,99,235,0.3); cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 10px; margin: 0 auto 30px; width: fit-content; }
+    .voice-btn:hover { transform: translateY(-2px); background: #1d4ed8; }
+
+    /* Payment Modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); opacity: 0; visibility: hidden; transition: 0.3s; }
+    .modal-overlay.active { opacity: 1; visibility: visible; }
+    .modal-content { background: white; width: 90%; max-width: 500px; border-radius: 16px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); transform: scale(0.9); transition: 0.3s; max-height: 90vh; overflow-y: auto; }
+    .modal-overlay.active .modal-content { transform: scale(1); }
+
+    @media (max-width: 768px) {
+        .floating-cart { bottom: 30px; top: auto; right: 20px; }
+        .marketplace-grid { padding: 20px 15px; grid-template-columns: 1fr; }
+        .product-card { padding: 20px; }
+        .hero-section h1 { font-size: 2.2rem !important; }
+    }
+</style>
+
+<div class="flash-banner">
+    ⚡ End of Quarter Sale: Save up to 35% on all Enterprise Models. Ends in <span id="countdown">14:59:59</span>
+</div>
+
+<section class="hero-section" style="padding: 60px 20px; text-align: center; border-bottom: 1px solid #e2e8f0; background: white;">
+    <span style="display: inline-block; background: #e0e7ff; color: #4338ca; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase;">Delstarford Works Marketplace</span>
+    <h1 style="font-size: 3rem; margin: 15px 0; color: #0f172a; font-weight: 800;">Marketplace of <span style="color: #2563eb;">Intelligence</span></h1>
+    <p style="font-size: 1.1rem; color: #64748b; max-width: 650px; margin: 0 auto 25px;">Browse our portfolio of 22 production-ready AI models. Add to cart and deploy instantly to your infrastructure.</p>
+    
+    <button onclick="toggleAudio()" id="audioControl" class="voice-btn">
+        <i class="fas fa-volume-up"></i> Listen to Catalog Overview
+    </button>
 </section>
 
-<section class="container py-50" style="padding: 50px 5%;">
-    <div class="grid-filter anim-fade-up" style="text-align: center; margin-bottom: 50px;">
-        <p style="color: #64748b; font-size: 0.95rem; font-weight: 500;">
-            Showing <strong>{{ models|length }}</strong> Enterprise Solutions
-        </p>
+<div class="floating-cart" onclick="toggleCart()">
+    <i class="fas fa-shopping-cart"></i>
+    <span class="cart-badge" id="cartCount">0</span>
+</div>
+
+<div class="marketplace-grid" id="productGrid">
+
+    <div class="product-card" style="border-color: var(--mp-primary); background: radial-gradient(circle at top right, rgba(37,99,235,0.05), white);">
+        <div class="urgency-tag">HOT</div>
+        <span class="category-tag">BioTech / Pharma</span>
+        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">⚡ DexaGen-AI</h3>
+        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><span>(4.9)</span></div>
+        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">Neuro-Symbolic Pharmacological Engine. Simulates drug interactions in 3D using DeepChem and RDKit.</p>
+        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
+            <i class="fas fa-microchip" style="color: #3b82f6;"></i> Flask, DeepChem, 3Dmol.js
+        </div>
+        <div class="price-container"><span class="price-strike">KSh 250,000</span><span class="price-current">KSh 185,000</span></div>
+        <button class="btn-add-cart" onclick="addToCart('DexaGen-AI', 'KSh 185,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
     </div>
 
-    <div class="model-grid anim-stagger-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px;">
-        {% for model in models %}
-        <div class="model-card" style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; transition: transform 0.2s, box-shadow 0.2s;">
-            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <span class="category-tag" style="background: #f1f5f9; color: #475569; padding: 4px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600;">{{ model.category }}</span>
-                <span class="price-tag" style="color: #059669; font-weight: 700; font-size: 1.1rem;">{{ model.price }}</span>
-            </div>
-            
-            <h3 style="margin: 0 0 10px 0; color: #1e293b; font-size: 1.25rem;">{{ model.name }}</h3>
-            <p class="desc" style="color: #64748b; font-size: 0.9rem; line-height: 1.5; margin-bottom: 20px;">{{ model.desc }}</p>
-            
-            <div class="tech-stack" style="border-top: 1px solid #f1f5f9; padding-top: 15px; margin-bottom: 20px; font-size: 0.85rem; color: #94a3b8;">
-                <i class="fas fa-microchip" style="margin-right: 8px; color: #3b82f6;"></i> 
-                {{ model.tech }}
-            </div>
-
-            <div class="card-actions" style="display: flex; gap: 10px;">
-                <button onclick="openPaymentModal('{{ model.name }}', '{{ model.price }}')" class="btn-buy" style="flex: 1; background: #0f172a; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: 600;">Purchase License</button>
-                <button class="btn-demo" onclick="alert('Demo request for {{ model.name }} has been logged.')" style="background: transparent; border: 1px solid #cbd5e1; color: #475569; padding: 10px 15px; border-radius: 6px; cursor: pointer;">
-                    View Demo
-                </button>
-            </div>
+    <div class="product-card">
+        <span class="category-tag">NLP / Theology</span>
+        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">📜 ScriptureAI</h3>
+        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><span>(5.0)</span></div>
+        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">Semantic search engine for theological texts using Vector Embeddings and RAG (Retrieval Augmented Generation).</p>
+        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
+            <i class="fas fa-microchip" style="color: #3b82f6;"></i> Python, Vector DB, React
         </div>
-        {% endfor %}
+        <div class="price-container"><span class="price-strike">KSh 120,000</span><span class="price-current">KSh 85,000</span></div>
+        <button class="btn-add-cart" onclick="addToCart('ScriptureAI', 'KSh 85,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
     </div>
-</section>
 
-<div id="paymentModal" class="modal-overlay" style="visibility: hidden; opacity: 0; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
-    <div class="modal-content" style="background: white; width: 90%; max-width: 500px; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); transform: scale(0.8);">
-        
-        <div class="modal-header" style="background: #f8fafc; padding: 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
-            <h3 style="margin: 0; color: #0f172a; font-size: 1.1rem;">Secure Checkout</h3>
-            <button onclick="closeModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #94a3b8;">&times;</button>
+    <div class="product-card">
+        <span class="category-tag">Security / Biometrics</span>
+        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">Usherbot Biometrics</h3>
+        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><span>(4.6)</span></div>
+        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">Fingerprint capture, embedding extraction, and robust matcher with audit logs and configurable thresholds.</p>
+        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
+            <i class="fas fa-microchip" style="color: #3b82f6;"></i> Flask, ONNX, Docker
+        </div>
+        <div class="price-container"><span class="price-strike">KSh 95,000</span><span class="price-current">KSh 65,000</span></div>
+        <button class="btn-add-cart" onclick="addToCart('Usherbot Biometrics', 'KSh 65,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+    </div>
+
+    <div class="product-card">
+        <span class="category-tag">Enterprise Web</span>
+        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">Attendance Dashboard</h3>
+        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><span>(4.2)</span></div>
+        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">Web dashboard with registration logs, attendance summaries, and scheduled PDF reports.</p>
+        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
+            <i class="fas fa-microchip" style="color: #3b82f6;"></i> React, WebSockets, Redis
+        </div>
+        <div class="price-container"><span class="price-strike">KSh 60,000</span><span class="price-current">KSh 45,000</span></div>
+        <button class="btn-add-cart" onclick="addToCart('Attendance Dashboard', 'KSh 45,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+    </div>
+
+    <div class="product-card" style="border-color: var(--mp-primary); background: radial-gradient(circle at top right, rgba(37,99,235,0.05), white);">
+        <div class="urgency-tag">HOT</div>
+        <span class="category-tag">Smart City / IoT</span>
+        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">AI Traffic Manager</h3>
+        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><span>(4.9)</span></div>
+        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">AI-powered traffic management system with a voice assistant for seamless city navigation and routing.</p>
+        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
+            <i class="fas fa-microchip" style="color: #3b82f6;"></i> PyTorch, TensorFlow, IoT
+        </div>
+        <div class="price-container"><span class="price-strike">KSh 300,000</span><span class="price-current">KSh 210,000</span></div>
+        <button class="btn-add-cart" onclick="addToCart('AI Traffic Manager', 'KSh 210,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+    </div>
+
+    <div class="product-card">
+        <span class="category-tag">AgriTech</span>
+        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">Field Trial Manager</h3>
+        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><span>(4.8)</span></div>
+        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">Reproducible lab-to-field experiment tracking, data ingestion, and analytics for modern agronomists.</p>
+        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
+            <i class="fas fa-microchip" style="color: #3b82f6;"></i> Django, Postgres, Plotly
+        </div>
+        <div class="price-container"><span class="price-strike">KSh 180,000</span><span class="price-current">KSh 125,000</span></div>
+        <button class="btn-add-cart" onclick="addToCart('Field Trial Manager', 'KSh 125,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+    </div>
+
+    <div class="product-card">
+        <span class="category-tag">NLP / Automation</span>
+        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">Enterprise Chatbot</h3>
+        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><span>(4.3)</span></div>
+        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">AI Powered Chatbot customized for E-Learning, Agriculture, Bulk Email, and SMS Operations.</p>
+        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
+            <i class="fas fa-microchip" style="color: #3b82f6;"></i> Flask, TensorFlow, ReportLab
+        </div>
+        <div class="price-container"><span class="price-strike">KSh 70,000</span><span class="price-current">KSh 50,000</span></div>
+        <button class="btn-add-cart" onclick="addToCart('Enterprise Chatbot', 'KSh 50,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+    </div>
+
+    <div class="product-card">
+        <span class="category-tag">GreenTech</span>
+        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">Eco-Ride App</h3>
+        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><span>(4.7)</span></div>
+        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">A logistics solution targeting climate change through the use of artificial intelligence and route optimization.</p>
+        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
+            <i class="fas fa-microchip" style="color: #3b82f6;"></i> React Native, Flask, TensorFlow
+        </div>
+        <div class="price-container"><span class="price-strike">KSh 150,000</span><span class="price-current">KSh 95,000</span></div>
+        <button class="btn-add-cart" onclick="addToCart('Eco-Ride App', 'KSh 95,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+    </div>
+
+    <div class="product-card" style="border-color: var(--mp-primary); background: radial-gradient(circle at top right, rgba(37,99,235,0.05), white);">
+        <div class="urgency-tag">HOT</div>
+        <span class="category-tag">EcoTech / Vision</span>
+        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">KWS AI Surveillance</h3>
+        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><span>(5.0)</span></div>
+        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">Wildlife park surveillance for the early detection of poachers and abnormal environmental conditions.</p>
+        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
+            <i class="fas fa-microchip" style="color: #3b82f6;"></i> PyTorch, TensorFlow, IoT
+        </div>
+        <div class="price-container"><span class="price-strike">KSh 280,000</span><span class="price-current">KSh 195,000</span></div>
+        <button class="btn-add-cart" onclick="addToCart('KWS AI Surveillance', 'KSh 195,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+    </div>
+
+    <div class="product-card">
+        <span class="category-tag">FinTech / AgriTech</span>
+        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">ANIPRO AI</h3>
+        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><span>(4.8)</span></div>
+        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">Banking service connecting small scale farmers to insurance for algorithmic de-risking.</p>
+        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
+            <i class="fas fa-microchip" style="color: #3b82f6;"></i> Flask, TensorFlow, PyTorch
+        </div>
+        <div class="price-container"><span class="price-strike">KSh 200,000</span><span class="price-current">KSh 160,000</span></div>
+        <button class="btn-add-cart" onclick="addToCart('ANIPRO AI', 'KSh 160,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+    </div>
+
+    <div class="product-card">
+        <span class="category-tag">FinTech</span>
+        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">BKING Systems</h3>
+        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><span>(4.4)</span></div>
+        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">AI-Intelligent Banking system tailored for Insurers and credit facilities.</p>
+        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
+            <i class="fas fa-microchip" style="color: #3b82f6;"></i> Flask, NumPy, TensorFlow
+        </div>
+        <div class="price-container"><span class="price-strike">KSh 220,000</span><span class="price-current">KSh 175,000</span></div>
+        <button class="btn-add-cart" onclick="addToCart('BKING Systems', 'KSh 175,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+    </div>
+
+    <div class="product-card">
+        <span class="category-tag">AgriTech / Vision</span>
+        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">Plant Pathology AI</h3>
+        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><span>(4.5)</span></div>
+        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">AI system for plant disease detection via visual analysis, with voice navigation for field workers.</p>
+        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
+            <i class="fas fa-microchip" style="color: #3b82f6;"></i> PyTorch, GTTS, IoT
+        </div>
+        <div class="price-container"><span class="price-strike">KSh 140,000</span><span class="price-current">KSh 95,000</span></div>
+        <button class="btn-add-cart" onclick="addToCart('Plant Pathology AI', 'KSh 95,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+    </div>
+
+    <div class="product-card">
+        <span class="category-tag">AgriTech / Audio</span>
+        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">InsectAI Sensor</h3>
+        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><span>(4.3)</span></div>
+        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">An AI-powered system for intelligent insect detection using frequency sound analysis.</p>
+        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
+            <i class="fas fa-microchip" style="color: #3b82f6;"></i> TensorFlow, PyTorch, Audio AI
+        </div>
+        <div class="price-container"><span class="price-strike">KSh 130,000</span><span class="price-current">KSh 85,000</span></div>
+        <button class="btn-add-cart" onclick="addToCart('InsectAI Sensor', 'KSh 85,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+    </div>
+
+    <div class="product-card">
+        <span class="category-tag">AgriTech / Vision</span>
+        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">Poli AI Vision</h3>
+        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><span>(4.7)</span></div>
+        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">AI-Intelligent poultry management and surveillance system to monitor flock health.</p>
+        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
+            <i class="fas fa-microchip" style="color: #3b82f6;"></i> TensorFlow, PyTorch, OpenCV
+        </div>
+        <div class="price-container"><span class="price-strike">KSh 110,000</span><span class="price-current">KSh 75,000</span></div>
+        <button class="btn-add-cart" onclick="addToCart('Poli AI Vision', 'KSh 75,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+    </div>
+
+    <div class="product-card">
+        <span class="category-tag">IoT / Supply Chain</span>
+        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">FREEZE AI</h3>
+        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><span>(4.9)</span></div>
+        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">AI-Intelligent refrigerator maintenance for the early detection of food spoilage patterns.</p>
+        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
+            <i class="fas fa-microchip" style="color: #3b82f6;"></i> TensorFlow, IoT Sensors
+        </div>
+        <div class="price-container"><span class="price-strike">KSh 160,000</span><span class="price-current">KSh 110,000</span></div>
+        <button class="btn-add-cart" onclick="addToCart('FREEZE AI', 'KSh 110,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+    </div>
+
+    <div class="product-card" style="border-color: var(--mp-primary); background: radial-gradient(circle at top right, rgba(37,99,235,0.05), white);">
+        <div class="urgency-tag">HOT</div>
+        <span class="category-tag">HealthTech</span>
+        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">Smart Health AI</h3>
+        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><span>(4.8)</span></div>
+        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">Predicts malaria prone regions based on mosquito species and intelligently connects patients to doctors.</p>
+        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
+            <i class="fas fa-microchip" style="color: #3b82f6;"></i> Scikit-learn, TensorFlow
+        </div>
+        <div class="price-container"><span class="price-strike">KSh 190,000</span><span class="price-current">KSh 145,000</span></div>
+        <button class="btn-add-cart" onclick="addToCart('Smart Health AI', 'KSh 145,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+    </div>
+
+    <div class="product-card">
+        <span class="category-tag">EdTech / BioTech</span>
+        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">Reen AI</h3>
+        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><span>(4.4)</span></div>
+        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">Biochemistry education tool for visualizing drug molecules, 3D structures, and pharmacology data.</p>
+        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
+            <i class="fas fa-microchip" style="color: #3b82f6;"></i> Flask, 3D Rendering JS
+        </div>
+        <div class="price-container"><span class="price-strike">KSh 110,000</span><span class="price-current">KSh 80,000</span></div>
+        <button class="btn-add-cart" onclick="addToCart('Reen AI', 'KSh 80,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+    </div>
+
+    <div class="product-card">
+        <span class="category-tag">EdTech</span>
+        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">LEARN AI</h3>
+        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><span>(4.7)</span></div>
+        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">Online digital college infrastructure specifically optimized for teaching Artificial Intelligence curriculums.</p>
+        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
+            <i class="fas fa-microchip" style="color: #3b82f6;"></i> PyTorch, Video SDK
+        </div>
+        <div class="price-container"><span class="price-strike">KSh 150,000</span><span class="price-current">KSh 95,000</span></div>
+        <button class="btn-add-cart" onclick="addToCart('LEARN AI', 'KSh 95,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+    </div>
+
+    <div class="product-card">
+        <span class="category-tag">EdTech / NLP</span>
+        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">MIRA AI</h3>
+        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><span>(4.6)</span></div>
+        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">A weather-aware generative AI learning assistant that adapts study focus based on environmental context.</p>
+        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
+            <i class="fas fa-microchip" style="color: #3b82f6;"></i> Generative AI, Weather API
+        </div>
+        <div class="price-container"><span class="price-strike">KSh 100,000</span><span class="price-current">KSh 75,000</span></div>
+        <button class="btn-add-cart" onclick="addToCart('MIRA AI', 'KSh 75,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+    </div>
+
+    <div class="product-card">
+        <span class="category-tag">Productivity AI</span>
+        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">Digital Assistant Core</h3>
+        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><span>(4.2)</span></div>
+        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">AI-powered enterprise assistant API for automated scheduling, reminders, and team task management.</p>
+        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
+            <i class="fas fa-microchip" style="color: #3b82f6;"></i> React, WebSockets, NLP
+        </div>
+        <div class="price-container"><span class="price-strike">KSh 80,000</span><span class="price-current">KSh 55,000</span></div>
+        <button class="btn-add-cart" onclick="addToCart('Digital Assistant Core', 'KSh 55,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+    </div>
+
+    <div class="product-card">
+        <span class="category-tag">Productivity AI</span>
+        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">Smart Day Planner</h3>
+        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><span>(4.9)</span></div>
+        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">Mobile-ready AI planner that links user scheduling directly with health and wellness tracking.</p>
+        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
+            <i class="fas fa-microchip" style="color: #3b82f6;"></i> React Native, TensorFlow
+        </div>
+        <div class="price-container"><span class="price-strike">KSh 50,000</span><span class="price-current">KSh 35,000</span></div>
+        <button class="btn-add-cart" onclick="addToCart('Smart Day Planner', 'KSh 35,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+    </div>
+
+    <div class="product-card">
+        <span class="category-tag">Social / Matching</span>
+        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">Date Me AI Alg.</h3>
+        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><span>(4.1)</span></div>
+        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">A humor-based compatibility matching algorithm utilizing complex data scoring for social platforms.</p>
+        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
+            <i class="fas fa-microchip" style="color: #3b82f6;"></i> JS, Similarity Scoring
+        </div>
+        <div class="price-container"><span class="price-strike">KSh 40,000</span><span class="price-current">KSh 25,000</span></div>
+        <button class="btn-add-cart" onclick="addToCart('Date Me AI Alg.', 'KSh 25,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+    </div>
+
+</div>
+
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart(event)">
+    <div class="cart-panel" onclick="event.stopPropagation()">
+        <div class="cart-header">
+            <h2>Your Cart</h2>
+            <button onclick="toggleCart()" style="background:none; border:none; font-size: 1.5rem; cursor:pointer; color: #0f172a;">&times;</button>
+        </div>
+        <div class="cart-items" id="cartItemsContainer">
+            <p style="color: #94a3b8; text-align: center; margin-top: 50px;">Your cart is empty.</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotalDisplay">KSh 0</span>
+            </div>
+            <button class="btn-checkout" onclick="openCheckout()">Proceed to Checkout</button>
+        </div>
+    </div>
+</div>
+
+<div id="paymentModal" class="modal-overlay" onclick="closePaymentModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div style="background: #f8fafc; padding: 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0; color: #0f172a; font-size: 1.2rem;"><i class="fas fa-lock" style="color: #10b981;"></i> Secure Checkout</h3>
+            <button onclick="closePaymentModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #94a3b8;">&times;</button>
         </div>
 
-        <div class="modal-body" style="padding: 25px;">
-            
+        <div style="padding: 25px;">
             <div style="background: #eff6ff; padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6; margin-bottom: 25px;">
-                <p style="margin: 0; font-size: 0.85rem; color: #1e40af; font-weight: 600; text-transform: uppercase;">Order Summary</p>
+                <p style="margin: 0; font-size: 0.85rem; color: #1e40af; font-weight: 700; text-transform: uppercase;">Total Amount Due</p>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
-                    <strong id="modalModelName" style="font-size: 1.1rem; color: #1e3a8a;">Model Name</strong>
-                    <span id="modalModelPrice" style="font-weight: 700; color: #059669; font-size: 1.1rem;">0</span>
+                    <strong style="font-size: 1.1rem; color: #1e3a8a;" id="checkoutItemCount">0 Items</strong>
+                    <span id="modalModelPrice" style="font-weight: 800; color: #059669; font-size: 1.4rem;">0</span>
                 </div>
             </div>
 
@@ -70,20 +438,19 @@
             </div>
 
             <div id="tabMpesa" class="tab-content" style="display: block;">
-                <p style="font-size: 0.9rem; color: #475569; margin-bottom: 10px;">Enter M-Pesa number for instant STK push:</p>
+                <p style="font-size: 0.9rem; color: #475569; margin-bottom: 10px; font-weight: 600;">M-Pesa Express Checkout:</p>
                 <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                    <input type="text" id="mpesaPhone" placeholder="e.g. 0712345678" style="flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none;">
-                    <button onclick="initiateMpesa()" id="btnPayMpesa" style="background: #10b981; color: white; border: none; padding: 0 20px; border-radius: 6px; font-weight: 600; cursor: pointer;">PAY</button>
+                    <input type="text" id="mpesaPhone" placeholder="e.g. 0712345678" style="flex: 1; padding: 14px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; font-size: 1rem;">
+                    <button onclick="initiateMpesa()" id="btnPayMpesa" style="background: #10b981; color: white; border: none; padding: 0 25px; border-radius: 8px; font-weight: 800; cursor: pointer;">PAY</button>
                 </div>
-                <div id="mpesaStatus" style="font-size: 0.85rem; display: none;"></div>
+                <div id="mpesaStatus" style="font-size: 0.85rem; display: none; padding: 10px; border-radius: 6px; margin-top: 10px;"></div>
             </div>
 
             <div id="tabCard" class="tab-content" style="display: none;">
                 <form id="payment-form">
-                    <div id="card-element" style="padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; margin-bottom: 15px;">
-                        </div>
-                    <button id="submit-stripe" style="width: 100%; background: #6366f1; color: white; padding: 12px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">
-                        Pay Securely with Card
+                    <div id="card-element" style="padding: 14px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 15px; background: #f8fafc;"></div>
+                    <button id="submit-stripe" style="width: 100%; background: #0f172a; color: white; padding: 14px; border: none; border-radius: 8px; font-weight: 800; cursor: pointer;">
+                        Pay Securely
                     </button>
                     <div id="card-errors" style="color: #ef4444; font-size: 0.85rem; margin-top: 10px;"></div>
                 </form>
@@ -92,236 +459,118 @@
             <div id="tabPaypal" class="tab-content" style="display: none;">
                 <div id="paypal-button-container"></div>
             </div>
-
-            <div style="margin-top: 20px; text-align: center; font-size: 0.85rem;">
-                <a href="#" onclick="toggleBankDetails(); return false;" style="color: #64748b; text-decoration: none;">Or pay via Bank Transfer</a>
-                <div id="bankDetails" style="display: none; background: #f8fafc; padding: 10px; margin-top: 10px; border-radius: 6px; text-align: left; color: #475569;">
-                    <p style="margin: 2px 0;"><strong>Bank:</strong> I&M BANK</p>
-                    <p style="margin: 2px 0;"><strong>Acc Name:</strong> DELSTARFORD WORKS</p>
-                    <p style="margin: 2px 0;"><strong>Acc No:</strong> 06006610196151</p>
-                </div>
-            </div>
-
-        </div>
-        
-        <div class="modal-footer" style="background: #f8fafc; padding: 15px; text-align: center;">
-            <p style="font-size: 0.75rem; color: #94a3b8; margin: 0;">
-                <i class="fas fa-lock"></i> SSL Encrypted & Secure
-            </p>
         </div>
     </div>
-</div>
-
-<div class="anim-bounce-in" style="position: fixed; bottom: 30px; left: 30px; z-index: 100;">
-    <button onclick="toggleAudio()" id="audioControl" class="btn-primary" style="border: none; background: #2563eb; color: white; border-radius: 50px; padding: 12px 25px; font-size: 0.85rem; box-shadow: 0 4px 15px rgba(37,99,235,0.3); cursor: pointer; transition: all 0.3s;">
-        Listen to Overview
-    </button>
 </div>
 
 <script src="https://js.stripe.com/v3/"></script>
 <script src="https://www.paypal.com/sdk/js?client-id={{ paypal_client_id }}&currency=USD"></script>
 
 <script>
-    // --- 1. INITIALIZE STRIPE ---
-    const stripe = Stripe('{{ stripe_publishable_key }}');
-    const elements = stripe.elements();
-    const card = elements.create('card', {
-        style: {
-            base: {
-                fontSize: '16px',
-                color: '#32325d',
-            },
-        },
-    });
-    card.mount('#card-element');
+    // --- 1. SHOPPING CART LOGIC ---
+    let cart = JSON.parse(localStorage.getItem('delstarfordCart')) || [];
+    let cartTotalValue = 0;
 
-    // --- 2. GLOBAL STATE ---
-    let currentPrice = 0;
-    let currentModel = "";
-
-    // --- 3. MODAL FUNCTIONS (WITH GSAP ANIMATIONS) ---
-    function openPaymentModal(name, priceStr) {
-        document.getElementById('modalModelName').innerText = name;
-        document.getElementById('modalModelPrice').innerText = priceStr;
-        currentModel = name;
-        
-        // Clean Price: "KSh 85,000" -> 85000
-        currentPrice = parseInt(priceStr.replace(/[^0-9]/g, ''));
-        
-        const modal = document.getElementById('paymentModal');
-        const modalContent = modal.querySelector('.modal-content');
-        
-        // Make it visible for GSAP
-        modal.style.visibility = 'visible';
-        modal.style.display = 'flex';
-        
-        // Animate the background overlay fading in
-        gsap.to(modal, { opacity: 1, duration: 0.3 });
-        
-        // Animate the modal box bouncing in
-        gsap.fromTo(modalContent, 
-            { scale: 0.8, opacity: 0, y: 50 }, 
-            { scale: 1, opacity: 1, y: 0, duration: 0.5, ease: "back.out(1.5)" }
-        );
+    function formatPrice(priceString) {
+        return parseInt(priceString.replace(/[^0-9]/g, '')) || 0;
     }
 
-    function closeModal() {
-        const modal = document.getElementById('paymentModal');
-        const modalContent = modal.querySelector('.modal-content');
-
-        // Animate the modal box scaling down
-        gsap.to(modalContent, { scale: 0.8, opacity: 0, y: 50, duration: 0.3, ease: "power2.in" });
+    function addToCart(name, priceStr) {
+        const price = formatPrice(priceStr);
+        cart.push({ name: name, price: price, formatted: priceStr });
+        saveCart();
+        updateCartUI();
         
-        // Animate the background fading out, then hide it
-        gsap.to(modal, { 
-            opacity: 0, 
-            duration: 0.3, 
-            onComplete: () => {
-                modal.style.visibility = 'hidden';
-                modal.style.display = 'none';
-                document.getElementById('mpesaStatus').style.display = 'none';
-                document.getElementById('bankDetails').style.display = 'none';
-            }
-        });
+        const cartIcon = document.querySelector('.floating-cart');
+        cartIcon.style.transform = 'scale(1.3)';
+        setTimeout(() => cartIcon.style.transform = 'scale(1)', 200);
+        
+        toggleCart(true);
     }
 
-    // Tabs Logic
-    function openTab(evt, tabName) {
-        var i, tabcontent, tablinks;
-        tabcontent = document.getElementsByClassName("tab-content");
-        for (i = 0; i < tabcontent.length; i++) {
-            tabcontent[i].style.display = "none";
+    function removeFromCart(index) {
+        cart.splice(index, 1);
+        saveCart();
+        updateCartUI();
+    }
+
+    function saveCart() { localStorage.setItem('delstarfordCart', JSON.stringify(cart)); }
+
+    function updateCartUI() {
+        document.getElementById('cartCount').innerText = cart.length;
+        const container = document.getElementById('cartItemsContainer');
+        
+        cartTotalValue = cart.reduce((total, item) => total + item.price, 0);
+        document.getElementById('cartTotalDisplay').innerText = "KSh " + cartTotalValue.toLocaleString();
+
+        if (cart.length === 0) {
+            container.innerHTML = '<p style="color: #94a3b8; text-align: center; margin-top: 50px;">Your cart is empty.</p>';
+            return;
         }
-        tablinks = document.getElementsByClassName("tab-link");
-        for (i = 0; i < tablinks.length; i++) {
+
+        container.innerHTML = cart.map((item, index) => `
+            <div class="cart-item">
+                <div class="cart-item-info">
+                    <h4>${item.name}</h4>
+                    <p>KSh ${item.price.toLocaleString()}</p>
+                </div>
+                <button class="remove-item" onclick="removeFromCart(${index})"><i class="fas fa-trash-alt"></i></button>
+            </div>
+        `).join('');
+    }
+
+    function toggleCart(forceOpen = false) {
+        const overlay = document.getElementById('cartOverlay');
+        if (forceOpen) overlay.classList.add('active');
+        else overlay.classList.toggle('active');
+    }
+
+    function closeCart(e) {
+        if (!e || e.target.id === 'cartOverlay') document.getElementById('cartOverlay').classList.remove('active');
+    }
+
+    updateCartUI();
+
+    // --- 2. CHECKOUT MODAL LOGIC ---
+    function openCheckout() {
+        if (cart.length === 0) return alert("Your cart is empty!");
+        document.getElementById('cartOverlay').classList.remove('active');
+        
+        document.getElementById('checkoutItemCount').innerText = cart.length + (cart.length > 1 ? " Items" : " Item");
+        document.getElementById('modalModelPrice').innerText = "KSh " + cartTotalValue.toLocaleString();
+        document.getElementById('paymentModal').classList.add('active');
+    }
+
+    function closePaymentModal(e) {
+        if (!e || e.target.classList.contains('modal-overlay')) document.getElementById('paymentModal').classList.remove('active');
+    }
+
+    function openTab(evt, tabName) {
+        const tabcontent = document.getElementsByClassName("tab-content");
+        for (let i = 0; i < tabcontent.length; i++) tabcontent[i].style.display = "none";
+        
+        const tablinks = document.getElementsByClassName("tab-link");
+        for (let i = 0; i < tablinks.length; i++) {
             tablinks[i].style.borderBottom = "none";
             tablinks[i].style.color = "#64748b";
         }
         
-        const activeTab = document.getElementById(tabName);
-        activeTab.style.display = "block";
-        
-        // Small fade animation when switching tabs
-        gsap.fromTo(activeTab, {opacity: 0, y: 10}, {opacity: 1, y: 0, duration: 0.3});
-        
+        document.getElementById(tabName).style.display = "block";
         evt.currentTarget.style.borderBottom = "2px solid #10b981";
         evt.currentTarget.style.color = "#0f172a";
     }
 
-    // Toggle Bank Details
-    function toggleBankDetails() {
-        const div = document.getElementById('bankDetails');
-        if (div.style.display === 'none') {
-            div.style.display = 'block';
-            gsap.fromTo(div, {opacity: 0, height: 0}, {opacity: 1, height: "auto", duration: 0.3});
-        } else {
-            div.style.display = 'none';
-        }
-    }
+    // Fake Countdown Timer for FOMO
+    let time = 14 * 3600 + 59 * 60 + 59;
+    setInterval(() => {
+        const h = Math.floor(time / 3600).toString().padStart(2, '0');
+        const m = Math.floor((time % 3600) / 60).toString().padStart(2, '0');
+        const s = (time % 60).toString().padStart(2, '0');
+        document.getElementById('countdown').innerText = `${h}:${m}:${s}`;
+        time--;
+    }, 1000);
 
-    // Close on background click
-    window.onclick = function(event) {
-        const modal = document.getElementById('paymentModal');
-        if (event.target == modal) {
-            closeModal();
-        }
-    }
-
-    // --- 4. PAYMENT LOGIC: M-PESA ---
-    function initiateMpesa() {
-        const phone = document.getElementById('mpesaPhone').value;
-        const btn = document.getElementById('btnPayMpesa');
-        const status = document.getElementById('mpesaStatus');
-
-        btn.disabled = true;
-        btn.innerText = "...";
-        status.style.display = 'block';
-        status.innerText = "Sending STK Push...";
-        status.style.color = "#475569";
-
-        fetch('/pay', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ phone: phone, amount: currentPrice })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.ResponseCode === "0") {
-                status.innerHTML = "✅ <b>Sent!</b> Check your phone for PIN.";
-                status.style.color = "green";
-            } else {
-                status.innerText = "❌ Error: " + (data.errorMessage || "Failed");
-                status.style.color = "red";
-                btn.innerText = "PAY";
-                btn.disabled = false;
-            }
-        })
-        .catch(err => {
-            status.innerText = "❌ Network Error";
-            status.style.color = "red";
-            btn.innerText = "PAY";
-            btn.disabled = false;
-        });
-    }
-
-    // --- 5. PAYMENT LOGIC: STRIPE ---
-    const form = document.getElementById('payment-form');
-    form.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const btn = document.getElementById('submit-stripe');
-        btn.disabled = true;
-        btn.innerText = "Processing...";
-
-        // 1. Create PaymentIntent on Backend
-        const res = await fetch('/create-payment-intent', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ amount: currentPrice })
-        });
-        const { clientSecret } = await res.json();
-
-        // 2. Confirm Payment with Stripe
-        const result = await stripe.confirmCardPayment(clientSecret, {
-            payment_method: {
-                card: card,
-                billing_details: { name: 'Delstarford Customer' }
-            }
-        });
-
-        if (result.error) {
-            document.getElementById('card-errors').textContent = result.error.message;
-            btn.disabled = false;
-            btn.innerText = "Pay Securely";
-        } else {
-            if (result.paymentIntent.status === 'succeeded') {
-                alert("Payment Successful!");
-                closeModal();
-                btn.innerText = "Paid";
-            }
-        }
-    });
-
-    // --- 6. PAYMENT LOGIC: PAYPAL ---
-    paypal.Buttons({
-        createOrder: function(data, actions) {
-            // Convert KES to USD (Approx 130 rate)
-            const usdAmount = (currentPrice / 130).toFixed(2);
-            return actions.order.create({
-                purchase_units: [{
-                    amount: { value: usdAmount },
-                    description: currentModel
-                }]
-            });
-        },
-        onApprove: function(data, actions) {
-            return actions.order.capture().then(function(details) {
-                alert('Transaction completed by ' + details.payer.name.given_name);
-                closeModal();
-            });
-        }
-    }).render('#paypal-button-container');
-
-    // --- 7. AUDIO LOGIC ---
+    // --- 3. SPEECH SYNTHESIS (Audio Reader) ---
     let isSpeaking = false;
     const synth = window.speechSynthesis;
 
@@ -330,11 +579,11 @@
         if (synth.speaking) {
             synth.cancel();
             isSpeaking = false;
-            btn.innerHTML = "🔊 Listen to Overview";
+            btn.innerHTML = '<i class="fas fa-volume-up"></i> Listen to Catalog Overview';
             btn.style.background = "#2563eb";
         } else {
             isSpeaking = true;
-            btn.innerHTML = "🔇 Stop Listening";
+            btn.innerHTML = '<i class="fas fa-volume-mute"></i> Stop Listening';
             btn.style.background = "#ef4444";
             speakProjects();
         }
@@ -342,33 +591,112 @@
 
     function speakProjects() {
         const btn = document.getElementById('audioControl');
-        let textToRead = "Welcome to the Delstarford AI Lab. ";
-        const cards = document.querySelectorAll('.model-card');
+        let textToRead = "Welcome to the Delstarford Works Marketplace. Here are our top production-ready models. ";
+        
+        const cards = document.querySelectorAll('.product-card');
         cards.forEach((card, index) => {
-            if(index < 5) { 
+            // Read only the first 6 to keep it short and sweet
+            if(index < 6) { 
                 const title = card.querySelector('h3')?.innerText;
-                const price = card.querySelector('.price-tag')?.innerText;
-                textToRead += `Solution: ${title}. Price: ${price}. `;
+                const price = card.querySelector('.price-current')?.innerText;
+                textToRead += `System: ${title}. Enterprise License: ${price}. `;
             }
         });
+        textToRead += "Browse the rest of the 22 models below. Add desired models to your cart to checkout.";
+        
         const utterance = new SpeechSynthesisUtterance(textToRead);
+        utterance.rate = 0.9;
         utterance.onend = function() {
             isSpeaking = false;
-            btn.innerHTML = "🔊 Listen to Overview";
+            btn.innerHTML = '<i class="fas fa-volume-up"></i> Listen to Catalog Overview';
             btn.style.background = "#2563eb";
         };
         synth.speak(utterance);
     }
-</script>
 
-<style>
-    .model-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    // --- 4. PAYMENT API INTEGRATIONS ---
+    function initiateMpesa() {
+        const phone = document.getElementById('mpesaPhone').value;
+        const btn = document.getElementById('btnPayMpesa');
+        const status = document.getElementById('mpesaStatus');
+
+        if(phone.length < 10) return alert("Please enter a valid phone number.");
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        status.style.display = 'block';
+        status.innerText = "Initiating Secure STK Push...";
+        status.style.background = "#fffbeb"; status.style.color = "#d97706";
+
+        fetch('/pay', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ phone: phone, amount: cartTotalValue, items: cart })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.ResponseCode === "0") {
+                status.innerHTML = "✅ <b>Authorization Sent!</b> Check your phone to enter M-Pesa PIN.";
+                status.style.background = "#ecfdf5"; status.style.color = "#059669";
+                cart = []; saveCart(); updateCartUI();
+            } else {
+                throw new Error(data.errorMessage || "M-Pesa API Failed");
+            }
+        })
+        .catch(err => {
+            status.innerHTML = "❌ " + err.message;
+            status.style.background = "#fef2f2"; status.style.color = "#dc2626";
+            btn.innerText = "PAY";
+            btn.disabled = false;
+        });
     }
-    .tab-link:hover {
-        background-color: #f8fafc !important;
+
+    if (typeof Stripe !== 'undefined' && '{{ stripe_publishable_key }}' !== '') {
+        const stripe = Stripe('{{ stripe_publishable_key }}');
+        const elements = stripe.elements();
+        const card = elements.create('card', { style: { base: { fontSize: '16px', color: '#0f172a' } } });
+        card.mount('#card-element');
+
+        document.getElementById('payment-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const btn = document.getElementById('submit-stripe');
+            btn.disabled = true; btn.innerText = "Processing...";
+
+            try {
+                const res = await fetch('/create-payment-intent', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ amount: cartTotalValue })
+                });
+                const { clientSecret } = await res.json();
+                const result = await stripe.confirmCardPayment(clientSecret, { payment_method: { card: card } });
+
+                if (result.error) throw result.error;
+                
+                alert("Payment Successful! Licenses added to your dashboard.");
+                cart = []; saveCart(); updateCartUI(); closePaymentModal();
+                
+            } catch(e) {
+                document.getElementById('card-errors').textContent = e.message;
+                btn.disabled = false; btn.innerText = "Pay Securely";
+            }
+        });
     }
-</style>
+
+    if(typeof paypal !== 'undefined') {
+        paypal.Buttons({
+            createOrder: function(data, actions) {
+                const usdAmount = (cartTotalValue / 130).toFixed(2);
+                return actions.order.create({ purchase_units: [{ amount: { value: usdAmount }, description: "AI Lab Order" }] });
+            },
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(details) {
+                    alert('Transaction completed by ' + details.payer.name.given_name);
+                    cart = []; saveCart(); updateCartUI(); closePaymentModal();
+                });
+            }
+        }).render('#paypal-button-container');
+    }
+</script>
 
 {% endblock %}

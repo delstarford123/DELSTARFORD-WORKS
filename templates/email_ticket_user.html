@@ -14,18 +14,26 @@
             mso-table-lspace: 0pt;
             mso-table-rspace: 0pt;
         }
+        img {
+            -ms-interpolation-mode: bicubic;
+            border: 0;
+            height: auto;
+            line-height: 100%;
+            outline: none;
+            text-decoration: none;
+        }
         body {
             margin: 0;
             padding: 0;
             width: 100% !important;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f1f5f9;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #f8fafc;
         }
 
         /* Main Container */
         .wrapper {
             width: 100%;
-            background-color: #f1f5f9;
+            background-color: #f8fafc;
             padding: 40px 20px;
         }
         .main-table {
@@ -36,49 +44,52 @@
             border-spacing: 0;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            border-top: 6px solid #2563eb; /* Corporate Blue for Support */
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border-top: 6px solid #3b82f6; /* Primary Blue */
         }
 
         /* Header */
         .header {
-            background-color: #0f172a; /* Navy */
-            padding: 35px 20px;
+            background-color: #0f172a; /* Deep Navy */
+            padding: 40px 20px;
             text-align: center;
         }
         .logo {
             display: block;
             margin: 0 auto;
-            max-width: 150px;
+            max-width: 160px;
             height: auto;
         }
         .tagline {
-            color: #94a3b8;
-            font-size: 12px;
-            margin-top: 12px;
+            color: #64748b;
+            font-size: 11px;
+            margin-top: 15px;
             text-transform: uppercase;
             letter-spacing: 2px;
+            font-weight: 700;
         }
 
         /* Content Area */
         .content {
-            padding: 40px 35px;
+            padding: 40px 40px;
             color: #334155;
-            font-size: 16px;
-            line-height: 1.6;
+            font-size: 15px;
+            line-height: 1.7;
         }
         .content h2 {
             color: #0f172a;
             margin-top: 0;
             font-size: 22px;
             margin-bottom: 20px;
-            font-weight: 700;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            text-align: center;
         }
 
         /* Ticket ID Box */
         .ticket-box {
             background-color: #eff6ff;
-            border: 2px dashed #bfdbfe;
+            border: 1px dashed #bfdbfe;
             padding: 25px;
             text-align: center;
             border-radius: 8px;
@@ -86,15 +97,15 @@
         }
         .ticket-label {
             display: block;
-            font-size: 13px;
+            font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: #3b82f6;
             margin-bottom: 8px;
-            font-weight: 700;
+            font-weight: 800;
         }
         .ticket-number {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 800;
             color: #1e3a8a;
             display: block;
@@ -113,19 +124,19 @@
             border: 1px solid #e2e8f0;
         }
         .details-table td {
-            padding: 15px;
+            padding: 16px 20px;
             border-bottom: 1px solid #e2e8f0;
-            font-size: 15px;
+            font-size: 14px;
         }
         .details-table tr:last-child td {
             border-bottom: none;
         }
         .details-label {
-            font-weight: 700;
+            font-weight: 800;
             color: #64748b;
             width: 35%;
             text-transform: uppercase;
-            font-size: 13px;
+            font-size: 12px;
             letter-spacing: 0.5px;
         }
         .status-badge {
@@ -133,47 +144,78 @@
             color: #166534;
             padding: 4px 12px;
             border-radius: 20px;
-            font-size: 13px;
-            font-weight: 700;
+            font-size: 12px;
+            font-weight: 800;
             text-transform: uppercase;
             display: inline-block;
+            letter-spacing: 0.5px;
+            border: 1px solid #bbf7d0;
         }
 
-        /* Action Button */
+        /* Call to Action Button */
         .btn-container {
             text-align: center;
-            margin: 35px 0 10px 0;
+            margin: 35px 0 20px 0;
         }
         .btn {
-            background-color: #0f172a;
+            background-color: #3b82f6;
             color: #ffffff !important;
-            padding: 14px 30px;
-            border-radius: 6px;
-            font-weight: 600;
+            padding: 16px 35px;
+            border-radius: 8px;
+            font-weight: 700;
             display: inline-block;
             text-decoration: none;
             font-size: 15px;
-            transition: background-color 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        .btn:hover {
-            background-color: #1e293b !important;
+
+        /* Signature Block */
+        .signature {
+            margin-top: 40px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 30px;
+        }
+        .signature p {
+            margin: 3px 0;
+        }
+        .sig-name {
+            font-weight: 800;
+            color: #0f172a;
+            font-size: 15px;
+        }
+        .sig-title {
+            color: #64748b;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .sig-company {
+            color: #2563eb;
+            font-size: 13px;
+            font-weight: 700;
         }
 
         /* Footer */
         .footer {
             background-color: #f8fafc;
-            padding: 25px 35px;
+            padding: 30px 40px;
             text-align: center;
-            font-size: 13px;
-            color: #64748b;
+            font-size: 12px;
+            color: #94a3b8;
             border-top: 1px solid #e2e8f0;
-            line-height: 1.5;
+            line-height: 1.6;
         }
-        .footer a {
-            color: #2563eb;
+        .footer-links {
+            margin-top: 15px;
+        }
+        .footer-links a {
+            color: #64748b;
             text-decoration: none;
+            margin: 0 12px;
+            font-weight: 600;
         }
-        .footer a:hover {
+        .footer-links a:hover {
+            color: #3b82f6;
             text-decoration: underline;
         }
     </style>
@@ -184,7 +226,9 @@
             
             <tr>
                 <td class="header">
-                    <img src="https://delstarford-works.onrender.com/static/images/DEL%20SVG.svg" alt="Delstarford Works Logo" class="logo">
+                    <a href="https://delstarfordworks.co.ke" target="_blank">
+                        <img src="https://delstarfordworks.co.ke/static/images/DEL%20SVG.svg" alt="Delstarford Works Logo" class="logo">
+                    </a>
                     <div class="tagline">Engineering & Support Team</div>
                 </td>
             </tr>
@@ -192,11 +236,12 @@
             <tr>
                 <td class="content">
                     <h2>Support Request Received</h2>
-                    <p>Hello {{ name }},</p>
-                    <p>We have successfully received your support request. A ticket has been generated in our system and routed to our engineering team for review.</p>
+                    
+                    <p>Hello <strong>{{ name }}</strong>,</p>
+                    <p>We have successfully received your support request. A ticket has been generated in our system and routed to our technical engineering team for review.</p>
                     
                     <div class="ticket-box">
-                        <span class="ticket-label">Ticket Reference ID</span>
+                        <span class="ticket-label">System Reference ID</span>
                         <span class="ticket-number">{{ ticket_id }}</span>
                     </div>
 
@@ -206,15 +251,23 @@
                             <td><span class="status-badge">Open</span></td>
                         </tr>
                         <tr>
-                            <td class="details-label">Subject</td>
-                            <td style="font-weight: 600; color: #0f172a;">{{ subject }}</td>
+                            <td class="details-label">Subject Line</td>
+                            <td style="font-weight: 700; color: #0f172a;">{{ subject }}</td>
                         </tr>
                     </table>
 
-                    <p style="font-size: 14px; color: #64748b; text-align: center;">Our team typically reviews new tickets within 24 hours. You will receive an email update as soon as the status changes, or you can track it via your client dashboard.</p>
+                    <p style="font-size: 13px; color: #64748b; text-align: center; font-style: italic;">
+                        Our team typically reviews new tickets within 24 hours. You will receive an email update as soon as the status changes, or you can track it directly via your secure client portal.
+                    </p>
                     
                     <div class="btn-container">
-                        <a href="https://delstarfordworks.co.ke/dashboard" class="btn">View Dashboard</a>
+                        <a href="https://delstarfordworks.co.ke/dashboard" class="btn">View Client Dashboard</a>
+                    </div>
+
+                    <div class="signature">
+                        <p class="sig-name">Delstarford Isaiah</p>
+                        <p class="sig-title">Chief Executive Director & Lead Engineer</p>
+                        <p class="sig-company">Delstarford Works</p>
                     </div>
                 </td>
             </tr>
@@ -222,7 +275,12 @@
             <tr>
                 <td class="footer">
                     <p style="margin: 0 0 10px 0;">&copy; 2026 Delstarford Works. All rights reserved.</p>
-                    <p style="margin: 0;">Kakamega, Kenya | <a href="mailto:delstarfordisaiah@gmail.com">Contact Support</a></p>
+                    <p style="margin: 0;">Innovation Hub, Kakamega, Kenya | +254 707 605 751</p>
+                    <div class="footer-links">
+                        <a href="https://delstarfordworks.co.ke">Website</a>
+                        <a href="https://delstarfordworks.co.ke/services">Our Services</a>
+                        <a href="mailto:delstarfordisaiah@gmail.com">Contact Support</a>
+                    </div>
                 </td>
             </tr>
 

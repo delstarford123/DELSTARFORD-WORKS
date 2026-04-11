@@ -1,199 +1,342 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<section class="contact-hero" style="overflow: hidden;">
-    <div class="container text-center">
-        <span class="hero-badge anim-scale-up">24/7 Support</span>
-        <h1 class="anim-reveal-wipe">Let's Start a Conversation</h1>
-        <p class="anim-split-words">Whether you need a custom AI model, a biotech consultation, or support for the Smart Farmers platform, our team in Kakamega is ready.</p>
+<style>
+    /* --- CORE STYLING --- */
+    :root {
+        --c-primary: #3b82f6;
+        --c-primary-hover: #2563eb;
+        --c-dark: #0f172a;
+        --c-bg: #f8fafc;
+        --c-card: #ffffff;
+        --c-border: #e2e8f0;
+        --c-text: #334155;
+        --c-muted: #64748b;
+    }
+
+    body { background: var(--c-bg); font-family: 'Plus Jakarta Sans', sans-serif; }
+
+    /* --- HERO SECTION --- */
+    .contact-hero { 
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); 
+        padding: 100px 20px 80px; 
+        text-align: center; 
+        position: relative;
+        overflow: hidden;
+    }
+    .contact-hero::before { 
+        content: ""; position: absolute; top: -50%; left: 50%; transform: translateX(-50%); 
+        width: 600px; height: 600px; background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%); 
+        z-index: 0; pointer-events: none; 
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
+    .hero-badge { display: inline-block; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa; padding: 6px 15px; border-radius: 50px; font-size: 0.85rem; font-weight: 800; margin-bottom: 20px; letter-spacing: 1px; text-transform: uppercase; }
+    .contact-hero h1 { color: #ffffff; font-size: 3rem; font-weight: 800; letter-spacing: -1px; margin: 0 0 15px; }
+    .contact-hero p { color: #cbd5e1; font-size: 1.15rem; line-height: 1.6; margin: 0; }
+
+    /* --- MAIN LAYOUT --- */
+    .contact-wrapper { padding: 60px 20px; max-width: 1280px; margin: 0 auto; }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1.6fr; gap: 50px; }
+
+    /* --- CONTACT DETAILS (LEFT COLUMN) --- */
+    .contact-details { display: flex; flex-direction: column; gap: 20px; }
+    
+    .detail-card { 
+        background: var(--c-card); padding: 25px; border-radius: 12px; display: flex; align-items: flex-start; gap: 15px; 
+        border: 1px solid var(--c-border); box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: all 0.3s ease; 
+    }
+    .detail-card:hover { transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.05); border-color: var(--c-primary); }
+    
+    .icon-circle { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
+    .email-icon { background: #eff6ff; color: #2563eb; }
+    .whatsapp-icon { background: #dcfce7; color: #16a34a; }
+    .loc-icon { background: #fef2f2; color: #dc2626; }
+    
+    .detail-card h3 { margin: 0 0 5px 0; font-size: 1.1rem; color: var(--c-dark); font-weight: 800; }
+    .detail-card p { margin: 0 0 10px 0; font-size: 0.85rem; color: var(--c-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;}
+    .link-item { color: var(--c-text); font-weight: 700; text-decoration: none; font-size: 0.95rem; transition: color 0.2s;}
+    .link-item:hover { color: var(--c-primary); }
+    .call-btn { display: inline-block; margin-top: 8px; font-size: 0.85rem; font-weight: 800; color: var(--c-primary); background: #eff6ff; padding: 4px 10px; border-radius: 6px; text-decoration: none;}
+
+    .map-wrapper { border-radius: 12px; overflow: hidden; border: 1px solid var(--c-border); box-shadow: 0 10px 20px rgba(0,0,0,0.03); height: 250px; background: #e2e8f0; position: relative;}
+    .map-wrapper iframe { width: 100%; height: 100%; border: none; }
+
+    /* --- CONTACT FORM (RIGHT COLUMN) --- */
+    .form-card { 
+        background: var(--c-card); padding: 40px; border-radius: 16px; border: 1px solid var(--c-border); 
+        box-shadow: 0 20px 40px rgba(0,0,0,0.04); 
+    }
+    .form-header { margin-bottom: 30px; border-bottom: 1px solid #f1f5f9; padding-bottom: 20px;}
+    .form-header h2 { margin: 0 0 5px; color: var(--c-dark); font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px;}
+    .form-header p { margin: 0; color: var(--c-muted); font-size: 0.95rem;}
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .form-group { margin-bottom: 20px; }
+    .full-width { grid-column: span 2; }
+    
+    .form-group label { display: block; font-weight: 800; font-size: 0.8rem; text-transform: uppercase; color: var(--c-muted); margin-bottom: 8px; letter-spacing: 0.5px;}
+    
+    .input-wrapper { display: flex; align-items: center; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0 15px; transition: all 0.3s; }
+    .input-wrapper:focus-within { border-color: var(--c-primary); background: #ffffff; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
+    .input-wrapper i { color: #94a3b8; margin-right: 12px; transition: 0.3s; }
+    .input-wrapper:focus-within i { color: var(--c-primary); }
+    
+    .input-wrapper input, .input-wrapper select, .input-wrapper textarea { 
+        width: 100%; border: none; background: transparent; padding: 14px 0; outline: none; color: var(--c-text); font-size: 0.95rem; font-family: inherit; font-weight: 500;
+    }
+    .input-wrapper select { cursor: pointer; }
+    .input-wrapper.top-align { align-items: flex-start; padding-top: 14px; }
+    .input-wrapper textarea { resize: vertical; min-height: 120px; }
+
+    .btn-submit { 
+        width: 100%; background: var(--c-primary); color: white; border: none; padding: 16px; border-radius: 8px; 
+        font-weight: 800; font-size: 1.05rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px;
+        text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 6px 20px rgba(59,130,246,0.3);
+    }
+    .btn-submit:hover { background: var(--c-primary-hover); transform: translateY(-3px); box-shadow: 0 10px 25px rgba(59,130,246,0.4); }
+    .btn-submit:disabled { background: #94a3b8; box-shadow: none; cursor: not-allowed; transform: none; }
+
+    .form-status { margin-top: 20px; text-align: center; font-size: 0.95rem; font-weight: 700; padding: 15px; border-radius: 8px; display: none;}
+    .status-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0;}
+    .status-error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca;}
+
+    /* --- RESPONSIVE --- */
+    @media (max-width: 992px) {
+        .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+        .map-wrapper { height: 300px; }
+    }
+    @media (max-width: 600px) {
+        .form-grid { grid-template-columns: 1fr; }
+        .full-width { grid-column: span 1; }
+        .contact-hero h1 { font-size: 2.2rem; }
+    }
+</style>
+
+<section class="contact-hero">
+    <div class="hero-content gsap-anim" style="visibility: hidden;">
+        <span class="hero-badge">24/7 Priority Support</span>
+        <h1>Let's Start a Conversation</h1>
+        <p>Whether you need a custom enterprise AI model, an agricultural biotech consultation, or direct technical support, our team in Kakamega is ready to execute.</p>
     </div>
 </section>
 
-<section class="container py-50" style="overflow: hidden;">
-    <div class="contact-grid-advanced">
+<div class="contact-wrapper">
+    <div class="contact-grid">
         
-        <div class="contact-details anim-stagger-grid">
-            <div class="detail-card">
+        <div class="contact-details">
+            <div class="detail-card gsap-stagger" style="visibility: hidden;">
                 <div class="icon-circle email-icon"><i class="fas fa-envelope"></i></div>
                 <div>
-                    <h3>Email Us</h3>
-                    <p>For official quotes & inquiries</p>
+                    <h3>Direct Email</h3>
+                    <p>Official quotes & documentation</p>
                     <a href="mailto:delstarfordisaiah@gmail.com" class="link-item">delstarfordisaiah@gmail.com</a>
                 </div>
             </div>
 
-            <div class="detail-card">
+            <div class="detail-card gsap-stagger" style="visibility: hidden;">
                 <div class="icon-circle whatsapp-icon"><i class="fab fa-whatsapp"></i></div>
                 <div>
-                    <h3>WhatsApp / Call</h3>
-                    <p>Instant chat & Voice Support</p>
-                    <a href="https://wa.me/254707605751" target="_blank" class="link-item">+254 707 605 751</a>
-                    <a href="tel:+254707605751" class="link-item" style="display:block; margin-top:5px; font-size:0.85rem; color:#2563eb;">📞 Call Now</a>
+                    <h3>WhatsApp / Voice</h3>
+                    <p>Instant chat & direct support</p>
+                    <a href="https://wa.me/254707605751" target="_blank" class="link-item">+254 707 605 751</a><br>
+                    <a href="tel:+254707605751" class="call-btn"><i class="fas fa-phone-alt"></i> Call Now</a>
                 </div>
             </div>
 
-            <div class="detail-card">
+            <div class="detail-card gsap-stagger" style="visibility: hidden;">
                 <div class="icon-circle loc-icon"><i class="fas fa-map-marker-alt"></i></div>
                 <div>
-                    <h3>Visit HQ</h3>
-                    <p>Innovation Hub</p>
+                    <h3>Corporate HQ</h3>
+                    <p>Physical Operations & Lab</p>
                     <span class="link-item">Near MMUST, Kakamega, Kenya</span>
                 </div>
             </div>
 
-            <div class="map-wrapper" style="overflow: hidden; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+            <div class="map-wrapper gsap-stagger" style="visibility: hidden;">
                 <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.691740925783!2d34.76569131475354!3d0.2827309997977053!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x17803ed65c27663f%3A0x6a0a033a39c59573!2sMasinde%20Muliro%20University%20of%20Science%20and%20Technology!5e0!3m2!1sen!2ske!4v1625567890123!5m2!1sen!2ske" 
-                    width="100%" height="250" style="border:0; border-radius: 12px;" allowfullscreen="" loading="lazy">
+                    src="https://maps.google.com/maps?q=Masinde%20Muliro%20University,%20Kakamega&t=&z=14&ie=UTF8&iwloc=&output=embed" 
+                    allowfullscreen="" loading="lazy">
                 </iframe>
             </div>
         </div>
 
-        <div class="contact-form-wrapper gsap-slide-right">
-            <div class="form-header anim-fade-up">
-                <h3>Send a Message</h3>
-                <p>We usually reply within 2 hours.</p>
+        <div class="form-card gsap-slide-up" style="visibility: hidden;">
+            <div class="form-header">
+                <h2>Secure Transmission Node</h2>
+                <p>Fill out the form below. High Council responds within 2 hours.</p>
             </div>
             
-            <form id="contactForm" class="advanced-form">
-                <div class="form-group anim-fade-up">
-                    <label>Full Name</label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-user"></i>
-                        <input type="text" id="name" name="name" placeholder="e.g. Kevin Omondi" required>
+            <form id="contactForm">
+                <div class="form-grid">
+                    
+                    <div class="form-group">
+                        <label>Full Legal Name</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="name" name="name" placeholder="e.g. Brian Smith" required>
+                        </div>
                     </div>
+
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="email" name="email" placeholder="briansmith@gmail.com" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Organization / Company</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-building"></i>
+                            <input type="text" id="company" name="company" placeholder="e.g. AgriTech Ltd (Optional)">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-phone"></i>
+                            <input type="tel" id="phone" name="phone" placeholder="e.g. +254 700 000 000" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Service Category</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-layer-group"></i>
+                            <select id="subject" name="subject" required>
+                                <option value="" disabled selected>Select an area of interest...</option>
+                                <option value="Custom AI Deployment">Custom AI Deployment</option>
+                                <option value="Agri-Biotech Analysis">Agri-Biotech Analysis</option>
+                                <option value="Enterprise Web Systems">Enterprise Web Systems</option>
+                                <option value="Market Intelligence Report">Market Intelligence Report</option>
+                                <option value="Technical Support">Existing Client Support</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Project Scope / Message</label>
+                        <div class="input-wrapper top-align">
+                            <i class="fas fa-comment-alt" style="margin-top: 4px;"></i>
+                            <textarea id="message" name="message" placeholder="Provide details about your operational requirements or technical issues..." required></textarea>
+                        </div>
+                    </div>
+
                 </div>
 
-                <div class="form-group anim-fade-up">
-                    <label>Email Address</label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" id="email" name="email" placeholder="kevin@example.com" required>
-                    </div>
-                </div>
-
-                <div class="form-group anim-fade-up">
-                    <label>Service Category</label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-list"></i>
-                        <select id="subject" name="subject">
-                            <option value="General Inquiry">General Inquiry</option>
-                            <option value="AI Model Request">AI Model Request</option>
-                            <option value="Agri-Biotech Service">Agri-Biotech Service</option>
-                            <option value="Support Issue">Technical Support</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group anim-fade-up">
-                    <label>Message</label>
-                    <div class="input-wrapper top-align">
-                        <i class="fas fa-comment-alt"></i>
-                        <textarea id="message" name="message" rows="5" placeholder="Tell us about your project or issue..." required></textarea>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-primary w-full anim-bounce-in" id="sendBtn">
-                    <span>Send Message</span>
+                <button type="submit" class="btn-submit" id="sendBtn">
+                    <span>Transmit Message</span>
                     <i class="fas fa-paper-plane"></i>
                 </button>
-                <div id="formStatus" style="margin-top: 15px; text-align: center; font-size: 0.9rem; font-weight: 500;"></div>
+                
+                <div id="formStatus" class="form-status"></div>
             </form>
         </div>
     </div>
-</section>
+</div>
 
 <script>
+    // --- GSAP BULLETPROOF ANIMATIONS ---
     document.addEventListener("DOMContentLoaded", () => {
-        if(typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
-            // Slide form from the right
-            gsap.utils.toArray(".gsap-slide-right").forEach(el => {
-                gsap.from(el, {
-                    scrollTrigger: { trigger: el, start: "top 85%" },
-                    x: 100,
-                    opacity: 0,
-                    duration: 1,
-                    ease: "power3.out"
-                });
-            });
+        // Fallback if GSAP fails
+        if (typeof gsap === 'undefined') {
+            document.querySelectorAll('.gsap-anim, .gsap-stagger, .gsap-slide-up').forEach(el => el.style.visibility = 'visible');
+            return;
         }
+
+        // Hero Animation (Instant)
+        gsap.fromTo(".gsap-anim", 
+            { y: 30, autoAlpha: 0 }, 
+            { y: 0, autoAlpha: 1, duration: 0.8, ease: "power3.out" }
+        );
+
+        // Left Column Stagger
+        gsap.fromTo(".gsap-stagger",
+            { x: -30, autoAlpha: 0 },
+            { x: 0, autoAlpha: 1, stagger: 0.15, duration: 0.8, ease: "power2.out", delay: 0.2 }
+        );
+
+        // Right Column Form Slide Up
+        gsap.fromTo(".gsap-slide-up",
+            { y: 50, autoAlpha: 0 },
+            { y: 0, autoAlpha: 1, duration: 0.8, ease: "power3.out", delay: 0.4 }
+        );
     });
 
-    // Existing Form Submission Logic
-    document.getElementById('contactForm').addEventListener('submit', function(e) {
-        e.preventDefault(); // Prevent page reload
+    // --- FORM SUBMISSION LOGIC ---
+    document.getElementById('contactForm').addEventListener('submit', async function(e) {
+        e.preventDefault(); 
 
         const btn = document.getElementById('sendBtn');
-        const status = document.getElementById('formStatus');
+        const statusBox = document.getElementById('formStatus');
         const originalBtnText = btn.innerHTML;
 
-        // 1. UI Loading State
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+        // UI Loading State
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Transmitting...';
         btn.disabled = true;
-        status.style.display = 'none';
+        statusBox.style.display = 'none';
+        statusBox.className = 'form-status'; 
 
-        // 2. Gather Data
+        // Gather Data (Including new fields)
         const formData = {
             name: document.getElementById('name').value,
             email: document.getElementById('email').value,
+            company: document.getElementById('company').value || 'Not Provided',
+            phone: document.getElementById('phone').value,
             subject: document.getElementById('subject').value,
             message: document.getElementById('message').value
         };
 
-        // 3. Send to Python Backend
-        fetch('/contact', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        })
-        .then(response => response.json())
-        .then(data => {
+        // Ensure we format the subject to include company/phone for the backend to see easily
+        // since the backend might only be expecting 'subject' and 'message'.
+        const enhancedMessage = `
+COMPANY: ${formData.company}
+PHONE: ${formData.phone}
+------------------------
+MESSAGE:
+${formData.message}
+        `.trim();
+
+        const payload = {
+            name: formData.name,
+            email: formData.email,
+            subject: formData.subject,
+            message: enhancedMessage
+        };
+
+        try {
+            const response = await fetch('/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            
+            const data = await response.json();
+
             if (data.success) {
-                status.innerHTML = '<span style="color: #10b981;">✅ Message Sent! We will check it shortly.</span>';
-                status.style.display = 'block';
-                document.getElementById('contactForm').reset(); // Clear form
-                // Add a little pop to the success message
+                statusBox.innerHTML = '<i class="fas fa-check-circle"></i> Message Successfully Transmitted! We will be in touch.';
+                statusBox.classList.add('status-success');
+                statusBox.style.display = 'block';
+                document.getElementById('contactForm').reset(); 
+                
+                // Pop animation for success
                 if(typeof gsap !== 'undefined') {
-                    gsap.fromTo(status, {scale: 0.8, opacity: 0}, {scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)"});
+                    gsap.fromTo(statusBox, {scale: 0.9, autoAlpha: 0}, {scale: 1, autoAlpha: 1, duration: 0.4, ease: "back.out(2)"});
                 }
             } else {
-                status.innerHTML = '<span style="color: #ef4444;">❌ Error sending message. Try WhatsApp.</span>';
-                status.style.display = 'block';
+                throw new Error(data.message || "Transmission failed.");
             }
-        })
-        .catch(error => {
-            status.innerHTML = '<span style="color: #ef4444;">❌ Network Error. Please try again.</span>';
-            status.style.display = 'block';
-        })
-        .finally(() => {
-            // Reset Button
+        } catch (error) {
+            statusBox.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Network Error. Please try reaching out via WhatsApp.';
+            statusBox.classList.add('status-error');
+            statusBox.style.display = 'block';
+        } finally {
             btn.innerHTML = originalBtnText;
             btn.disabled = false;
-        });
+        }
     });
 </script>
-
-<style>
-    .contact-grid-advanced { display: grid; grid-template-columns: 1fr 1.5fr; gap: 40px; }
-    .contact-details { display: flex; flex-direction: column; gap: 20px; }
-    .detail-card { background: white; padding: 20px; border-radius: 12px; display: flex; align-items: center; gap: 15px; border: 1px solid #e2e8f0; transition: transform 0.2s; }
-    .detail-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-    .icon-circle { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-    .email-icon { background: #eff6ff; color: #2563eb; }
-    .whatsapp-icon { background: #dcfce7; color: #16a34a; }
-    .loc-icon { background: #fef2f2; color: #dc2626; }
-    .contact-form-wrapper { background: white; padding: 40px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-    .input-wrapper { display: flex; align-items: center; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0 15px; transition: border-color 0.3s, box-shadow 0.3s; }
-    .input-wrapper:focus-within { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
-    .input-wrapper i { color: #94a3b8; margin-right: 10px; }
-    .input-wrapper input, .input-wrapper select, .input-wrapper textarea { width: 100%; border: none; background: transparent; padding: 12px 0; outline: none; color: #334155; }
-    .top-align { align-items: flex-start; padding-top: 12px; }
-    
-    @media (max-width: 768px) {
-        .contact-grid-advanced { grid-template-columns: 1fr; }
-    }
-</style>
 
 {% endblock %}

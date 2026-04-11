@@ -1,319 +1,411 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="contact-page-wrapper" style="overflow: hidden;">
-    <div class="contact-container">
-        
-        <div class="contact-info gsap-panel-left">
-            <h2 class="anim-reveal-wipe">Let's Engineer the Future</h2>
-            <p class="subtitle anim-split-words">Whether you need a custom AI model, a biotech solution, or an agricultural management system, we build robust, scalable technology tailored to your needs.</p>
-
-            <div class="info-items anim-stagger-grid">
-                <div class="info-item">
-                    <div class="icon-box"><i class="fas fa-check-circle"></i></div>
-                    <div>
-                        <h4>Precision Engineering</h4>
-                        <p>Solutions built on data-driven architectures.</p>
-                    </div>
-                </div>
-                <div class="info-item">
-                    <div class="icon-box"><i class="fas fa-shield-alt"></i></div>
-                    <div>
-                        <h4>Secure & Scalable</h4>
-                        <p>Enterprise-grade security standards.</p>
-                    </div>
-                </div>
-                <div class="info-item">
-                    <div class="icon-box"><i class="fas fa-clock"></i></div>
-                    <div>
-                        <h4>Rapid Deployment</h4>
-                        <p>From prototype to production in record time.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="contact-direct anim-fade-up" style="animation-delay: 0.5s;">
-                <p><i class="fas fa-envelope"></i> delstarfordisaiah@gmail.com</p>
-                <p><i class="fas fa-map-marker-alt"></i> Kakamega, Kenya</p>
-            </div>
-        </div>
-
-        <div class="form-section gsap-panel-right">
-            <form id="requestForm">
-                <h3 class="anim-reveal-wipe">Project Request</h3>
-                
-                <div class="form-row">
-                    <div class="form-group gsap-form-element">
-                        <label>Full Name</label>
-                        <input type="text" name="name" placeholder="e.g. Kevin Omondi" required>
-                    </div>
-                    <div class="form-group gsap-form-element">
-                        <label>Email Address</label>
-                        <input type="email" name="email" placeholder="kevin@example.com" required>
-                    </div>
-                </div>
-
-                <div class="form-group gsap-form-element">
-                    <label>Service Category</label>
-                    <select name="service" required>
-                        <option value="" disabled selected>Select a Service...</option>
-                        <optgroup label="Artificial Intelligence">
-                            <option value="custom_ai">Custom AI Model Development</option>
-                            <option value="computer_vision">Computer Vision (Medical/Agri)</option>
-                            <option value="nlp">Natural Language Processing</option>
-                        </optgroup>
-                        <optgroup label="Biotechnology">
-                            <option value="genetic_analysis">Biotech Genetic Analysis</option>
-                            <option value="insemination">Artificial Insemination Program</option>
-                        </optgroup>
-                        <optgroup label="Web Systems">
-                            <option value="dashboard">Custom Dashboard System</option>
-                            <option value="api">API Development</option>
-                        </optgroup>
-                    </select>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group gsap-form-element">
-                        <label>Estimated Budget</label>
-                        <select name="budget">
-                            <option value="standard">Standard (KSH 30k - 100k)</option>
-                            <option value="pro">Professional (KSH 100k - 500k)</option>
-                            <option value="enterprise">Enterprise (KSH 500k+)</option>
-                        </select>
-                    </div>
-                    <div class="form-group gsap-form-element">
-                        <label>Timeline</label>
-                        <select name="timeline">
-                            <option value="urgent">Urgent (< 1 Month)</option>
-                            <option value="flexible">Flexible (1-3 Months)</option>
-                            <option value="longterm">Long Term (3+ Months)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group gsap-form-element">
-                    <label>Project Details</label>
-                    <textarea name="details" rows="5" placeholder="Describe your objectives, target audience, and any specific technical requirements..." required></textarea>
-                </div>
-
-                <button type="submit" class="btn-submit anim-bounce-in" id="submitBtn">
-                    <span>Send Request</span>
-                    <div class="spinner" id="btnSpinner"></div>
-                </button>
-                
-                <p id="formMessage" class="form-message"></p>
-            </form>
-        </div>
-    </div>
-</div>
-
 <style>
+    /* --- CORE STYLING & VARIABLES --- */
+    :root {
+        --cp-primary: #3b82f6;
+        --cp-primary-hover: #2563eb;
+        --cp-dark: #0f172a;
+        --cp-bg: #f1f5f9;
+        --cp-card: #ffffff;
+        --cp-border: #e2e8f0;
+        --cp-border-heavy: #cbd5e1;
+        --cp-text: #334155;
+        --cp-muted: #64748b;
+        --cp-success: #10b981;
+        --cp-danger: #ef4444;
+    }
+
+    body { background: var(--cp-bg); font-family: 'Plus Jakarta Sans', sans-serif; }
+
     .contact-page-wrapper {
-        min-height: 90vh;
+        min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 60px 20px;
-        background-color: #f1f5f9;
+        padding: 80px 20px;
+        background-color: var(--cp-bg);
+        background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+        background-size: 40px 40px;
     }
 
     .contact-container {
         display: grid;
-        grid-template-columns: 1fr 1.5fr;
-        background: white;
-        max-width: 1100px;
+        grid-template-columns: 1fr 1.6fr;
+        background: var(--cp-card);
+        max-width: 1200px;
         width: 100%;
-        border-radius: 20px;
-        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
+        border-radius: 24px;
+        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15), 0 0 0 1px rgba(15, 23, 42, 0.05);
         overflow: hidden;
     }
 
-    /* Left Side */
+    /* --- LEFT PANEL (INFO) --- */
     .contact-info {
-        background: #0f172a;
+        background: var(--cp-dark);
         color: white;
-        padding: 50px;
+        padding: 60px 50px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         position: relative;
     }
     
-    /* Adds a subtle geometric pattern to the dark background */
     .contact-info::before {
         content: '';
         position: absolute;
         top: 0; right: 0; bottom: 0; left: 0;
-        background-image: radial-gradient(circle at top right, rgba(59, 130, 246, 0.1) 0%, transparent 40%);
+        background-image: radial-gradient(circle at top right, rgba(59, 130, 246, 0.15) 0%, transparent 60%);
         pointer-events: none;
     }
 
-    .contact-info h2 { font-size: 2.2rem; margin-bottom: 15px; color: white; line-height: 1.2; position: relative; z-index: 1;}
-    .subtitle { color: #94a3b8; line-height: 1.6; margin-bottom: 40px; position: relative; z-index: 1;}
+    .contact-info h2 { font-size: 2.4rem; margin: 0 0 15px 0; color: white; line-height: 1.1; font-weight: 800; letter-spacing: -1px; position: relative; z-index: 1;}
+    .contact-info .subtitle { color: #94a3b8; font-size: 1.05rem; line-height: 1.6; margin-bottom: 50px; position: relative; z-index: 1; font-weight: 500;}
     
-    .info-items { display: flex; flex-direction: column; gap: 30px; position: relative; z-index: 1;}
-    .info-item { display: flex; gap: 18px; align-items: flex-start; }
+    .info-items { display: flex; flex-direction: column; gap: 35px; position: relative; z-index: 1;}
+    .info-item { display: flex; gap: 20px; align-items: flex-start; }
     
     .icon-box {
         background: rgba(59, 130, 246, 0.1);
-        width: 40px; height: 40px;
-        border-radius: 10px;
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        width: 48px; height: 48px;
+        border-radius: 12px;
         display: flex; align-items: center; justify-content: center;
-        flex-shrink: 0;
+        flex-shrink: 0; transition: 0.3s;
     }
-    .info-item i { color: #3b82f6; font-size: 1.2rem; }
+    .info-item:hover .icon-box { background: var(--cp-primary); border-color: var(--cp-primary); transform: scale(1.05); }
+    .info-item:hover i { color: white; }
+    .info-item i { color: var(--cp-primary); font-size: 1.3rem; transition: 0.3s;}
     
-    .info-item h4 { margin: 0 0 5px 0; font-size: 1.05rem; letter-spacing: 0.5px; }
-    .info-item p { margin: 0; color: #cbd5e1; font-size: 0.9rem; line-height: 1.5; }
+    .info-item h4 { margin: 0 0 6px 0; font-size: 1.1rem; letter-spacing: 0.5px; font-weight: 800; }
+    .info-item p { margin: 0; color: #cbd5e1; font-size: 0.95rem; line-height: 1.5; }
 
-    .contact-direct { margin-top: 50px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 25px; position: relative; z-index: 1;}
-    .contact-direct p { display: flex; align-items: center; gap: 12px; color: #cbd5e1; margin: 12px 0; font-weight: 500;}
-    .contact-direct i { color: #10b981; }
+    .contact-direct { margin-top: 60px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 30px; position: relative; z-index: 1;}
+    .contact-direct p { display: flex; align-items: center; gap: 15px; color: #e2e8f0; margin: 15px 0; font-weight: 600; font-size: 0.95rem;}
+    .contact-direct i { color: var(--cp-success); font-size: 1.2rem;}
 
-    /* Right Side (Form) */
-    .form-section { padding: 60px 50px; }
-    .form-section h3 { margin: 0 0 30px 0; color: #0f172a; font-size: 1.8rem; }
+    /* --- RIGHT PANEL (FORM) --- */
+    .form-section { padding: 60px; background: var(--cp-card); }
+    .form-section h3 { margin: 0 0 10px 0; color: var(--cp-dark); font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px;}
+    .form-section > p { margin: 0 0 35px 0; color: var(--cp-muted); font-size: 0.95rem; font-weight: 500;}
 
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .form-group { margin-bottom: 22px; }
-    .form-group label { display: block; font-size: 0.85rem; font-weight: 700; color: #475569; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;}
+    .form-group { margin-bottom: 25px; }
+    .full-width { grid-column: span 2; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 800; color: var(--cp-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;}
     
-    input, select, textarea {
-        width: 100%;
-        padding: 14px 16px;
-        border: 1px solid #cbd5e1;
-        border-radius: 8px;
-        font-family: inherit;
-        font-size: 0.95rem;
-        background: #f8fafc;
-        color: #0f172a;
-        transition: all 0.3s ease;
-    }
-    input::placeholder, textarea::placeholder { color: #94a3b8; }
+    .input-wrapper { display: flex; align-items: center; background: #f8fafc; border: 1px solid var(--cp-border-heavy); border-radius: 8px; padding: 0 16px; transition: all 0.3s ease; }
+    .input-wrapper:focus-within { border-color: var(--cp-primary); background: white; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
+    .input-wrapper i { color: #94a3b8; margin-right: 12px; font-size: 1.1rem; transition: 0.3s;}
+    .input-wrapper:focus-within i { color: var(--cp-primary); }
     
-    input:focus, select:focus, textarea:focus {
-        outline: none;
-        border-color: #3b82f6;
-        background: white;
-        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    .input-wrapper input, .input-wrapper select, .input-wrapper textarea { 
+        width: 100%; border: none; background: transparent; padding: 15px 0; outline: none; color: var(--cp-dark); font-size: 0.95rem; font-family: inherit; font-weight: 500;
     }
+    .input-wrapper select { cursor: pointer; appearance: none; }
+    .input-wrapper.top-align { align-items: flex-start; padding-top: 15px; }
+    .input-wrapper textarea { resize: vertical; min-height: 120px; line-height: 1.6;}
+    
+    input::placeholder, textarea::placeholder { color: #94a3b8; font-weight: 400;}
 
+    /* Custom Select Arrow */
+    .select-container { position: relative; width: 100%; }
+    .select-arrow { position: absolute; right: 0; top: 50%; transform: translateY(-50%); color: var(--cp-primary); pointer-events: none; font-size: 1rem;}
+
+    /* Highly Visible Submit Button */
     .btn-submit {
-        background: #2563eb;
+        background: var(--cp-primary);
         color: white;
         width: 100%;
-        padding: 16px;
+        padding: 18px;
         border: none;
         border-radius: 8px;
-        font-weight: 700;
+        font-weight: 800;
         font-size: 1.05rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
         cursor: pointer;
-        display: flex; justify-content: center; align-items: center; gap: 10px;
-        transition: all 0.3s;
-        margin-top: 10px;
+        display: flex; justify-content: center; align-items: center; gap: 12px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-top: 15px;
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
     }
-    .btn-submit:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2); }
-    .btn-submit:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-submit:hover { background: var(--cp-primary-hover); transform: translateY(-3px); box-shadow: 0 12px 25px rgba(59, 130, 246, 0.4); }
+    .btn-submit:disabled { background: var(--cp-muted); cursor: not-allowed; transform: none; box-shadow: none; }
 
-    .spinner {
-        width: 20px; height: 20px;
-        border: 3px solid rgba(255,255,255,0.3);
-        border-radius: 50%;
-        border-top-color: white;
-        animation: spin 1s ease-in-out infinite;
-        display: none;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    .form-message { margin-top: 20px; font-size: 0.95rem; text-align: center; font-weight: 700; padding: 15px; border-radius: 8px; display: none;}
 
-    .form-message { margin-top: 20px; font-size: 0.95rem; text-align: center; font-weight: 600; padding: 10px; border-radius: 6px; display: none;}
-    .form-message.success { color: #047857; background: #d1fae5; border: 1px solid #a7f3d0; display: block;}
-    .form-message.error { color: #b91c1c; background: #fee2e2; border: 1px solid #fecaca; display: block;}
-
-    @media (max-width: 850px) {
-        .contact-container { grid-template-columns: 1fr; }
+    @media (max-width: 992px) {
+        .contact-container { grid-template-columns: 1fr; max-width: 700px;}
         .form-row { grid-template-columns: 1fr; }
-        .contact-info { padding: 40px 30px; }
-        .form-section { padding: 40px 30px; }
+        .full-width { grid-column: span 1; }
+        .contact-info { padding: 50px 40px; }
+        .form-section { padding: 50px 40px; }
     }
 </style>
 
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        if(typeof gsap !== 'undefined') {
-            const tl = gsap.timeline();
+<div class="contact-page-wrapper">
+    <div class="contact-container">
+        
+        <div class="contact-info gsap-panel-left" style="visibility: hidden;">
+            <h2>Let's Engineer<br>the Future</h2>
+            <p class="subtitle">Whether you need a custom AI architecture, a biotech validation solution, or an enterprise management system, we build robust technology tailored to your exact operational needs.</p>
 
-            // 1. Panels slide in from opposite sides
-            tl.from(".gsap-panel-left", { x: -100, opacity: 0, duration: 0.8, ease: "power3.out" })
-              .from(".gsap-panel-right", { x: 100, opacity: 0, duration: 0.8, ease: "power3.out" }, "-=0.6")
-              
-            // 2. Form fields stagger in
-              .from(".gsap-form-element", {
-                  y: 20, 
-                  opacity: 0, 
-                  stagger: 0.1, 
-                  duration: 0.5, 
-                  ease: "power2.out"
-              }, "-=0.4");
+            <div class="info-items">
+                <div class="info-item">
+                    <div class="icon-box"><i class="fas fa-microchip"></i></div>
+                    <div>
+                        <h4>Precision Engineering</h4>
+                        <p>Solutions built on mathematically sound, data-driven architectures.</p>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="icon-box"><i class="fas fa-shield-alt"></i></div>
+                    <div>
+                        <h4>Secure & Scalable</h4>
+                        <p>Enterprise-grade security standards and cloud infrastructure.</p>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="icon-box"><i class="fas fa-rocket"></i></div>
+                    <div>
+                        <h4>Rapid Deployment</h4>
+                        <p>Transition from prototype to full production in record time.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-direct">
+                <p><i class="fas fa-envelope"></i> delstarfordisaiah@gmail.com</p>
+                <p><i class="fas fa-map-marker-alt"></i> Innovation Hub, Kakamega, Kenya</p>
+            </div>
+        </div>
+
+        <div class="form-section gsap-panel-right" style="visibility: hidden;">
+            <form id="requestForm">
+                <h3>Official Project Request</h3>
+                <p>Complete the parameters below. The High Council responds within 2 hours.</p>
+                
+                <div class="form-row">
+                    <div class="form-group gsap-form-element">
+                        <label>Full Legal Name</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="reqName" name="name" placeholder="e.g. Brian Smith" required>
+                        </div>
+                    </div>
+                    <div class="form-group gsap-form-element">
+                        <label>Email Address</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="reqEmail" name="email" placeholder="briansmith@gmail.com" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group gsap-form-element">
+                        <label>Company / Organization</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-building"></i>
+                            <input type="text" id="reqCompany" placeholder="AgriTech Ltd (Optional)">
+                        </div>
+                    </div>
+                    <div class="form-group gsap-form-element">
+                        <label>Phone Number</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-phone"></i>
+                            <input type="tel" id="reqPhone" placeholder="+254 700 000 000" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group gsap-form-element full-width">
+                    <label>Primary Service Category</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-layer-group"></i>
+                        <div class="select-container">
+                            <select id="reqService" name="service" required>
+                                <option value="" disabled selected>Select an architectural domain...</option>
+                                <optgroup label="Artificial Intelligence">
+                                    <option value="Custom AI Model Development">Custom AI Model Development</option>
+                                    <option value="Computer Vision (Medical/Agri)">Computer Vision (Medical/Agri)</option>
+                                    <option value="Natural Language Processing">Natural Language Processing</option>
+                                </optgroup>
+                                <optgroup label="Biotechnology">
+                                    <option value="Biotech Genetic Analysis">Biotech Genetic Analysis</option>
+                                    <option value="Biophysical System Modeling">Biophysical System Modeling</option>
+                                </optgroup>
+                                <optgroup label="Web & Enterprise Systems">
+                                    <option value="Custom Dashboard System">Custom Dashboard System</option>
+                                    <option value="Secure API Development">Secure API Development</option>
+                                </optgroup>
+                            </select>
+                            <i class="fas fa-chevron-down select-arrow"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group gsap-form-element">
+                        <label>Estimated Budget</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-wallet"></i>
+                            <div class="select-container">
+                                <select id="reqBudget">
+                                    <option value="Standard (KSH 30k - 100k)">Standard (KSH 30k - 100k)</option>
+                                    <option value="Professional (KSH 100k - 500k)">Professional (KSH 100k - 500k)</option>
+                                    <option value="Enterprise (KSH 500k+)">Enterprise (KSH 500k+)</option>
+                                </select>
+                                <i class="fas fa-chevron-down select-arrow"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group gsap-form-element">
+                        <label>Deployment Timeline</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-calendar-alt"></i>
+                            <div class="select-container">
+                                <select id="reqTimeline">
+                                    <option value="Urgent (< 1 Month)">Urgent (< 1 Month)</option>
+                                    <option value="Flexible (1-3 Months)">Flexible (1-3 Months)</option>
+                                    <option value="Long Term (3+ Months)">Long Term (3+ Months)</option>
+                                </select>
+                                <i class="fas fa-chevron-down select-arrow"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group gsap-form-element full-width">
+                    <label>Project Objectives & Details</label>
+                    <div class="input-wrapper top-align">
+                        <i class="fas fa-align-left" style="margin-top: 4px;"></i>
+                        <textarea id="reqDetails" rows="4" placeholder="Describe your operational objectives, target audience, and any specific technical or biological constraints..." required></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit gsap-form-element" id="submitBtn">
+                    <span id="btnText">Transmit Official Request</span>
+                    <i class="fas fa-paper-plane" id="btnIcon"></i>
+                </button>
+                
+                <div id="formMessage" class="form-message"></div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- GSAP BULLETPROOF ANIMATIONS ---
+    document.addEventListener("DOMContentLoaded", () => {
+        if(typeof gsap === 'undefined') {
+            document.querySelectorAll('.gsap-panel-left, .gsap-panel-right').forEach(el => el.style.visibility = 'visible');
+            return;
         }
+
+        const tl = gsap.timeline();
+
+        // Panels slide in from opposite sides
+        tl.fromTo(".gsap-panel-left", 
+            { x: -50, autoAlpha: 0 }, 
+            { x: 0, autoAlpha: 1, duration: 0.8, ease: "power3.out" }
+        )
+        .fromTo(".gsap-panel-right", 
+            { x: 50, autoAlpha: 0 }, 
+            { x: 0, autoAlpha: 1, duration: 0.8, ease: "power3.out" }, 
+            "-=0.6"
+        )
+        // Form fields stagger up
+        .fromTo(".gsap-form-element", 
+            { y: 20, autoAlpha: 0 }, 
+            { y: 0, autoAlpha: 1, stagger: 0.08, duration: 0.5, ease: "power2.out" }, 
+            "-=0.4"
+        );
     });
 
+    // --- FORM SUBMISSION LOGIC ---
     document.getElementById('requestForm').onsubmit = async (e) => {
         e.preventDefault();
         
         const btn = document.getElementById('submitBtn');
-        const spinner = document.getElementById('btnSpinner');
-        const btnText = btn.querySelector('span');
+        const btnText = document.getElementById('btnText');
+        const btnIcon = document.getElementById('btnIcon');
         const msg = document.getElementById('formMessage');
+        const originalText = btnText.textContent;
         
-        // 1. SAFETY CHECK: If already processing, stop here.
         if (btn.disabled) return;
 
-        // 2. DISABLE BUTTON IMMEDIATELY (Prevents Triple Submit)
+        // UI Loading State
         btn.disabled = true;
         btnText.textContent = "Processing...";
-        spinner.style.display = 'block';
+        btnIcon.className = "fas fa-circle-notch fa-spin";
+        msg.style.display = 'none';
         
-        // Reset message
-        msg.textContent = "";
-        msg.className = "form-message";
-        
-        const formData = new FormData(e.target);
+        // Compile Payload for Python Backend
+        // Your existing backend /custom route expects: name, email, service, details
+        // We compile the extra fields into the 'details' section so it formats beautifully in your database/email
+        const company = document.getElementById('reqCompany').value || 'Not Provided';
+        const phone = document.getElementById('reqPhone').value;
+        const budget = document.getElementById('reqBudget').value;
+        const timeline = document.getElementById('reqTimeline').value;
+        const rawDetails = document.getElementById('reqDetails').value;
+
+        const compiledDetails = `
+COMPANY: ${company}
+PHONE: ${phone}
+BUDGET TIER: ${budget}
+TIMELINE: ${timeline}
+------------------------
+PROJECT DETAILS:
+${rawDetails}
+        `.trim();
+
+        const formData = new FormData();
+        formData.append('name', document.getElementById('reqName').value);
+        formData.append('email', document.getElementById('reqEmail').value);
+        formData.append('service', document.getElementById('reqService').value);
+        formData.append('details', compiledDetails);
         
         try {
             const response = await fetch('/custom', { method: 'POST', body: formData });
-            
             if (!response.ok) throw new Error('Network error');
             
             const result = await response.json();
             
-            // 3. Success
-            msg.textContent = result.message || "Request sent successfully!";
-            msg.className = "form-message success";
-            e.target.reset(); 
-            
-            // Animate success message pop-in
-            if(typeof gsap !== 'undefined') {
-                gsap.fromTo(msg, {scale: 0.9, opacity: 0}, {scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)"});
-            }
-            
-        } catch (error) {
-            // 4. Error
-            console.error(error);
-            msg.textContent = "Error sending request. Please try again.";
-            msg.className = "form-message error";
-            
-            // Re-enable button ONLY on error so they can fix it
-            btn.disabled = false;
-        } finally {
-            // 5. Cleanup
-            spinner.style.display = 'none';
-            if (!btn.disabled) {
-                btnText.textContent = "Send Request";
-            } else {
+            if (result.success) {
+                // Success State
+                msg.innerHTML = '<i class="fas fa-check-circle"></i> ' + (result.message || "Request transmitted successfully! High Council will review shortly.");
+                msg.style.background = "#dcfce7";
+                msg.style.color = "#166534";
+                msg.style.border = "1px solid #bbf7d0";
+                msg.style.display = 'block';
+                
+                e.target.reset(); 
                 btnText.textContent = "Request Sent";
-                btn.style.background = "#10b981"; // Turn button green on success
+                btnIcon.className = "fas fa-check";
+                btn.style.background = "var(--cp-success)";
+                
+                if(typeof gsap !== 'undefined') {
+                    gsap.fromTo(msg, {scale: 0.95, autoAlpha: 0}, {scale: 1, autoAlpha: 1, duration: 0.4, ease: "back.out(2)"});
+                }
+                return; // Exit function so button stays green
+            } else {
+                throw new Error(result.message || "Transmission failed.");
             }
+        } catch (error) {
+            // Error State
+            console.error(error);
+            msg.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error sending request. Please ensure all fields are correct or contact us directly.';
+            msg.style.background = "#fee2e2";
+            msg.style.color = "#991b1b";
+            msg.style.border = "1px solid #fecaca";
+            msg.style.display = 'block';
+            
+            btn.disabled = false;
+            btnText.textContent = originalText;
+            btnIcon.className = "fas fa-paper-plane";
         }
     };
 </script>

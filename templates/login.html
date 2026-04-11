@@ -1,110 +1,246 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<style>
+    /* --- CSS VARIABLES & RESET --- */
+    :root {
+        --log-primary: #3b82f6;
+        --log-primary-hover: #2563eb;
+        --log-dark: #0f172a;
+        --log-bg: #f8fafc;
+        --log-card: #ffffff;
+        --log-border: #e2e8f0;
+        --log-text: #334155;
+        --log-muted: #64748b;
+        --log-success: #10b981;
+        --log-danger: #ef4444;
+    }
+
+    body { background: var(--log-bg); font-family: 'Plus Jakarta Sans', sans-serif; }
+
+    /* --- AUTH LAYOUT --- */
+    .auth-section { 
+        min-height: calc(100vh - 80px); 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        background-color: var(--log-bg);
+        background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+        background-size: 40px 40px;
+        padding: 40px 20px; 
+        box-sizing: border-box; 
+    }
+    
+    .auth-card { 
+        background: var(--log-card); 
+        padding: 50px 40px; 
+        border-radius: 20px; 
+        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15), 0 0 0 1px rgba(15, 23, 42, 0.05); 
+        width: 100%; 
+        max-width: 480px; 
+        box-sizing: border-box; 
+    }
+    
+    /* --- HEADER --- */
+    .auth-header { text-align: center; margin-bottom: 40px; }
+    .auth-logo { height: 45px; margin-bottom: 25px; }
+    .auth-header h2 { font-size: 2rem; color: var(--log-dark); margin: 0 0 8px 0; font-weight: 800; letter-spacing: -0.5px;}
+    .auth-header p { color: var(--log-muted); font-size: 1rem; margin: 0; font-weight: 500;}
+    
+    /* --- FORM ELEMENTS --- */
+    .form-group { margin-bottom: 25px; width: 100%; box-sizing: border-box; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 800; color: var(--log-muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+    
+    .input-wrapper { 
+        display: flex; align-items: center; background: var(--log-bg); border: 1px solid var(--log-border); 
+        border-radius: 8px; padding: 0 16px; transition: all 0.3s ease; width: 100%; box-sizing: border-box; 
+    }
+    .input-wrapper:focus-within { border-color: var(--log-primary); background: var(--log-card); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
+    
+    .input-icon { color: #94a3b8; margin-right: 14px; font-size: 1.1rem; transition: 0.3s; width: 20px; text-align: center;}
+    .input-wrapper:focus-within .input-icon { color: var(--log-primary); }
+    
+    .input-wrapper input { 
+        width: 100%; border: none; background: transparent; padding: 16px 0; 
+        outline: none; color: var(--log-dark); font-size: 1rem; font-family: inherit; font-weight: 500;
+    }
+    .input-wrapper input::placeholder { color: #94a3b8; font-weight: 400;}
+
+    /* Password Toggle Eye */
+    .toggle-password {
+        background: none; border: none; color: #94a3b8; cursor: pointer;
+        padding: 0 5px; font-size: 1rem; transition: 0.2s; outline: none;
+    }
+    .toggle-password:hover { color: var(--log-primary); }
+    
+    /* --- HIGH VISIBILITY BUTTON --- */
+    .btn-primary {
+        background: var(--log-primary);
+        color: #ffffff; width: 100%; padding: 18px; border: none; border-radius: 8px;
+        font-weight: 800; font-size: 1.05rem; letter-spacing: 0.5px; cursor: pointer; text-transform: uppercase;
+        display: flex; justify-content: center; align-items: center; gap: 10px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-top: 30px; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+    }
+    .btn-primary:hover { background: var(--log-primary-hover); transform: translateY(-3px); box-shadow: 0 12px 25px rgba(59, 130, 246, 0.4); }
+    .btn-primary:disabled { background: var(--log-muted); cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* --- ALERTS & FOOTER --- */
+    .auth-alert { 
+        background: #fee2e2; color: #991b1b; font-size: 0.9rem; text-align: center; 
+        margin-top: 20px; padding: 12px; display: none; font-weight: 700; border-radius: 8px; border: 1px solid #fecaca;
+    }
+
+    .auth-footer { text-align: center; margin-top: 35px; font-size: 0.95rem; color: var(--log-muted); border-top: 1px solid var(--log-border); padding-top: 25px; font-weight: 500;}
+    .auth-footer a { color: var(--log-primary); font-weight: 800; text-decoration: none; transition: 0.2s; margin-left: 5px;}
+    .auth-footer a:hover { color: var(--log-dark); text-decoration: underline;}
+    
+    /* Spinner Animation */
+    .spinner-icon { animation: spin 1s linear infinite; }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+
+    @media (max-width: 500px) { 
+        .auth-card { padding: 40px 25px; border-radius: 16px; } 
+        .auth-header h2 { font-size: 1.6rem; } 
+    }
+</style>
+
 <section class="auth-section">
-    <div class="auth-card" id="login-container">
+    <div class="auth-card gsap-card" style="visibility: hidden;">
         
         <div class="auth-header">
-            <img src="{{ url_for('static', filename='images/DEL SVG.svg') }}" alt="DW Logo" class="auth-logo">
-            <h2>Welcome Back</h2>
-            <p>Enter your credentials to access the terminal.</p>
+            <img src="{{ url_for('static', filename='images/DEL SVG.svg') }}" alt="DW Logo" class="auth-logo gsap-stagger">
+            <h2 class="gsap-stagger">Welcome Back</h2>
+            <p class="gsap-stagger">Secure Client Authentication</p>
         </div>
 
         <form id="loginForm" class="advanced-form">
-            <div class="form-group">
+            <div class="form-group gsap-stagger">
                 <label>Email Address</label>
                 <div class="input-wrapper">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" id="login-email" placeholder="name@example.com" required>
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" id="login-email" placeholder="name@company.com" required>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label>Password</label>
+            <div class="form-group gsap-stagger">
+                <div style="display: flex; justify-content: space-between;">
+                    <label>Password</label>
+                </div>
                 <div class="input-wrapper">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="login-password" placeholder="••••••••" required>
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="login-password" placeholder="••••••••••••" required>
+                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility()" aria-label="Toggle password visibility">
+                        <i class="fas fa-eye" id="eyeIcon"></i>
+                    </button>
                 </div>
             </div>
 
-            <button type="submit" class="btn-primary" id="loginBtn">
-                <span id="btn-text">Secure Login</span> <i class="fas fa-arrow-right" style="margin-left: 10px;"></i>
+            <button type="submit" class="btn-primary gsap-stagger" id="loginBtn">
+                <span id="btn-text">Secure Login</span> <i class="fas fa-arrow-right" id="btn-icon"></i>
             </button>
             
-            <p id="error-msg" style="color: #ef4444; font-size: 0.85rem; text-align: center; margin-top: 15px; display: none; font-weight: 600;"></p>
+            <div id="error-msg" class="auth-alert"></div>
         </form>
 
-        <div class="auth-footer">
+        <div class="auth-footer gsap-stagger">
             <p>New to Delstarford Works? <a href="/register2">Create an Account</a></p>
         </div>
     </div>
 </section>
 
 <script>
+    // --- GSAP BULLETPROOF ANIMATIONS ---
+    document.addEventListener("DOMContentLoaded", () => {
+        if(typeof gsap === 'undefined') {
+            document.querySelector('.gsap-card').style.visibility = 'visible';
+            return;
+        }
+
+        const tl = gsap.timeline();
+        
+        // Unhide card and animate it scaling up slightly
+        tl.fromTo(".gsap-card", 
+            { scale: 0.95, y: 30, autoAlpha: 0 }, 
+            { scale: 1, y: 0, autoAlpha: 1, duration: 0.6, ease: "power3.out" }
+        )
+        // Stagger internal elements sliding up
+        .fromTo(".gsap-stagger", 
+            { y: 15, autoAlpha: 0 }, 
+            { y: 0, autoAlpha: 1, stagger: 0.08, duration: 0.5, ease: "power2.out" }, 
+            "-=0.3"
+        );
+    });
+
+    // --- PASSWORD VISIBILITY TOGGLE ---
+    function togglePasswordVisibility() {
+        const passInput = document.getElementById('login-password');
+        const eyeIcon = document.getElementById('eyeIcon');
+        
+        if (passInput.type === 'password') {
+            passInput.type = 'text';
+            eyeIcon.classList.remove('fa-eye');
+            eyeIcon.classList.add('fa-eye-slash');
+        } else {
+            passInput.type = 'password';
+            eyeIcon.classList.remove('fa-eye-slash');
+            eyeIcon.classList.add('fa-eye');
+        }
+    }
+
     // --- FIREBASE LOGIN LOGIC ---
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();
+        
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
         const btnText = document.getElementById('btn-text');
+        const btnIcon = document.getElementById('btn-icon');
         const btn = document.getElementById('loginBtn');
         const errorMsg = document.getElementById('error-msg');
 
         try {
+            // UI Loading State
             btnText.innerText = "Authenticating...";
+            btnIcon.className = "fas fa-circle-notch spinner-icon";
             btn.disabled = true;
             errorMsg.style.display = "none";
 
             // Firebase Login
             await firebase.auth().signInWithEmailAndPassword(email, password);
             
+            // UI Success State
             btnText.innerText = "Access Granted";
-            btn.style.background = "#10b981"; // Turn green
+            btnIcon.className = "fas fa-check";
+            btn.style.background = "var(--log-success)";
+            
+            // Success Pop Animation
+            if(typeof gsap !== 'undefined') {
+                gsap.fromTo(btn, {scale: 0.95}, {scale: 1, duration: 0.4, ease: "back.out(2)"});
+            }
             
             // Redirect to Dashboard
             setTimeout(() => {
                 window.location.href = "/dashboard";
-            }, 500);
+            }, 800);
             
         } catch (error) {
             console.error(error);
+            
+            // Reset Button State
             btnText.innerText = "Secure Login";
+            btnIcon.className = "fas fa-arrow-right";
             btn.disabled = false;
-            errorMsg.innerText = "Access Denied: Invalid email or password.";
+            
+            // Show Error
+            errorMsg.innerHTML = '<i class="fas fa-exclamation-triangle" style="margin-right: 5px;"></i> Access Denied: Invalid email or password.';
             errorMsg.style.display = "block";
+            
+            // Shake Card on Error
+            if(typeof gsap !== 'undefined') {
+                gsap.to(".gsap-card", { x: 10, duration: 0.08, yoyo: true, repeat: 5, ease: "sine.inOut" });
+            }
         }
     });
 </script>
 
-<style>
-    .auth-section { min-height: calc(100vh - 80px); display: flex; align-items: center; justify-content: center; background: #f8fafc; padding: 40px 20px; box-sizing: border-box; }
-    .auth-card { background: white; padding: 50px 40px; border-radius: 24px; box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1); border: 1px solid #e2e8f0; width: 100%; max-width: 450px; box-sizing: border-box; }
-    .auth-header { text-align: center; margin-bottom: 35px; }
-    .auth-logo { height: 50px; margin-bottom: 20px; }
-    .auth-header h2 { font-size: 1.8rem; color: #0f172a; margin: 0 0 5px 0; font-weight: 800; }
-    .auth-header p { color: #64748b; font-size: 0.95rem; margin: 0; }
-    
-    .form-group { margin-bottom: 20px; width: 100%; box-sizing: border-box; }
-    .form-group label { display: block; font-size: 0.85rem; font-weight: 700; color: #475569; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .input-wrapper { display: flex; align-items: center; background: #f1f5f9; border: 2px solid #e2e8f0; border-radius: 10px; padding: 0 15px; transition: all 0.3s ease; width: 100%; box-sizing: border-box; }
-    .input-wrapper:focus-within { border-color: #2563eb; background: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
-    .input-wrapper i { color: #94a3b8; margin-right: 12px; font-size: 1.1rem; }
-    .input-wrapper input { width: 100%; border: none; background: transparent; padding: 14px 0; outline: none; color: #0f172a; font-size: 1rem; font-family: inherit; }
-    
-    /* THE MISSING BUTTON FIX */
-    .btn-primary {
-        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-        color: #ffffff; width: 100%; padding: 16px; border: none; border-radius: 12px;
-        font-weight: 800; font-size: 1.05rem; letter-spacing: 0.5px; cursor: pointer;
-        display: flex; justify-content: center; align-items: center; transition: all 0.4s ease;
-        margin-top: 25px; box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
-    }
-    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 35px -5px rgba(37, 99, 235, 0.6); }
-    .btn-primary:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
-
-    .auth-footer { text-align: center; margin-top: 30px; font-size: 0.95rem; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 20px; }
-    .auth-footer a { color: #2563eb; font-weight: 700; text-decoration: none; }
-    
-    @media (max-width: 500px) { .auth-card { padding: 30px 20px; border-radius: 16px; } .auth-header h2 { font-size: 1.5rem; } }
-</style>
 {% endblock %}

@@ -1,14 +1,172 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<style>
+    /* --- HIDE PUBLIC UI ELEMENTS --- */
+    .site-header, .site-footer { display: none !important; }
+    
+    /* --- CSS VARIABLES & RESET --- */
+    :root {
+        --bg-sidebar: #0f172a;
+        --bg-main: #ffffff; /* Crisp white background */
+        --bg-card: #f8fafc;
+        --white: #ffffff;
+        --border: #e2e8f0;
+        --border-heavy: #cbd5e1;
+        --text-main: #0f172a;
+        --text-light: #64748b;
+        --primary: #3b82f6;
+        --primary-hover: #2563eb;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+    }
+    
+    body, html { 
+        margin: 0; padding: 0; height: 100%; 
+        font-family: 'Plus Jakarta Sans', sans-serif; 
+        background: var(--bg-main) !important; 
+        overflow: hidden; 
+    }
+
+    /* --- LAYOUT --- */
+    .admin-wrapper { display: flex; height: 100vh; width: 100vw; }
+    
+    /* Sidebar */
+    .sidebar { width: 280px; background: var(--bg-sidebar); color: var(--white); display: flex; flex-direction: column; flex-shrink: 0; z-index: 100; box-shadow: 4px 0 15px rgba(0,0,0,0.05);}
+    .sidebar-header { padding: 30px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 15px; }
+    .admin-icon { font-size: 1.8rem; color: var(--primary); background: rgba(59, 130, 246, 0.1); padding: 10px; border-radius: 12px;}
+    .admin-meta h3 { margin: 0; font-size: 1.1rem; font-weight: 700; letter-spacing: -0.5px;}
+    .status-badge { font-size: 0.7rem; color: var(--success); font-weight: 800; letter-spacing: 1px; display: flex; align-items: center; gap: 5px;}
+    .status-badge::before { content: ""; display: block; width: 6px; height: 6px; background: var(--success); border-radius: 50%; box-shadow: 0 0 8px var(--success);}
+
+    .nav-links { flex: 1; padding: 20px 0; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; }
+    .nav-item { width: 100%; background: transparent; border: none; color: #94a3b8; padding: 16px 25px; display: flex; align-items: center; gap: 15px; cursor: pointer; font-size: 0.95rem; font-weight: 600; transition: 0.3s; text-align: left; }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--white); }
+    .nav-item.active { background: rgba(59, 130, 246, 0.1); color: var(--primary); border-right: 4px solid var(--primary); }
+    .counter { margin-left: auto; background: rgba(255,255,255,0.1); padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 800;}
+    .nav-item.active .counter { background: var(--primary); color: white; }
+
+    .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+    .logout-btn { width: 100%; padding: 12px; background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; cursor: pointer; transition: 0.3s; font-weight: 700; font-size: 0.9rem;}
+    .logout-btn:hover { background: var(--danger); color: var(--white); box-shadow: 0 4px 12px rgba(239,68,68,0.3);}
+
+    /* Main Content */
+    .main-content { flex: 1; display: flex; flex-direction: column; min-width: 0; background: var(--bg-main); }
+    
+    /* Top Bar */
+    .top-bar { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 40px; height: 80px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .breadcrumb h1 { font-size: 1.4rem; margin: 0; color: var(--text-main); display: inline; font-weight: 800; letter-spacing: -0.5px;}
+    .breadcrumb .divider { margin: 0 12px; color: var(--border-heavy); }
+    .breadcrumb span { color: var(--text-light); font-weight: 600; }
+    
+    .search-box { position: relative; width: 350px; }
+    .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-light); }
+    .search-box input { width: 100%; padding: 12px 15px 12px 40px; border: 1px solid var(--border-heavy); border-radius: 8px; background: var(--bg-card); outline: none; transition: 0.3s; font-family: inherit; font-size: 0.95rem;}
+    .search-box input:focus { border-color: var(--primary); background: var(--white); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);}
+
+    /* Data View Container */
+    .data-view { flex: 1; padding: 30px 40px; overflow: hidden; display: flex; flex-direction: column; }
+    .table-wrapper { background: var(--white); border-radius: 12px; border: 1px solid var(--border-heavy); flex: 1; overflow: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.03); position: relative; }
+
+    /* Professional Table */
+    .pro-table { width: 100%; border-collapse: collapse; min-width: 800px;}
+    .pro-table th { background: #f8fafc; position: sticky; top: 0; z-index: 10; padding: 18px 25px; text-align: left; font-size: 0.8rem; font-weight: 800; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid var(--border-heavy); }
+    .pro-table td { padding: 18px 25px; border-bottom: 1px solid var(--border); color: var(--text-main); font-size: 0.95rem; vertical-align: middle; }
+    .pro-table tr { transition: background 0.2s; cursor: pointer; }
+    .pro-table tr:hover { background: #f1f5f9; }
+    
+    /* Table Elements */
+    .client-cell b { display: block; color: var(--text-main); font-weight: 700; margin-bottom: 4px;}
+    .client-cell small { color: var(--text-light); font-size: 0.85rem; font-weight: 500;}
+    .btn-view { padding: 8px 16px; background: var(--white); border: 1px solid var(--border-heavy); border-radius: 6px; color: var(--text-main); font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;}
+    .pro-table tr:hover .btn-view { background: var(--primary); color: var(--white); border-color: var(--primary); box-shadow: 0 4px 10px rgba(59,130,246,0.2);}
+
+    /* Pills */
+    .pill { padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; white-space: nowrap;}
+    .pill.green { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0;}
+    .pill.blue { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe;}
+    .pill.yellow { background: #fef3c7; color: #b45309; border: 1px solid #fde68a;}
+    .pill.red { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca;}
+
+    /* --- MODAL (SLIDE OVER STYLE) --- */
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); z-index: 9999; display: none; justify-content: flex-end; }
+    .modal-panel { background: var(--white); width: 900px; max-width: 100%; height: 100vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: -20px 0 50px rgba(0,0,0,0.15); animation: slideIn 0.3s ease-out forwards;}
+    
+    @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+    .modal-header { background: var(--bg-card); border-bottom: 1px solid var(--border-heavy); padding: 25px 30px; display: flex; justify-content: space-between; align-items: center; }
+    .modal-header h2 { margin: 0; font-size: 1.4rem; color: var(--text-main); font-weight: 800; letter-spacing: -0.5px;}
+    .close-modal { background: var(--white); border: 1px solid var(--border-heavy); color: var(--text-light); width: 40px; height: 40px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center;}
+    .close-modal:hover { background: var(--danger); color: var(--white); border-color: var(--danger); transform: rotate(90deg);}
+
+    .modal-body-grid { display: grid; grid-template-columns: 3fr 2fr; flex: 1; overflow: hidden; }
+    
+    .details-column { padding: 30px; border-right: 1px solid var(--border-heavy); overflow-y: auto; background: var(--white); }
+    .action-column { padding: 30px; overflow-y: auto; background: var(--bg-card); display: flex; flex-direction: column; gap: 25px;}
+
+    .col-title { margin-top: 0; margin-bottom: 20px; color: var(--primary); text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; border-bottom: 2px solid var(--border); padding-bottom: 10px; font-weight: 800;}
+    
+    /* Info Grid in Modal */
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid var(--border);}
+    .info-item { display: flex; flex-direction: column; gap: 5px;}
+    .info-label { font-size: 0.75rem; color: var(--text-light); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;}
+    .info-value { font-size: 1rem; color: var(--text-main); font-weight: 600; word-break: break-word; }
+
+    .message-box { background: var(--white); padding: 25px; border-radius: 12px; border: 1px solid var(--border-heavy); font-size: 0.95rem; line-height: 1.7; color: var(--text-main); white-space: pre-wrap; box-shadow: 0 4px 6px rgba(0,0,0,0.02);}
+
+    /* Form in Modal */
+    .form-group label { display: block; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; color: var(--text-main); }
+    .form-control { width: 100%; padding: 15px; border: 1px solid var(--border-heavy); border-radius: 8px; font-family: inherit; font-size: 0.95rem; box-sizing: border-box; background: var(--white); transition: 0.3s;}
+    .form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
+    
+    /* --- HIGHLY VISIBLE SUBMIT BUTTON --- */
+    .btn-primary-action { 
+        width: 100%; 
+        background: var(--primary); 
+        color: var(--white); 
+        border: none; 
+        padding: 18px; 
+        font-size: 1.05rem; 
+        font-weight: 800; 
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-radius: 8px; 
+        cursor: pointer; 
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        gap: 12px; 
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        margin-top: auto;
+    }
+    .btn-primary-action:hover { 
+        background: var(--primary-hover); 
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.5);
+    }
+    .btn-primary-action:disabled {
+        background: var(--text-light);
+        box-shadow: none;
+        transform: none;
+        cursor: not-allowed;
+    }
+
+    .mt-4 { margin-top: 30px; }
+    .spinner-small { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: var(--white); border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; }
+    .spinner-dark { border-color: var(--border-heavy); border-top-color: var(--primary); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+
 <div class="admin-wrapper">
     
     <aside class="sidebar">
         <div class="sidebar-header">
-            <div class="admin-icon"><i class="fas fa-user-shield"></i></div>
+            <div class="admin-icon"><i class="fas fa-shield-alt"></i></div>
             <div class="admin-meta">
-                <h3>System Admin</h3>
-                <span class="status-badge">● ONLINE</span>
+                <h3>Admin Console</h3>
+                <span class="status-badge">SYSTEM SECURE</span>
             </div>
         </div>
 
@@ -27,7 +185,7 @@
 
         <div class="sidebar-footer">
             <button class="logout-btn" onclick="handleLogout()">
-                <i class="fas fa-sign-out-alt"></i> Logout
+                <i class="fas fa-sign-out-alt"></i> Terminate Session
             </button>
         </div>
     </aside>
@@ -36,7 +194,7 @@
         
         <header class="top-bar">
             <div class="breadcrumb">
-                <h1>Admin Console</h1>
+                <h1>Command Center</h1>
                 <span class="divider">/</span>
                 <span id="current-view-name">Project Leads</span>
             </div>
@@ -54,15 +212,15 @@
                     <thead>
                         <tr>
                             <th width="15%">Date</th>
-                            <th width="25%">Client</th>
-                            <th width="20%">Service</th>
-                            <th width="15%">Budget</th>
+                            <th width="25%">Client Details</th>
+                            <th width="20%">Requested Service</th>
+                            <th width="15%">Budget Est.</th>
                             <th width="15%">Status</th>
                             <th width="10%">Action</th>
                         </tr>
                     </thead>
                     <tbody id="body-leads">
-                        <tr><td colspan="6" class="loading-row"><div class="spinner-small"></div> Loading Records...</td></tr>
+                        <tr><td colspan="6" class="loading-row" style="text-align: center; padding: 40px;"><div class="spinner-small spinner-dark"></div> Fetching Database...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -75,14 +233,14 @@
                         <tr>
                             <th width="15%">Ticket ID</th>
                             <th width="10%">Priority</th>
-                            <th width="25%">User</th>
-                            <th width="25%">Subject</th>
+                            <th width="25%">Client Details</th>
+                            <th width="25%">Subject Line</th>
                             <th width="15%">Status</th>
                             <th width="10%">Action</th>
                         </tr>
                     </thead>
                     <tbody id="body-tickets">
-                        <tr><td colspan="6" class="loading-row"><div class="spinner-small"></div> Loading Records...</td></tr>
+                        <tr><td colspan="6" class="loading-row" style="text-align: center; padding: 40px;"><div class="spinner-small spinner-dark"></div> Fetching Database...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -91,8 +249,8 @@
     </main>
 </div>
 
-<div id="detail-modal" class="modal-backdrop">
-    <div class="modal-panel">
+<div id="detail-modal" class="modal-backdrop" onclick="closeModal(event)">
+    <div class="modal-panel" onclick="event.stopPropagation()">
         
         <div class="modal-header">
             <h2 id="modal-title">Record Details</h2>
@@ -102,17 +260,17 @@
         <div class="modal-body-grid">
             
             <div class="details-column">
-                <h4 class="col-title">Record Information</h4>
+                <h4 class="col-title">Client & Request Data</h4>
                 <div class="info-grid" id="modal-info-grid">
                     </div>
 
-                <h4 class="col-title mt-4">Full Message / Description</h4>
+                <h4 class="col-title mt-4">Full Message Payload</h4>
                 <div class="message-box" id="modal-full-message">
                     </div>
             </div>
 
             <div class="action-column">
-                <h4 class="col-title">Admin Action</h4>
+                <h4 class="col-title">Admin Action Panel</h4>
                 
                 <input type="hidden" id="modal-hidden-db-path">
                 <input type="hidden" id="modal-hidden-email">
@@ -120,19 +278,19 @@
                 <input type="hidden" id="modal-hidden-type">
 
                 <div class="form-group">
-                    <label>Update Status</label>
+                    <label>Update Internal Status</label>
                     <select id="modal-status" class="form-control">
                         </select>
                 </div>
 
-                <div class="form-group">
-                    <label>Reply to Client (Email)</label>
-                    <textarea id="modal-reply" class="form-control" rows="8" placeholder="Type a professional response. This will be emailed to the client immediately..."></textarea>
+                <div class="form-group" style="flex: 1; display: flex; flex-direction: column;">
+                    <label>Official Client Response</label>
+                    <textarea id="modal-reply" class="form-control" style="flex: 1; resize: none;" placeholder="Type a professional response here. Upon submission, this will be emailed directly to the client's inbox and updated on their dashboard..."></textarea>
                 </div>
 
                 <div class="action-buttons">
-                    <button class="btn-primary-action" onclick="sendResponse()">
-                        <i class="fas fa-paper-plane"></i> Update & Send
+                    <button class="btn-primary-action" id="submitResponseBtn" onclick="sendResponse()">
+                        <i class="fas fa-paper-plane"></i> Transmit Update & Send Email
                     </button>
                 </div>
             </div>
@@ -141,127 +299,31 @@
     </div>
 </div>
 
-<style>
-    /* --- CSS VARIABLES & RESET --- */
-    :root {
-        --bg-dark: #0f172a;
-        --bg-light: #f1f5f9;
-        --white: #ffffff;
-        --border: #e2e8f0;
-        --text-main: #334155;
-        --text-light: #64748b;
-        --primary: #2563eb;
-        --success: #10b981;
-        --danger: #ef4444;
-        --warning: #f59e0b;
-    }
-    
-    body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg-light); overflow: hidden; }
-
-    /* --- LAYOUT --- */
-    .admin-wrapper { display: flex; height: 100vh; width: 100vw; }
-    
-    /* Sidebar */
-    .sidebar { width: 260px; background: var(--bg-dark); color: var(--white); display: flex; flex-direction: column; flex-shrink: 0; }
-    .sidebar-header { padding: 25px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 15px; }
-    .admin-icon { font-size: 1.5rem; color: var(--primary); }
-    .admin-meta h3 { margin: 0; font-size: 1rem; font-weight: 600; }
-    .status-badge { font-size: 0.7rem; color: var(--success); font-weight: bold; letter-spacing: 1px; }
-
-    .nav-links { flex: 1; padding: 20px 0; overflow-y: auto; }
-    .nav-item { width: 100%; background: transparent; border: none; color: #94a3b8; padding: 15px 25px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 0.95rem; transition: 0.2s; text-align: left; }
-    .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.05); color: var(--white); border-left: 4px solid var(--primary); }
-    .counter { margin-left: auto; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; }
-
-    .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
-    .logout-btn { width: 100%; padding: 10px; background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 6px; cursor: pointer; transition: 0.2s; }
-    .logout-btn:hover { background: var(--danger); color: var(--white); }
-
-    /* Main Content */
-    .main-content { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-    
-    /* Top Bar */
-    .top-bar { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 30px; height: 70px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-    .breadcrumb h1 { font-size: 1.2rem; margin: 0; color: var(--text-main); display: inline; }
-    .breadcrumb .divider { margin: 0 10px; color: var(--text-light); }
-    .breadcrumb span { color: var(--text-light); font-weight: 500; }
-    
-    .search-box { position: relative; width: 300px; }
-    .search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-light); }
-    .search-box input { width: 100%; padding: 10px 10px 10px 35px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-light); outline: none; transition: 0.2s; }
-    .search-box input:focus { border-color: var(--primary); background: var(--white); }
-
-    /* Data View Container */
-    .data-view { flex: 1; padding: 20px 30px; overflow: hidden; display: flex; flex-direction: column; }
-    .table-wrapper { background: var(--white); border-radius: 8px; border: 1px solid var(--border); flex: 1; overflow: auto; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); position: relative; }
-
-    /* Professional Table */
-    .pro-table { width: 100%; border-collapse: collapse; }
-    .pro-table th { background: #f8fafc; position: sticky; top: 0; z-index: 10; padding: 15px 20px; text-align: left; font-size: 0.85rem; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--border); }
-    .pro-table td { padding: 15px 20px; border-bottom: 1px solid var(--border); color: var(--text-main); font-size: 0.95rem; vertical-align: middle; }
-    .pro-table tr:hover { background: #f8fafc; }
-    
-    /* Table Elements */
-    .client-cell b { display: block; color: var(--bg-dark); }
-    .client-cell small { color: var(--text-light); font-size: 0.85rem; }
-    .btn-view { padding: 6px 12px; background: var(--white); border: 1px solid var(--border); border-radius: 4px; color: var(--primary); font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 0.85rem; }
-    .btn-view:hover { background: var(--primary); color: var(--white); border-color: var(--primary); }
-
-    /* Pills */
-    .pill { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
-    .pill.green { background: #dcfce7; color: #166534; }
-    .pill.blue { background: #dbeafe; color: #1e40af; }
-    .pill.yellow { background: #fef3c7; color: #b45309; }
-    .pill.red { background: #fee2e2; color: #991b1b; }
-
-    /* --- MODAL --- */
-    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(2px); z-index: 1000; display: none; align-items: center; justify-content: center; }
-    .modal-panel { background: var(--white); width: 900px; height: 85vh; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
-    
-    .modal-header { background: var(--bg-dark); color: var(--white); padding: 20px; display: flex; justify-content: space-between; align-items: center; }
-    .modal-header h2 { margin: 0; font-size: 1.2rem; }
-    .close-modal { background: none; border: none; color: var(--white); font-size: 1.5rem; cursor: pointer; }
-
-    .modal-body-grid { display: grid; grid-template-columns: 1fr 1fr; flex: 1; overflow: hidden; }
-    
-    .details-column { padding: 25px; border-right: 1px solid var(--border); overflow-y: auto; background: #fdfdfd; }
-    .action-column { padding: 25px; overflow-y: auto; background: var(--white); }
-
-    .col-title { margin-top: 0; margin-bottom: 20px; color: var(--primary); text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
-    
-    /* Info Grid in Modal */
-    .info-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
-    .info-item { display: flex; flex-direction: column; }
-    .info-label { font-size: 0.75rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
-    .info-value { font-size: 1rem; color: var(--bg-dark); font-weight: 500; word-break: break-word; }
-
-    .message-box { background: #f1f5f9; padding: 15px; border-radius: 6px; border: 1px solid var(--border); font-size: 0.95rem; line-height: 1.6; color: var(--text-main); white-space: pre-wrap; }
-
-    /* Form in Modal */
-    .form-group { margin-bottom: 20px; }
-    .form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--text-main); }
-    .form-control { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 0.95rem; box-sizing: border-box; }
-    .form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-    
-    .btn-primary-action { width: 100%; background: var(--success); color: var(--white); border: none; padding: 15px; font-size: 1rem; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
-    .btn-primary-action:hover { background: #059669; }
-
-    .mt-4 { margin-top: 25px; }
-    .spinner-small { width: 20px; height: 20px; border: 2px solid var(--text-light); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-</style>
-
 <script>
+    // --- UTILITIES (XSS Prevention) ---
+    function sanitizeHTML(str) {
+        if (!str) return 'N/A';
+        const temp = document.createElement('div');
+        temp.textContent = str;
+        return temp.innerHTML;
+    }
+
     // --- GLOBAL DATA CACHE ---
-    // We store data here so we can open full details without making new API calls
-    const adminCache = {
-        leads: {},
-        tickets: {}
-    };
+    const adminCache = { leads: {}, tickets: {} };
 
     // 1. INIT
     document.addEventListener('DOMContentLoaded', () => {
-        initAdminData();
+        setTimeout(() => {
+            if (window.auth) {
+                auth.onAuthStateChanged(async (user) => {
+                    if (user) {
+                        initAdminData();
+                    } else {
+                        window.location.href = '/admin-login';
+                    }
+                });
+            }
+        }, 500);
     });
 
     function initAdminData() {
@@ -269,15 +331,13 @@
 
         // Listen for Leads
         db.ref('leads/service_requests').on('value', (snap) => {
-            const data = snap.val();
-            adminCache.leads = data || {};
+            adminCache.leads = snap.val() || {};
             renderLeads(adminCache.leads);
         });
 
         // Listen for Tickets
         db.ref('support_tickets').on('value', (snap) => {
-            const data = snap.val();
-            adminCache.tickets = data || {};
+            adminCache.tickets = snap.val() || {};
             renderTickets(adminCache.tickets);
         });
     }
@@ -285,131 +345,121 @@
     // 2. RENDER FUNCTIONS
     function renderLeads(data) {
         const tbody = document.getElementById('body-leads');
-        tbody.innerHTML = '';
+        let htmlStr = '';
         let count = 0;
 
         if (Object.keys(data).length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px;">No records found.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:50px; color: var(--text-light);"><i class="fas fa-folder-open" style="font-size:2rem; margin-bottom:10px; opacity:0.5;"></i><br>No project leads found.</td></tr>`;
             document.getElementById('count-leads').innerText = 0;
             return;
         }
 
         Object.entries(data).reverse().forEach(([key, item]) => {
             count++;
-            const status = item.status || "New";
-            const date = item.timestamp ? new Date(item.timestamp).toLocaleDateString() : 'N/A';
+            const status = sanitizeHTML(item.status || "New");
+            const date = item.timestamp ? sanitizeHTML(item.timestamp).substring(0,10) : 'N/A';
             
-            // Status Color Logic
             let pillClass = 'blue';
-            if(status === 'Approved') pillClass = 'green';
-            if(status === 'Rejected') pillClass = 'red';
-            if(status === 'Under Review') pillClass = 'yellow';
+            if(status.includes('Approved')) pillClass = 'green';
+            if(status.includes('Rejected')) pillClass = 'red';
+            if(status.includes('Review') || status.includes('Pending')) pillClass = 'yellow';
 
-            const row = `
-                <tr onclick="openDetailModal('lead', '${key}')" style="cursor:pointer">
-                    <td>${date}</td>
+            htmlStr += `
+                <tr onclick="openDetailModal('lead', '${sanitizeHTML(key)}')">
+                    <td style="font-family: monospace;">${date}</td>
                     <td class="client-cell">
-                        <b>${item.name || 'Unknown'}</b>
-                        <small>${item.email || 'No Email'}</small>
+                        <b>${sanitizeHTML(item.name || 'Unknown')}</b>
+                        <small>${sanitizeHTML(item.email || 'No Email')}</small>
                     </td>
-                    <td>${item.service || 'N/A'}</td>
-                    <td>${item.budget || '-'}</td>
+                    <td style="font-weight: 600; color: var(--primary);">${sanitizeHTML(item.service || 'N/A')}</td>
+                    <td>${sanitizeHTML(item.budget || '-')}</td>
                     <td><span class="pill ${pillClass}">${status}</span></td>
-                    <td><button class="btn-view">Manage</button></td>
+                    <td><button class="btn-view"><i class="fas fa-edit"></i> Assess</button></td>
                 </tr>
             `;
-            tbody.innerHTML += row;
         });
+        tbody.innerHTML = htmlStr;
         document.getElementById('count-leads').innerText = count;
     }
 
     function renderTickets(data) {
         const tbody = document.getElementById('body-tickets');
-        tbody.innerHTML = '';
+        let htmlStr = '';
         let count = 0;
 
         if (Object.keys(data).length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px;">No tickets found.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:50px; color: var(--text-light);"><i class="fas fa-check-circle" style="font-size:2rem; margin-bottom:10px; opacity:0.5;"></i><br>Inbox Zero. No active tickets.</td></tr>`;
             document.getElementById('count-tickets').innerText = 0;
             return;
         }
 
         Object.entries(data).reverse().forEach(([key, item]) => {
             count++;
-            const status = item.status || "Open";
+            const status = sanitizeHTML(item.status || "Open");
+            const priority = sanitizeHTML(item.priority || 'Normal');
             
             let pillClass = 'blue';
-            if(status === 'Resolved') pillClass = 'green';
-            if(item.priority === 'High') pillClass = 'red';
+            if(status.includes('Resolved') || status.includes('Closed')) pillClass = 'green';
+            if(status.includes('In Progress')) pillClass = 'yellow';
 
-            const row = `
-                <tr onclick="openDetailModal('ticket', '${key}')" style="cursor:pointer">
-                    <td><code>${item.ticket_id || '###'}</code></td>
-                    <td><span class="pill ${item.priority === 'High' ? 'red' : 'blue'}">${item.priority || 'Normal'}</span></td>
+            htmlStr += `
+                <tr onclick="openDetailModal('ticket', '${sanitizeHTML(key)}')">
+                    <td style="font-family: monospace; font-weight: bold; color: var(--primary);">${sanitizeHTML(item.ticket_id || key.substring(0,8))}</td>
+                    <td><span class="pill ${priority === 'High' ? 'red' : 'blue'}">${priority}</span></td>
                     <td class="client-cell">
-                        <b>${item.name}</b>
-                        <small>${item.email}</small>
+                        <b>${sanitizeHTML(item.name)}</b>
+                        <small>${sanitizeHTML(item.email)}</small>
                     </td>
-                    <td>${item.subject}</td>
+                    <td style="font-weight: 600;">${sanitizeHTML(item.subject)}</td>
                     <td><span class="pill ${pillClass}">${status}</span></td>
-                    <td><button class="btn-view">Reply</button></td>
+                    <td><button class="btn-view"><i class="fas fa-reply"></i> Reply</button></td>
                 </tr>
             `;
-            tbody.innerHTML += row;
         });
+        tbody.innerHTML = htmlStr;
         document.getElementById('count-tickets').innerText = count;
     }
 
-    // 3. MODAL LOGIC (The "Muck Full Professional" Part)
+    // 3. MODAL LOGIC
     function openDetailModal(type, key) {
         const modal = document.getElementById('detail-modal');
         const infoGrid = document.getElementById('modal-info-grid');
         const msgBox = document.getElementById('modal-full-message');
         const statusSelect = document.getElementById('modal-status');
         
-        // Fetch Data from Cache
         const data = type === 'lead' ? adminCache.leads[key] : adminCache.tickets[key];
         if(!data) return alert("Error: Data not found in cache.");
 
-        // Set Hidden Fields for Form Submission
+        // Hidden Fields
         document.getElementById('modal-hidden-db-path').value = type === 'lead' ? `leads/service_requests/${key}` : `support_tickets/${key}`;
         document.getElementById('modal-hidden-email').value = data.email;
         document.getElementById('modal-hidden-name').value = data.name;
         document.getElementById('modal-hidden-type').value = type;
 
-        // Populate Left Column (Details)
+        // Populate Left Column
         infoGrid.innerHTML = '';
-        
-        // Common Fields
-        addInfoItem('Client Name', data.name);
-        addInfoItem('Email Address', data.email);
-        addInfoItem('Date Submitted', data.timestamp);
+        addInfoItem('Client Name', sanitizeHTML(data.name));
+        addInfoItem('Email Address', sanitizeHTML(data.email));
+        addInfoItem('Date Submitted', sanitizeHTML(data.timestamp));
 
-        // Specific Fields
         if(type === 'lead') {
-            document.getElementById('modal-title').textContent = "Project Lead Details";
-            addInfoItem('Service Type', data.service);
-            addInfoItem('Proposed Budget', data.budget);
-            addInfoItem('Timeline', data.timeline);
-            msgBox.textContent = data.details || "No details provided.";
+            document.getElementById('modal-title').innerHTML = "<i class='fas fa-briefcase' style='color:var(--primary); margin-right:10px;'></i> Project Request Review";
+            addInfoItem('Service Type', sanitizeHTML(data.service));
+            addInfoItem('Proposed Budget', sanitizeHTML(data.budget));
+            msgBox.textContent = data.details || "No project details provided.";
             
-            // Populate Dropdown for Leads
             statusSelect.innerHTML = `
-                <option value="New">New</option>
+                <option value="Pending Review">Pending Review</option>
                 <option value="Under Review">Under Review</option>
                 <option value="Approved">Approved</option>
                 <option value="Rejected">Rejected</option>
-                <option value="Completed">Completed</option>
             `;
         } else {
-            document.getElementById('modal-title').textContent = `Ticket: ${data.ticket_id}`;
-            addInfoItem('Ticket ID', data.ticket_id);
-            addInfoItem('Priority', data.priority);
-            addInfoItem('Category', data.category);
-            addInfoItem('Subject', data.subject);
+            document.getElementById('modal-title').innerHTML = `<i class='fas fa-ticket-alt' style='color:var(--primary); margin-right:10px;'></i> Ticket: ${sanitizeHTML(data.ticket_id)}`;
+            addInfoItem('Priority Level', sanitizeHTML(data.priority));
+            addInfoItem('Subject Line', sanitizeHTML(data.subject));
             msgBox.textContent = data.message || "No message content.";
 
-            // Populate Dropdown for Tickets
             statusSelect.innerHTML = `
                 <option value="Open">Open</option>
                 <option value="In Progress">In Progress</option>
@@ -418,10 +468,11 @@
             `;
         }
 
-        // Set current status in dropdown
-        statusSelect.value = data.status || (type === 'lead' ? 'New' : 'Open');
+        // Set current status
+        statusSelect.value = sanitizeHTML(data.status) || (type === 'lead' ? 'Pending Review' : 'Open');
 
-        // Show Modal
+        // Reset Response Box & Show Modal
+        document.getElementById('modal-reply').value = '';
         modal.style.display = 'flex';
     }
 
@@ -432,16 +483,20 @@
         document.getElementById('modal-info-grid').appendChild(div);
     }
 
-    function closeModal() {
-        document.getElementById('detail-modal').style.display = 'none';
-        document.getElementById('modal-reply').value = ''; // Clear text
+    function closeModal(e) {
+        if (!e || e.target.classList.contains('modal-backdrop')) {
+            document.getElementById('detail-modal').style.display = 'none';
+        }
     }
 
     // 4. ACTION LOGIC
     async function sendResponse() {
-        const btn = document.querySelector('.btn-primary-action');
+        const replyText = document.getElementById('modal-reply').value;
+        if(!replyText.trim()) return alert("Please type a response to send to the client.");
+
+        const btn = document.getElementById('submitResponseBtn');
         const originalText = btn.innerHTML;
-        btn.innerHTML = `<div class="spinner-small" style="border-color: white; border-top-color: transparent;"></div> Sending...`;
+        btn.innerHTML = `<div class="spinner-small"></div> Transmitting...`;
         btn.disabled = true;
 
         const payload = {
@@ -449,7 +504,7 @@
             email: document.getElementById('modal-hidden-email').value,
             name: document.getElementById('modal-hidden-name').value,
             newStatus: document.getElementById('modal-status').value,
-            replyMessage: document.getElementById('modal-reply').value,
+            replyMessage: sanitizeHTML(replyText),
             type: document.getElementById('modal-hidden-type').value
         };
 
@@ -462,15 +517,22 @@
             const result = await response.json();
             
             if(result.success) {
-                alert("Success: Record updated and email sent.");
-                closeModal();
+                btn.innerHTML = `<i class="fas fa-check"></i> Dispatched Successfully`;
+                btn.style.background = "var(--success)";
+                setTimeout(() => {
+                    closeModal();
+                    btn.innerHTML = originalText;
+                    btn.style.background = "";
+                    btn.disabled = false;
+                }, 1000);
             } else {
                 alert("Error: " + result.message);
+                btn.innerHTML = originalText;
+                btn.disabled = false;
             }
         } catch(e) {
             console.error(e);
-            alert("Network Error");
-        } finally {
+            alert("Network Error: Could not reach the server.");
             btn.innerHTML = originalText;
             btn.disabled = false;
         }
@@ -481,31 +543,28 @@
         document.getElementById('view-leads').style.display = 'none';
         document.getElementById('view-tickets').style.display = 'none';
         
-        document.getElementById('view-' + viewName).style.display = 'flex'; // Use flex for sticky header to work
+        document.getElementById('view-' + viewName).style.display = 'flex';
         
-        // Update Sidebar Active State
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
         event.currentTarget.classList.add('active');
 
-        // Update Breadcrumb
         document.getElementById('current-view-name').innerText = viewName === 'leads' ? 'Project Leads' : 'Support Tickets';
     }
 
     // 6. SEARCH FUNCTION
     function handleSearch(query) {
         const filter = query.toLowerCase();
-        // Determine visible table
         const activeTable = document.getElementById('view-leads').style.display !== 'none' ? 'table-leads' : 'table-tickets';
         const rows = document.getElementById(activeTable).getElementsByTagName('tr');
 
-        for (let i = 1; i < rows.length; i++) { // Skip header
+        for (let i = 1; i < rows.length; i++) { 
             const text = rows[i].textContent.toLowerCase();
             rows[i].style.display = text.includes(filter) ? '' : 'none';
         }
     }
 
     function handleLogout() {
-        window.location.href = '/admin-logout';
+        if(window.auth) auth.signOut().then(() => { window.location.href = '/admin-login'; });
     }
 </script>
 

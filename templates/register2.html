@@ -1,65 +1,195 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<style>
+    /* --- CSS VARIABLES & RESET --- */
+    :root {
+        --reg-primary: #3b82f6;
+        --reg-primary-hover: #2563eb;
+        --reg-dark: #0f172a;
+        --reg-bg: #f8fafc;
+        --reg-card: #ffffff;
+        --reg-border: #e2e8f0;
+        --reg-text: #334155;
+        --reg-muted: #64748b;
+        --reg-success: #10b981;
+        --reg-danger: #ef4444;
+    }
+
+    body { background: var(--reg-bg); font-family: 'Plus Jakarta Sans', sans-serif; }
+
+    /* --- AUTH LAYOUT --- */
+    .auth-section { 
+        min-height: calc(100vh - 80px); 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        background-color: var(--reg-bg);
+        background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+        background-size: 40px 40px;
+        padding: 60px 20px; 
+        box-sizing: border-box; 
+    }
+    
+    .auth-card { 
+        background: var(--reg-card); 
+        padding: 50px 40px; 
+        border-radius: 20px; 
+        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15), 0 0 0 1px rgba(15, 23, 42, 0.05); 
+        width: 100%; 
+        max-width: 500px; 
+        box-sizing: border-box; 
+    }
+
+    /* --- HEADER --- */
+    .auth-header { text-align: center; margin-bottom: 35px; }
+    .auth-logo { height: 45px; margin-bottom: 25px; }
+    .auth-header h2 { font-size: 2rem; color: var(--reg-dark); margin: 0 0 8px 0; font-weight: 800; letter-spacing: -0.5px;}
+    .auth-header p { color: var(--reg-muted); font-size: 1rem; margin: 0; font-weight: 500;}
+
+    /* --- AVATAR UPLOAD --- */
+    .avatar-upload-container { text-align: center; margin-bottom: 30px; }
+    .avatar-upload-container label { display: block; margin-bottom: 12px; font-weight: 800; color: var(--reg-muted); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
+    
+    .photo-upload-circle {
+        width: 90px; height: 90px; margin: 0 auto; border-radius: 50%; 
+        background: #f8fafc; display: flex; align-items: center; justify-content: center; 
+        overflow: hidden; cursor: pointer; border: 2px dashed #cbd5e1; 
+        position: relative; transition: all 0.3s ease;
+    }
+    .photo-upload-circle:hover { border-color: var(--reg-primary); background: #eff6ff; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.15);}
+    .photo-upload-circle:hover #photo-placeholder { color: var(--reg-primary) !important; transform: scale(1.05); }
+    
+    #photo-preview { width: 100%; height: 100%; object-fit: cover; display: none; }
+    #photo-placeholder { text-align: center; color: #94a3b8; transition: all 0.3s; }
+    #photo-placeholder i { font-size: 1.5rem; margin-bottom: 5px; }
+    #photo-placeholder span { display: block; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;}
+    
+    .avatar-hint { font-size: 0.75rem; color: #94a3b8; margin-top: 10px; font-weight: 500; }
+
+    /* --- FORM ELEMENTS --- */
+    .form-group { margin-bottom: 25px; width: 100%; box-sizing: border-box; }
+    .form-group > label { display: block; font-size: 0.85rem; font-weight: 800; color: var(--reg-muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+    
+    .input-wrapper { 
+        display: flex; align-items: center; background: var(--reg-bg); border: 1px solid var(--reg-border); 
+        border-radius: 8px; padding: 0 16px; transition: all 0.3s ease; width: 100%; box-sizing: border-box; 
+    }
+    .input-wrapper:focus-within { border-color: var(--reg-primary); background: var(--reg-card); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
+    
+    .input-icon { color: #94a3b8; margin-right: 14px; font-size: 1.1rem; transition: 0.3s; width: 20px; text-align: center;}
+    .input-wrapper:focus-within .input-icon { color: var(--reg-primary); }
+    
+    .input-wrapper input { 
+        width: 100%; border: none; background: transparent; padding: 16px 0; 
+        outline: none; color: var(--reg-dark); font-size: 1rem; font-family: inherit; font-weight: 500;
+    }
+    .input-wrapper input::placeholder { color: #94a3b8; font-weight: 400;}
+
+    /* Password Toggle Eye */
+    .toggle-password {
+        background: none; border: none; color: #94a3b8; cursor: pointer;
+        padding: 0 5px; font-size: 1rem; transition: 0.2s; outline: none;
+    }
+    .toggle-password:hover { color: var(--reg-primary); }
+
+    .terms-text { font-size: 0.8rem; color: var(--reg-muted); text-align: center; margin-top: 10px; margin-bottom: 25px; line-height: 1.6; font-weight: 500;}
+    .terms-text a { color: var(--reg-primary); font-weight: 700; text-decoration: none; transition: 0.2s;}
+    .terms-text a:hover { color: var(--reg-dark); text-decoration: underline; }
+
+    /* --- SUBMIT BUTTON --- */
+    .btn-primary {
+        background: var(--reg-primary);
+        color: #ffffff; width: 100%; padding: 18px; border: none; border-radius: 8px;
+        font-weight: 800; font-size: 1.05rem; letter-spacing: 0.5px; cursor: pointer; text-transform: uppercase;
+        display: flex; justify-content: center; align-items: center; gap: 10px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+    }
+    .btn-primary:hover { background: var(--reg-primary-hover); transform: translateY(-3px); box-shadow: 0 12px 25px rgba(59, 130, 246, 0.4); }
+    .btn-primary:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .spinner-icon { animation: spin 1s linear infinite; }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+
+    .auth-alert { 
+        background: #fee2e2; color: #991b1b; font-size: 0.9rem; text-align: center; 
+        margin-top: 20px; padding: 12px; display: none; font-weight: 700; border-radius: 8px; border: 1px solid #fecaca;
+    }
+
+    /* --- FOOTER --- */
+    .auth-footer { text-align: center; margin-top: 35px; font-size: 0.95rem; color: var(--reg-muted); border-top: 1px solid var(--reg-border); padding-top: 25px; font-weight: 500;}
+    .auth-footer a { color: var(--reg-primary); font-weight: 800; text-decoration: none; transition: 0.2s; margin-left: 5px;}
+    .auth-footer a:hover { color: var(--reg-dark); text-decoration: underline;}
+
+    @media (max-width: 500px) { 
+        .auth-card { padding: 40px 25px; border-radius: 16px; } 
+        .auth-header h2 { font-size: 1.6rem; } 
+    }
+</style>
+
 <section class="auth-section">
-    <div class="auth-card" id="register-container" style="visibility: hidden;">
+    <div class="auth-card gsap-card" style="visibility: hidden;">
         
         <div class="auth-header">
-            <img src="{{ url_for('static', filename='images/DEL SVG.svg') }}" alt="DW Logo" class="auth-logo gsap-logo">
-            <h2 class="gsap-title">Initialize Account</h2>
-            <p class="gsap-subtitle">Join the consortium to access enterprise AI tools.</p>
+            <img src="{{ url_for('static', filename='images/DEL SVG.svg') }}" alt="DW Logo" class="auth-logo gsap-stagger">
+            <h2 class="gsap-stagger">Initialize Account</h2>
+            <p class="gsap-stagger">Join the consortium to access enterprise AI tools.</p>
         </div>
 
         <form id="registerForm" class="advanced-form">
-            <div class="form-group gsap-photo" style="text-align: center; margin-bottom: 30px;">
-                <label style="display: block; margin-bottom: 12px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;">Profile Avatar</label>
-                
+            
+            <div class="avatar-upload-container gsap-stagger">
+                <label>Profile Avatar</label>
                 <div onclick="document.getElementById('reg-photo').click()" class="photo-upload-circle" id="photo-circle" title="Click to upload photo">
-                    <img id="photo-preview" src="" style="width: 100%; height: 100%; object-fit: cover; display: none;">
-                    <div id="photo-placeholder" style="text-align: center; color: #94a3b8; transition: color 0.3s;">
-                        <i class="fas fa-camera" style="font-size: 1.5rem;"></i>
-                        <span style="display: block; font-size: 0.65rem; margin-top: 5px; font-weight: 600; text-transform: uppercase;">Upload</span>
+                    <img id="photo-preview" src="" alt="Avatar Preview">
+                    <div id="photo-placeholder">
+                        <i class="fas fa-camera"></i>
+                        <span>Upload</span>
                     </div>
                 </div>
-                
-                <input type="file" id="reg-photo" accept="image/*" style="display: none;" onchange="previewImage(this)">
-                <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 10px;">Max size: 500KB (Optional)</p>
+                <input type="file" id="reg-photo" accept="image/jpeg, image/png, image/webp" style="display: none;" onchange="previewImage(this)">
+                <p class="avatar-hint">Max size: 500KB (Optional)</p>
             </div>
 
-            <div class="form-group gsap-input">
+            <div class="form-group gsap-stagger">
                 <label>Full Legal Name</label>
                 <div class="input-wrapper">
-                    <i class="fas fa-user-tie"></i>
-                    <input type="text" id="reg-name" placeholder="e.g. Luke" required>
+                    <i class="fas fa-user-tie input-icon"></i>
+                    <input type="text" id="reg-name" placeholder="e.g. Brian Smith" required>
                 </div>
             </div>
 
-            <div class="form-group gsap-input">
+            <div class="form-group gsap-stagger">
                 <label>Email Address</label>
                 <div class="input-wrapper">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" id="reg-email" placeholder="luck@gmail.com" required>
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" id="reg-email" placeholder="briansmith@gmail.com" required>
                 </div>
             </div>
 
-            <div class="form-group gsap-input">
-                <label>Secure Password</label>
+            <div class="form-group gsap-stagger">
+                <div style="display: flex; justify-content: space-between;">
+                    <label>Secure Password</label>
+                </div>
                 <div class="input-wrapper">
-                    <i class="fas fa-shield-alt"></i>
-                    <input type="password" id="reg-password" placeholder="Minimum 6 characters" required>
+                    <i class="fas fa-shield-alt input-icon"></i>
+                    <input type="password" id="reg-password" placeholder="Minimum 6 characters" required minlength="6">
+                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility()" aria-label="Toggle password visibility">
+                        <i class="fas fa-eye" id="eyeIcon"></i>
+                    </button>
                 </div>
             </div>
 
-            <p class="terms-text gsap-input">By initializing an account, you agree to the <a href="/privacy">Delstarford Works Terms of Service</a> and Data Privacy Policy.</p>
+            <p class="terms-text gsap-stagger">By initializing an account, you agree to the <a href="/privacy">Delstarford Works Terms of Service</a> and Data Privacy Policy.</p>
 
-            <button type="submit" class="btn-primary w-full" id="regBtn">
-                <span id="btn-text">Create Account</span> <i class="fas fa-arrow-right"></i>
+            <button type="submit" class="btn-primary gsap-stagger" id="regBtn">
+                <span id="btn-text">Create Account</span> <i class="fas fa-arrow-right" id="btn-icon"></i>
             </button>
             
-            <p id="error-msg" style="color: #ef4444; font-size: 0.85rem; text-align: center; margin-top: 15px; display: none; font-weight: 600; padding: 10px; background: #fef2f2; border-radius: 8px; border: 1px solid #fecaca;"></p>
+            <div id="error-msg" class="auth-alert"></div>
         </form>
 
-        <div class="auth-footer gsap-footer">
+        <div class="auth-footer gsap-stagger">
             <p>Already a member? <a href="/login">Access Terminal</a></p>
         </div>
     </div>
@@ -68,30 +198,48 @@
 <script>
     // --- 1. ENTRANCE ANIMATION TIMELINE ---
     document.addEventListener("DOMContentLoaded", () => {
-        if(typeof gsap !== 'undefined') {
-            const tl = gsap.timeline();
-            
-            // Ensure card is visible before animation starts
-            gsap.set(".auth-card", { visibility: "visible" });
-            
-            tl.from(".auth-card", { y: 40, opacity: 0, duration: 0.6, ease: "power3.out", scale: 0.95 })
-              .from(".gsap-logo", { scale: 0, rotation: -90, opacity: 0, duration: 0.5, ease: "back.out(1.7)" }, "-=0.3")
-              .from(".gsap-title", { y: 15, opacity: 0, duration: 0.4 }, "-=0.2")
-              .from(".gsap-subtitle", { y: 15, opacity: 0, duration: 0.4 }, "-=0.3")
-              .from(".gsap-photo", { scale: 0.8, opacity: 0, duration: 0.5, ease: "back.out(1.5)" }, "-=0.2")
-              .from(".gsap-input", { y: 20, opacity: 0, stagger: 0.1, duration: 0.5, ease: "power2.out" }, "-=0.2")
-              // Removed .gsap-btn animation line here so the button stays visible!
-              .from(".gsap-footer", { opacity: 0, duration: 0.5 }, "-=0.2");
+        if(typeof gsap === 'undefined') {
+            document.querySelector('.gsap-card').style.visibility = 'visible';
+            return;
         }
+
+        const tl = gsap.timeline();
+        
+        tl.fromTo(".gsap-card", 
+            { scale: 0.95, y: 30, autoAlpha: 0 }, 
+            { scale: 1, y: 0, autoAlpha: 1, duration: 0.6, ease: "power3.out" }
+        )
+        .fromTo(".gsap-stagger", 
+            { y: 15, autoAlpha: 0 }, 
+            { y: 0, autoAlpha: 1, stagger: 0.08, duration: 0.5, ease: "power2.out" }, 
+            "-=0.3"
+        );
     });
 
-    // --- 2. IMAGE PREVIEW LOGIC ---
+    // --- 2. PASSWORD VISIBILITY TOGGLE ---
+    function togglePasswordVisibility() {
+        const passInput = document.getElementById('reg-password');
+        const eyeIcon = document.getElementById('eyeIcon');
+        
+        if (passInput.type === 'password') {
+            passInput.type = 'text';
+            eyeIcon.classList.remove('fa-eye');
+            eyeIcon.classList.add('fa-eye-slash');
+        } else {
+            passInput.type = 'password';
+            eyeIcon.classList.remove('fa-eye-slash');
+            eyeIcon.classList.add('fa-eye');
+        }
+    }
+
+    // --- 3. IMAGE PREVIEW LOGIC ---
     function previewImage(input) {
         if (input.files && input.files[0]) {
+            const file = input.files[0];
             const reader = new FileReader();
             
-            // Check file size (500KB limit)
-            if (input.files[0].size > 500000) {
+            // Check file size (500KB limit to keep database fast)
+            if (file.size > 512000) {
                 alert("Image too large. Please select an image under 500KB to ensure fast database syncing.");
                 input.value = "";
                 return;
@@ -108,11 +256,11 @@
                     gsap.fromTo("#photo-circle", {scale: 0.8}, {scale: 1, duration: 0.4, ease: "back.out(2)"});
                 }
             }
-            reader.readAsDataURL(input.files[0]);
+            reader.readAsDataURL(file);
         }
     }
 
-    // --- 3. REGISTRATION LOGIC ---
+    // --- 4. REGISTRATION LOGIC ---
     document.getElementById('registerForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         
@@ -123,12 +271,15 @@
         
         const btn = document.getElementById('regBtn');
         const btnText = document.getElementById('btn-text');
+        const btnIcon = document.getElementById('btn-icon');
         const errorMsg = document.getElementById('error-msg');
 
         let loadingAnim; 
 
         try {
+            // UI Loading State
             btnText.innerText = "Provisioning Setup...";
+            btnIcon.className = "fas fa-circle-notch spinner-icon";
             btn.disabled = true;
             errorMsg.style.display = "none";
             
@@ -167,11 +318,13 @@
                 joined_at: new Date().toISOString()
             });
 
-            // Stop loading animation and show success
+            // UI Success State
             if(loadingAnim) loadingAnim.kill();
-            gsap.set(btn, { scale: 1, opacity: 1 });
+            if(typeof gsap !== 'undefined') gsap.set(btn, { scale: 1, opacity: 1 });
+            
             btnText.innerText = "Account Created!";
-            btn.style.background = "#10b981"; // Turn green
+            btnIcon.className = "fas fa-check";
+            btn.style.background = "var(--reg-success)"; 
             btn.style.boxShadow = "0 10px 25px -5px rgba(16, 185, 129, 0.4)";
             
             // Redirect to Dashboard
@@ -184,149 +337,26 @@
             if(typeof gsap !== 'undefined') {
                 if(loadingAnim) loadingAnim.kill();
                 gsap.set(btn, { scale: 1, opacity: 1 });
-                gsap.to("#register-container", { x: 10, duration: 0.08, yoyo: true, repeat: 5 });
+                gsap.to(".gsap-card", { x: 10, duration: 0.08, yoyo: true, repeat: 5, ease: "sine.inOut" });
             }
             
+            // Reset Button State
             btnText.innerText = "Create Account";
+            btnIcon.className = "fas fa-arrow-right";
             btn.disabled = false;
             
             // Professional Error Handling
             if (error.code === 'auth/email-already-in-use') {
-                errorMsg.innerHTML = '<i class="fas fa-exclamation-circle"></i> This email is already registered in our system. Please proceed to login.';
+                errorMsg.innerHTML = '<i class="fas fa-exclamation-circle" style="margin-right: 5px;"></i> This email is already registered in our system. Please proceed to login.';
             } else if (error.code === 'auth/weak-password') {
-                errorMsg.innerHTML = '<i class="fas fa-shield-alt"></i> Security alert: Password must be at least 6 characters.';
+                errorMsg.innerHTML = '<i class="fas fa-shield-alt" style="margin-right: 5px;"></i> Security alert: Password must be at least 6 characters.';
             } else {
-                errorMsg.innerText = error.message;
+                errorMsg.innerHTML = '<i class="fas fa-exclamation-triangle" style="margin-right: 5px;"></i> ' + error.message;
             }
             
             errorMsg.style.display = "block";
         }
     });
 </script>
-
-<style>
-    /* --- AUTH LAYOUT --- */
-    .auth-section {
-        min-height: calc(100vh - 80px);
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        background: radial-gradient(circle at top left, #f1f5f9 0%, #e2e8f0 100%); 
-        padding: 40px 20px;
-        box-sizing: border-box;
-    }
-
-    .auth-card {
-        background: white; 
-        padding: 50px 40px; 
-        border-radius: 24px;
-        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15); 
-        border: 1px solid #e2e8f0;
-        width: 100%; 
-        max-width: 500px; 
-        position: relative;
-        box-sizing: border-box;
-    }
-    
-    .auth-header { text-align: center; margin-bottom: 30px; }
-    .auth-logo { height: 45px; margin-bottom: 15px; }
-    .auth-header h2 { font-size: 1.8rem; color: #0f172a; margin: 0 0 5px 0; font-weight: 800; letter-spacing: -0.5px; }
-    .auth-header p { color: #64748b; font-size: 0.95rem; margin: 0; }
-    
-    /* Profile Photo Upload Circle */
-    .photo-upload-circle {
-        width: 90px; height: 90px; margin: 0 auto; border-radius: 50%; 
-        background: #f8fafc; display: flex; align-items: center; justify-content: center; 
-        overflow: hidden; cursor: pointer; border: 2px dashed #cbd5e1; 
-        position: relative; transition: all 0.3s ease;
-    }
-    .photo-upload-circle:hover { border-color: #2563eb; background: #eff6ff; }
-    .photo-upload-circle:hover #photo-placeholder { color: #2563eb !important; transform: scale(1.05); }
-
-    /* Input Styling */
-    .form-group { margin-bottom: 20px; width: 100%; box-sizing: border-box; }
-    .form-group label { display: block; font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-    
-    .input-wrapper { 
-        display: flex; align-items: center; background: #f8fafc; border: 2px solid #e2e8f0; 
-        border-radius: 10px; padding: 0 15px; transition: all 0.3s ease; width: 100%; box-sizing: border-box;
-    }
-    .input-wrapper:focus-within { border-color: #2563eb; background: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
-    .input-wrapper i { color: #94a3b8; margin-right: 12px; font-size: 1.1rem; }
-    .input-wrapper input { 
-        width: 100%; border: none; background: transparent; padding: 14px 0; 
-        outline: none; color: #0f172a; font-size: 1rem; font-family: inherit; font-weight: 500;
-    }
-    .input-wrapper input::placeholder { color: #cbd5e1; font-weight: 400; }
-
-    /* Terms Text */
-    .terms-text {
-        font-size: 0.75rem;
-        color: #64748b;
-        text-align: center;
-        margin-top: 10px;
-        margin-bottom: 20px;
-        line-height: 1.5;
-    }
-    .terms-text a { color: #2563eb; font-weight: 600; text-decoration: none; }
-    .terms-text a:hover { text-decoration: underline; }
-
-    /* --- PREMIUM BLUE BUTTON --- */
-    .btn-primary {
-        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-        color: #ffffff;
-        width: 100%;
-        padding: 16px;
-        border: none;
-        border-radius: 12px;
-        font-weight: 800;
-        font-size: 1.05rem;
-        letter-spacing: 0.5px;
-        cursor: pointer;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .btn-primary i { transition: transform 0.3s ease; margin-left: 10px; }
-
-    .btn-primary:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 15px 35px -5px rgba(37, 99, 235, 0.6);
-        background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
-    }
-
-    .btn-primary:hover i { transform: translateX(6px); }
-
-    .btn-primary::after {
-        content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-        background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0) 100%);
-        transform: skewX(-25deg); transition: all 0.7s ease;
-    }
-    
-    .btn-primary:hover::after { left: 200%; }
-
-    .btn-primary:disabled {
-        background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none;
-    }
-    .btn-primary:disabled::after { display: none; }
-
-    /* Footer */
-    .auth-footer { text-align: center; margin-top: 30px; font-size: 0.95rem; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 20px; }
-    .auth-footer a { color: #2563eb; font-weight: 700; text-decoration: none; transition: color 0.2s; }
-    .auth-footer a:hover { color: #1e3a8a; text-decoration: underline; }
-    
-    /* --- MOBILE RESPONSIVENESS --- */
-    @media (max-width: 500px) {
-        .auth-section { padding: 20px 15px; } 
-        .auth-card { padding: 30px 25px; border-radius: 16px; } 
-        .auth-header h2 { font-size: 1.5rem; } 
-        .photo-upload-circle { width: 80px; height: 80px; } 
-    }
-</style>
 
 {% endblock %}

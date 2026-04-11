@@ -134,6 +134,17 @@ def safe_dict(data):
 # ==============================================================================
 # 3. PAGE ROUTES (View Layer)
 # ==============================================================================
+from flask import send_from_directory
+import os
+
+# ADD THESE ROUTES BEFORE YOUR @app.route('/')
+@app.route('/manifest.json')
+def serve_manifest():
+    return send_from_directory(os.path.join(app.root_path, 'static'), 'manifest.json', mimetype='application/manifest+json')
+
+@app.route('/sw.js')
+def serve_sw():
+    return send_from_directory(os.path.join(app.root_path, 'static'), 'sw.js', mimetype='application/javascript')
 
 @app.route('/')
 def home(): return render_template('home.html')

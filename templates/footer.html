@@ -1,262 +1,285 @@
 <footer class="main-footer">
-    <div class="container grid-4 gsap-footer-grid">
+    <div class="container grid-4">
         
-        <div class="gsap-footer-col brand-col">
+        <div class="gsap-footer-col brand-col" style="visibility: hidden;">
             <div class="footer-logo">
-                <img src="{{ url_for('static', filename='images/DEL SVG.svg') }}" alt="DW" width="40" style="margin-right: 10px;">
+                <img src="{{ url_for('static', filename='images/DEL SVG.svg') }}" alt="Delstarford Works" width="45" style="margin-right: 12px;">
                 <h4>DELSTARFORD</h4>
             </div>
-            <p class="footer-desc">Solving the world's biology and tech puzzles from Kakamega, Kenya to the global stage.</p>
+            <p class="footer-desc">Solving the world's biology and technical puzzles from Kakamega, Kenya to the global enterprise stage.</p>
             <div class="social-links">
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                <a href="#"><i class="fab fa-github"></i></a>
+                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
             </div>
         </div>
 
-        <div class="gsap-footer-col">
-            <h5>Solutions</h5>
+        <div class="gsap-footer-col" style="visibility: hidden;">
+            <h5>Platform Solutions</h5>
             <ul class="footer-links"> 
                 <li><a href="/ai-lab">AI Marketplace</a></li>
                 <li><a href="/services">Agri-Biotech Algorithms</a></li>
                 <li><a href="/services">Enterprise Web Systems</a></li>
+                <li><a href="/custom">Custom Architecture</a></li>
             </ul>
         </div>
 
-        <div class="gsap-footer-col">
-            <h5>Company</h5>
+        <div class="gsap-footer-col" style="visibility: hidden;">
+            <h5>Company & Resources</h5>
             <ul class="footer-links">
-                <li><a href="/about">Our Story</a></li>
-                <li><a href="/dashboard">Client Portal</a></li>
+                <li><a href="/about">Our Story & High Council</a></li>
+                <li><a href="/dashboard">Secure Client Portal</a></li>
                 <li><a href="/support">Support Center</a></li>
-                <li><a href="/privacy">Privacy Policy</a></li>
-                <li><a href="/admin-login" style="color: #ef4444; font-weight: 600;"><i class="fas fa-lock" style="font-size: 0.8rem; margin-right: 5px;"></i> Admin Portal</a></li>
+                <li><a href="/agreement">Service Pricing & Terms</a></li>
+                <li><a href="/admin-login" class="admin-link"><i class="fas fa-lock"></i> Admin Portal</a></li>
             </ul>
         </div>
 
-        <div class="gsap-footer-col">
-            <h5>Newsletter</h5>
-            <p class="footer-sm-text">Get the latest AI and Biotech insights delivered to your inbox.</p>
-            <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Subscribed successfully!');">
-                <input type="email" placeholder="Email address" required>
-                <button type="submit" class="btn-small-sub"><i class="fas fa-paper-plane"></i></button>
+        <div class="gsap-footer-col" style="visibility: hidden;">
+            <h5>Intelligence Newsletter</h5>
+            <p class="footer-sm-text">Get the latest AI and Biotech architectural insights delivered directly to your inbox.</p>
+            <form class="newsletter-form" onsubmit="handleNewsletter(event)">
+                <input type="email" placeholder="Corporate email address" required aria-label="Email address">
+                <button type="submit" class="btn-small-sub" aria-label="Subscribe">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
             </form>
         </div>
 
     </div>
     
-    <div class="footer-bottom gsap-footer-bottom">
+    <div class="footer-bottom gsap-footer-bottom" style="visibility: hidden;">
         <div class="container">
             <p>&copy; 2026 Delstarford Works. All rights reserved.</p>
-            <p>Built with precision in Kenya.</p>
+            <p class="built-with">Engineered with precision in Kenya. <span class="status-dot"></span> All Systems Operational</p>
         </div>
     </div>
 </footer>
 
 <style>
-    /* Footer Base Styling */
+    /* --- CSS VARIABLES & RESET --- */
+    :root {
+        --ft-bg: #0f172a; 
+        --ft-bg-darker: #020617;
+        --ft-text: #f8fafc;
+        --ft-muted: #94a3b8;
+        --ft-border: #1e293b;
+        --ft-primary: #3b82f6;
+        --ft-primary-hover: #2563eb;
+        --ft-success: #10b981;
+        --ft-danger: #ef4444;
+    }
+
+    /* --- FOOTER BASE --- */
     .main-footer {
-        background: #0f172a; /* Deep Navy */
-        color: #f8fafc;
-        padding-top: 60px;
+        background: var(--ft-bg);
+        color: var(--ft-text);
+        padding-top: 80px;
         font-family: 'Plus Jakarta Sans', sans-serif;
-        border-top: 1px solid #1e293b;
+        border-top: 1px solid var(--ft-border);
         overflow: hidden;
+        position: relative;
     }
     
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 20px;
-    }
+    .container { max-width: 1250px; margin: 0 auto; padding: 0 20px; }
 
     .grid-4 {
         display: grid;
-        grid-template-columns: 1.5fr 1fr 1fr 1fr;
-        gap: 40px;
-        margin-bottom: 50px;
+        grid-template-columns: 1.5fr 1fr 1fr 1.2fr;
+        gap: 50px;
+        margin-bottom: 60px;
     }
 
-    /* Column Typography */
+    /* --- TYPOGRAPHY & COLUMNS --- */
     .main-footer h5 {
-        color: #ffffff;
-        font-size: 1.1rem;
-        margin-bottom: 20px;
-        font-weight: 700;
+        color: var(--ft-text);
+        font-size: 1.05rem;
+        margin: 0 0 25px 0;
+        font-weight: 800;
         letter-spacing: 0.5px;
+        text-transform: uppercase;
     }
     .footer-desc {
-        color: #94a3b8;
+        color: var(--ft-muted);
         font-size: 0.95rem;
-        line-height: 1.6;
-        margin-bottom: 20px;
+        line-height: 1.7;
+        margin: 0 0 25px 0;
+        font-weight: 500;
     }
     .footer-sm-text {
-        color: #94a3b8;
-        font-size: 0.85rem;
-        margin-bottom: 15px;
-        line-height: 1.5;
+        color: var(--ft-muted);
+        font-size: 0.9rem;
+        margin: 0 0 20px 0;
+        line-height: 1.6;
     }
 
-    /* Brand Setup */
-    .footer-logo {
-        display: flex;
-        align-items: center;
-        margin-bottom: 15px;
-    }
+    /* --- BRANDING --- */
+    .footer-logo { display: flex; align-items: center; margin-bottom: 20px; }
     .footer-logo h4 {
         margin: 0;
         font-size: 1.4rem;
         font-weight: 800;
         letter-spacing: 1px;
+        color: var(--ft-text);
     }
     
-    /* Social Links */
-    .social-links {
-        display: flex;
-        gap: 15px;
-    }
+    /* --- SOCIAL LINKS --- */
+    .social-links { display: flex; gap: 15px; }
     .social-links a {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 35px;
-        height: 35px;
-        background: rgba(255,255,255,0.05);
-        color: #cbd5e1;
-        border-radius: 50%;
-        text-decoration: none;
-        transition: all 0.3s ease;
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 38px; height: 38px;
+        background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
+        color: var(--ft-muted); border-radius: 8px;
+        text-decoration: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .social-links a:hover {
-        background: #2563eb;
-        color: white;
-        transform: translateY(-3px);
+        background: var(--ft-primary); color: white; border-color: var(--ft-primary);
+        transform: translateY(-3px); box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
     }
 
-    /* List Links */
-    .footer-links {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    .footer-links li {
-        margin-bottom: 12px;
-    }
+    /* --- NAVIGATION LINKS --- */
+    .footer-links { list-style: none; padding: 0; margin: 0; }
+    .footer-links li { margin-bottom: 14px; }
     .footer-links a {
-        color: #94a3b8;
+        color: var(--ft-muted);
         text-decoration: none;
         font-size: 0.95rem;
+        font-weight: 500;
         transition: all 0.3s ease;
-        display: inline-block;
-    }
-    .footer-links a:hover {
-        color: #10b981; /* Emerald */
-        transform: translateX(5px); /* Slide right slightly on hover */
-    }
-
-    /* Newsletter Input */
-    .newsletter-form {
-        display: flex;
-        gap: 0;
-    }
-    .newsletter-form input {
-        flex: 1;
-        padding: 12px 15px;
-        background: rgba(255,255,255,0.05);
-        border: 1px solid #334155;
-        color: white;
-        border-radius: 6px 0 0 6px;
-        outline: none;
-        font-family: inherit;
-        transition: border-color 0.3s;
-    }
-    .newsletter-form input:focus {
-        border-color: #2563eb;
-    }
-    .btn-small-sub {
-        background: #2563eb;
-        color: white;
-        border: none;
-        padding: 0 20px;
-        border-radius: 0 6px 6px 0;
-        cursor: pointer;
-        transition: background 0.3s;
-    }
-    .btn-small-sub:hover {
-        background: #1d4ed8;
-    }
-
-    /* Footer Bottom */
-    .footer-bottom {
-        background: #020617; /* Darker Navy */
-        padding: 20px 0;
-        border-top: 1px solid #1e293b;
-    }
-    .footer-bottom .container {
-        display: flex;
-        justify-content: space-between;
+        display: inline-flex;
         align-items: center;
     }
-    .footer-bottom p {
-        margin: 0;
-        color: #64748b;
-        font-size: 0.85rem;
+    .footer-links a:hover { color: var(--ft-primary); transform: translateX(5px); }
+    
+    .admin-link { color: #fca5a5 !important; font-weight: 700 !important; }
+    .admin-link i { font-size: 0.8rem; margin-right: 6px; }
+    .admin-link:hover { color: var(--ft-danger) !important; }
+
+    /* --- NEWSLETTER FORM --- */
+    .newsletter-form { display: flex; gap: 0; position: relative;}
+    .newsletter-form input {
+        flex: 1; padding: 14px 15px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--ft-border);
+        color: white; border-radius: 8px 0 0 8px;
+        outline: none; font-family: inherit; font-size: 0.9rem;
+        transition: all 0.3s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .newsletter-form input::placeholder { color: #64748b; }
+    .newsletter-form input:focus {
+        border-color: var(--ft-primary);
+        background: rgba(255,255,255,0.05);
+    }
+    .btn-small-sub {
+        background: var(--ft-primary); color: white;
+        border: none; padding: 0 20px; border-radius: 0 8px 8px 0;
+        cursor: pointer; transition: all 0.3s;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .btn-small-sub:hover { background: var(--ft-primary-hover); }
+
+    /* --- FOOTER BOTTOM --- */
+    .footer-bottom {
+        background: var(--ft-bg-darker);
+        padding: 25px 0;
+        border-top: 1px solid var(--ft-border);
+    }
+    .footer-bottom .container {
+        display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
+    }
+    .footer-bottom p { margin: 0; color: #64748b; font-size: 0.85rem; font-weight: 500;}
+    
+    .built-with { display: flex; align-items: center; gap: 10px; }
+    .status-dot {
+        display: inline-block; width: 8px; height: 8px;
+        background: var(--ft-success); border-radius: 50%;
+        box-shadow: 0 0 8px var(--ft-success);
     }
 
-    /* Mobile Responsive */
-    @media (max-width: 900px) {
-        .grid-4 {
-            grid-template-columns: 1fr 1fr;
-        }
+    /* --- MOBILE RESPONSIVE --- */
+    @media (max-width: 1024px) {
+        .grid-4 { grid-template-columns: 1fr 1fr; gap: 40px; }
     }
     @media (max-width: 600px) {
-        .grid-4 {
-            grid-template-columns: 1fr;
-            text-align: center;
-        }
-        .footer-logo {
-            justify-content: center;
-        }
-        .social-links {
-            justify-content: center;
-        }
-        .footer-bottom .container {
-            flex-direction: column;
-            gap: 10px;
-            text-align: center;
-        }
+        .grid-4 { grid-template-columns: 1fr; text-align: center; gap: 40px;}
+        .footer-logo { justify-content: center; }
+        .social-links { justify-content: center; }
+        .footer-links a:hover { transform: translateX(0) scale(1.05); }
+        .footer-bottom .container { flex-direction: column; text-align: center; }
+        .built-with { justify-content: center; }
     }
 </style>
 
 <script>
+    // --- GSAP SCROLL ANIMATIONS ---
     document.addEventListener("DOMContentLoaded", () => {
-        if(typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
-            
-            // Staggered fade up for the footer columns
-            gsap.from(".gsap-footer-col", {
+        if(typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+            // Fallback if GSAP fails to load
+            document.querySelectorAll('.gsap-footer-col, .gsap-footer-bottom').forEach(el => el.style.visibility = 'visible');
+            return;
+        }
+
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Staggered fade up for the footer columns
+        gsap.fromTo(".gsap-footer-col", 
+            { y: 40, autoAlpha: 0 },
+            {
                 scrollTrigger: {
                     trigger: ".main-footer",
-                    start: "top 90%", // Triggers when the top of the footer hits 90% of the viewport height
+                    start: "top 90%" 
                 },
-                y: 40,
-                opacity: 0,
+                y: 0,
+                autoAlpha: 1,
                 stagger: 0.15,
                 duration: 0.8,
-                ease: "power2.out"
-            });
+                ease: "power3.out"
+            }
+        );
 
-            // Fade up the bottom copyright bar slightly after the columns
-            gsap.from(".gsap-footer-bottom", {
+        // Fade up the bottom copyright bar slightly after
+        gsap.fromTo(".gsap-footer-bottom", 
+            { autoAlpha: 0 },
+            {
                 scrollTrigger: {
                     trigger: ".main-footer",
-                    start: "top 80%", 
+                    start: "top 80%" 
                 },
-                opacity: 0,
+                autoAlpha: 1,
                 duration: 1,
-                delay: 0.5,
+                delay: 0.4,
                 ease: "power2.inOut"
-            });
-        }
+            }
+        );
     });
+
+    // --- INTERACTIVE NEWSLETTER FORM ---
+    function handleNewsletter(e) {
+        e.preventDefault();
+        const form = e.target;
+        const input = form.querySelector('input');
+        const btn = form.querySelector('button');
+        const icon = btn.querySelector('i');
+
+        // Loading State
+        icon.className = 'fas fa-circle-notch fa-spin';
+        btn.disabled = true;
+
+        // Simulate API call delay
+        setTimeout(() => {
+            // Success State
+            icon.className = 'fas fa-check';
+            btn.style.background = 'var(--ft-success)';
+            input.value = '';
+            input.placeholder = 'Successfully Subscribed!';
+            
+            // Reset after 3 seconds
+            setTimeout(() => {
+                icon.className = 'fas fa-paper-plane';
+                btn.style.background = '';
+                btn.disabled = false;
+                input.placeholder = 'Corporate email address';
+            }, 3000);
+        }, 1200);
+    }
 </script>

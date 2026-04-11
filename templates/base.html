@@ -10,7 +10,11 @@
     <meta property="og:description" content="Where Biology Meets Technology. Custom AI, Biotech, and AI-Powered Web and application Solutions.">
     <meta property="og:image" content="{{ url_for('static', filename='images/logo.png') }}">
     <meta property="og:url" content="https://delstarford-works.onrender.com">
-
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="DSW App">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.png') }}">
     <title>Delstarford Works | Engineering the Future</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
@@ -47,7 +51,6 @@
 
         ::selection { background: var(--primary); color: #ffffff; }
 
-        /* Container for constraining content width */
         .container {
             width: 100%;
             max-width: 1280px;
@@ -56,7 +59,6 @@
             box-sizing: border-box;
         }
 
-        /* --- CUSTOM SCROLLBAR --- */
         ::-webkit-scrollbar { width: 8px; height: 6px; }
         ::-webkit-scrollbar-track { background: var(--dark); }
         ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
@@ -75,7 +77,6 @@
             100% { transform: scale(1); opacity: 0.8; } 
         }
 
-        /* --- SCROLL PROGRESS BAR --- */
         #scrollProgress { 
             position: fixed; top: 0; left: 0; height: 4px; width: 0%; z-index: 4000; 
             background: linear-gradient(to right, #3b82f6, #10b981); 
@@ -103,7 +104,6 @@
             color: #94a3b8; font-size: 0.75rem; margin-left: 10px; border: 1px solid rgba(255,255,255,0.1);
         }
 
-        /* Desktop Nav */
         .desktop-nav { display: flex; align-items: center; gap: 20px; overflow-x: auto; scrollbar-width: none; }
         .desktop-nav::-webkit-scrollbar { display: none; }
         .nav-link { color: #cbd5e1; text-decoration: none; font-size: 0.95rem; font-weight: 600; transition: 0.3s; flex-shrink: 0; }
@@ -119,11 +119,11 @@
         .btn-primary-small { 
             background: var(--primary); color: white; padding: 10px 22px; border-radius: 8px; 
             font-weight: 700; text-decoration: none; transition: all 0.3s; position: relative; overflow: hidden;
-            box-shadow: 0 4px 10px rgba(37,99,235,0.2);
+            box-shadow: 0 4px 10px rgba(37,99,235,0.2); cursor: pointer; border: none;
         }
         .btn-primary-small:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,99,235,0.4); }
 
-        /* --- MOBILE MENU & HAMBURGER --- */
+        /* --- MOBILE MENU --- */
         .mobile-toggle { 
             display: none; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); 
             cursor: pointer; flex-direction: column; gap: 5px; z-index: 3100; padding: 10px; border-radius: 8px; 
@@ -151,32 +151,54 @@
 
         .btn-mobile-cta { background: var(--primary); color: white; padding: 15px 30px; border-radius: 12px; margin-top: 20px; font-size: 1.2rem; text-decoration: none; font-weight: 700; display: inline-block; }
 
-        /* --- BACK TO TOP BUTTON --- */
+        /* --- PWA INSTALL BANNER (NEW) --- */
+        .pwa-banner {
+            position: fixed; top: -120px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 450px; background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.15); border-radius: 16px;
+            z-index: 9999; display: flex; align-items: center; justify-content: space-between;
+            padding: 15px 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            transition: top 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy drop-down */
+        }
+        .pwa-banner.show { top: 20px; }
+        .pwa-banner-content { display: flex; align-items: center; gap: 15px; }
+        .pwa-logo { width: 45px; height: 45px; border-radius: 10px; background: #fff; padding: 2px; }
+        .pwa-text { display: flex; flex-direction: column; color: #fff; }
+        .pwa-text strong { font-size: 1rem; font-weight: 800; letter-spacing: -0.5px; }
+        .pwa-text span { font-size: 0.8rem; color: #cbd5e1; }
+        .pwa-actions { display: flex; align-items: center; gap: 15px; }
+        .pwa-close { background: none; border: none; color: #94a3b8; font-size: 1.4rem; cursor: pointer; transition: color 0.3s; padding: 0; display: flex; align-items: center;}
+        .pwa-close:hover { color: #ef4444; }
+
+        /* --- UTILITIES --- */
         #backToTop { position: fixed; bottom: 30px; right: 30px; background: var(--dark); color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; cursor: pointer; border: 2px solid var(--primary); opacity: 0; visibility: hidden; transition: all 0.3s; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         #backToTop.show { opacity: 1; visibility: visible; }
         #backToTop:hover { background: var(--primary); transform: translateY(-8px); }
 
-        /* --- FLASH MESSAGES --- */
         .flash-wrapper { position: fixed; top: 90px; right: 20px; z-index: 4000; display: flex; flex-direction: column; gap: 10px; }
         .flash-card { background: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 15px; border-left: 4px solid var(--primary); min-width: 300px; }
-        .flash-card.success { border-left-color: #10b981; }
-        .flash-card.error { border-left-color: #ef4444; }
 
-        /* --- BREAKPOINTS --- */
-        @media (max-width: 1250px) {
-            .contact-pill { display: none; }
-        }
-        @media (max-width: 1100px) {
-            .desktop-nav, .header-utils { display: none; }
-            .mobile-toggle { display: flex; }
-        }
-        @media (max-width: 480px) {
-            .brand-name { font-size: 1rem; }
-            .brand-suffix { display: none; }
-        }
+        @media (max-width: 1250px) { .contact-pill { display: none; } }
+        @media (max-width: 1100px) { .desktop-nav, .header-utils { display: none; } .mobile-toggle { display: flex; } }
+        @media (max-width: 480px) { .brand-name { font-size: 1rem; } .brand-suffix { display: none; } .pwa-banner { width: 95%; padding: 12px; } .pwa-logo { width: 35px; height: 35px; } }
     </style>
 </head>
 <body>
+
+    <div id="pwa-install-banner" class="pwa-banner">
+        <div class="pwa-banner-content">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="DSW Logo" class="pwa-logo">
+            <div class="pwa-text">
+                <strong>Install DSW App</strong>
+                <span>Faster, secure offline access</span>
+            </div>
+        </div>
+        <div class="pwa-actions">
+            <button id="pwa-install-btn" class="btn-primary-small">Install</button>
+            <button id="pwa-close-btn" class="pwa-close" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
 
     <div id="scrollProgress"></div>
     <div id="preloader"><img src="{{ url_for('static', filename='images/DEL SVG.svg') }}" alt="Loading..."></div>
@@ -302,9 +324,6 @@
             </div>
             <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; display: flex; justify-content: space-between; align-items: center; color: #64748b; font-size: 0.85rem; flex-wrap: wrap; gap: 10px;">
                 <p style="margin:0;">&copy; 2026 Delstarford Works. All rights reserved.</p>
-                <div>
-                    <span style="display:inline-block; width:8px; height:8px; background:#10b981; border-radius:50%; margin-right:5px; box-shadow: 0 0 8px #10b981;"></span> System Status: Online
-                </div>
             </div>
         </div>
     </footer>
@@ -333,7 +352,6 @@
         // --- Mobile Menu Logic ---
         const mobileToggle = document.getElementById('mobileToggle');
         const mobileOverlay = document.getElementById('mobileOverlay');
-        const siteHeader = document.getElementById('siteHeader');
 
         function toggleMobileMenu() {
             const isOpen = mobileOverlay.classList.contains('active');
@@ -359,177 +377,67 @@
             });
         });
 
-        // --- THE UNIVERSAL GSAP ENGINE ---
+        // --- PWA INSTALLATION LOGIC ---
+        let deferredPrompt;
+        const pwaBanner = document.getElementById('pwa-install-banner');
+        const installBtn = document.getElementById('pwa-install-btn');
+        const closeBtn = document.getElementById('pwa-close-btn');
+
+        // Listen for the native install prompt event
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent Chrome from automatically showing its default mini-infobar
+            e.preventDefault();
+            // Stash the event so it can be triggered when the user clicks 'Install'
+            deferredPrompt = e;
+
+            // Only show if the user hasn't explicitly dismissed it before
+            if (!localStorage.getItem('dsw_app_dismissed')) {
+                // Wait 2 seconds so it feels natural, then slide the banner in
+                setTimeout(() => { pwaBanner.classList.add('show'); }, 2000);
+            }
+        });
+
+        // Handle Install Button Click
+        installBtn.addEventListener('click', async () => {
+            pwaBanner.classList.remove('show');
+            if (deferredPrompt) {
+                // Show the native installation prompt
+                deferredPrompt.prompt();
+                // Wait for the user to respond to the prompt
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response to install prompt: ${outcome}`);
+                // Clear the deferred prompt variable
+                deferredPrompt = null;
+            }
+        });
+
+        // Handle Close 'X' Button Click
+        closeBtn.addEventListener('click', () => {
+            pwaBanner.classList.remove('show');
+            // Save preference so we don't spam them on next page reload
+            localStorage.setItem('dsw_app_dismissed', 'true');
+        });
+
+        // --- GSAP ANIMATIONS ---
         document.addEventListener("DOMContentLoaded", () => {
             if(typeof gsap !== 'undefined') {
                 gsap.registerPlugin(ScrollTrigger, TextPlugin);
                 const ST = (el) => ({ trigger: el, start: "top 85%", toggleActions: "play none none reverse" });
 
-                // 1. STANDARD CSS & TRANSFORM REVEALS
+                // Standard Animations
                 gsap.utils.toArray('.anim-fade-up').forEach(el => gsap.from(el, { scrollTrigger: ST(el), y: 50, opacity: 0, duration: 0.8, ease: "power3.out" }));
                 gsap.utils.toArray('.anim-scale-up').forEach(el => gsap.from(el, { scrollTrigger: ST(el), scale: 0, opacity: 0, duration: 0.8, ease: "back.out(1.7)" }));
-                gsap.utils.toArray('.anim-rotate-in').forEach(el => gsap.from(el, { scrollTrigger: ST(el), rotation: -90, transformOrigin: "left bottom", opacity: 0, duration: 1 }));
                 gsap.utils.toArray('.anim-slide-left').forEach(el => gsap.from(el, { scrollTrigger: ST(el), x: -200, opacity: 0, duration: 1, ease: "power2.out" }));
-                gsap.utils.toArray('.anim-zoom-out').forEach(el => gsap.from(el, { scrollTrigger: ST(el), scale: 3, opacity: 0, duration: 1.2, ease: "power4.out" }));
-                gsap.utils.toArray('.anim-flip-x').forEach(el => gsap.from(el, { scrollTrigger: ST(el), rotationX: 90, opacity: 0, duration: 1, transformPerspective: 800 }));
-                gsap.utils.toArray('.anim-flip-y').forEach(el => gsap.from(el, { scrollTrigger: ST(el), rotationY: 90, opacity: 0, duration: 1, transformPerspective: 800 }));
                 gsap.utils.toArray('.anim-bounce-in').forEach(el => gsap.from(el, { scrollTrigger: ST(el), y: -100, opacity: 0, duration: 1, ease: "bounce.out" }));
-                gsap.utils.toArray('.anim-skew-in').forEach(el => gsap.from(el, { scrollTrigger: ST(el), skewX: 30, x: -100, opacity: 0, duration: 1 }));
-                gsap.utils.toArray('.anim-reveal-wipe').forEach(el => gsap.from(el, { scrollTrigger: ST(el), clipPath: "inset(0 100% 0 0)", duration: 1.2, ease: "power3.inOut" }));
-                gsap.utils.toArray('.anim-ink-bleed').forEach(el => gsap.from(el, { scrollTrigger: ST(el), filter: "blur(20px)", opacity: 0, scale: 0.9, duration: 1.5 }));
-                gsap.utils.toArray('.anim-elastic-snap').forEach(el => gsap.from(el, { scrollTrigger: ST(el), x: -300, opacity: 0, duration: 1.5, ease: "elastic.out(1, 0.3)" }));
-                gsap.utils.toArray('.anim-rubber-band').forEach(el => gsap.from(el, { scrollTrigger: ST(el), scaleX: 1.8, scaleY: 0.4, opacity: 0, duration: 1, ease: "elastic.out(1.2, 0.4)" }));
-                gsap.utils.toArray('.anim-whip-slide').forEach(el => gsap.from(el, { scrollTrigger: ST(el), x: -600, rotation: -10, duration: 0.8, ease: "back.out(1.4)" }));
-                gsap.utils.toArray('.anim-cross-fade').forEach(el => gsap.from(el, { scrollTrigger: ST(el), opacity: 0, scale: 0.95, filter: "blur(8px)", duration: 1.2, ease: "power2.out" }));
-                gsap.utils.toArray('.anim-slide-up-reveal').forEach(el => gsap.from(el, { scrollTrigger: ST(el), yPercent: 100, duration: 0.8, ease: "power3.out" }));
-                gsap.utils.toArray('.anim-unfold-3d').forEach(el => gsap.from(el, { scrollTrigger: ST(el), rotationY: -90, rotationX: 45, opacity: 0, scale: 0.5, transformPerspective: 800, duration: 1.2, ease: "power3.out" }));
-                gsap.utils.toArray('.anim-stretch-warp').forEach(el => gsap.from(el, { scrollTrigger: ST(el), scaleX: 4, scaleY: 0.2, opacity: 0, duration: 1, ease: "elastic.out(1, 0.4)" }));
-                gsap.utils.toArray('.anim-cinema-title').forEach(el => gsap.from(el, { scrollTrigger: ST(el), letterSpacing: "2em", opacity: 0, duration: 2, ease: "power3.inOut" }));
-                gsap.utils.toArray('.anim-rubber-stamp').forEach(el => gsap.from(el, { scrollTrigger: ST(el), scale: 4, rotation: -15, opacity: 0, duration: 0.3, ease: "power4.in" }));
-                gsap.utils.toArray('.anim-liquid-fill').forEach(el => gsap.from(el, { scrollTrigger: ST(el), clipPath: "inset(100% 0 0 0)", duration: 1.5, ease: "power2.out" }));
-
-                // 2. TIMELINES (Glitch, Heartbeat, Earthquake, etc.)
-                gsap.utils.toArray('.anim-glitch').forEach(el => {
-                    let tl = gsap.timeline({ scrollTrigger: ST(el), repeat: 2 });
-                    tl.to(el, { x: -3, skewX: 10, duration: 0.05 }).to(el, { x: 3, skewX: -8, duration: 0.05 }).to(el, { x: 0, skewX: 0, duration: 0.05 });
-                });
-                gsap.utils.toArray('.anim-heartbeat').forEach(el => {
-                    let tl = gsap.timeline({ scrollTrigger: ST(el), repeat: 2 });
-                    tl.to(el, { scale: 1.15, duration: 0.1, ease: "power2.in" }).to(el, { scale: 1, duration: 0.1 }).to(el, { scale: 1.25, duration: 0.12 }).to(el, { scale: 1, duration: 0.3, ease: "power2.out" });
-                });
-                gsap.utils.toArray('.anim-earthquake').forEach(el => {
-                    let tl = gsap.timeline({ scrollTrigger: ST(el) });
-                    for (let i = 0; i < 8; i++) {
-                        let intensity = 12 * (1 - i / 8);
-                        tl.to(el, { x: gsap.utils.random(-intensity, intensity), y: gsap.utils.random(-intensity * 0.5, intensity * 0.5), rotation: gsap.utils.random(-3, 3), duration: 0.05 });
-                    }
-                    tl.to(el, { x: 0, y: 0, rotation: 0, duration: 0.3 });
-                });
-                gsap.utils.toArray('.anim-neon-flicker').forEach(el => {
-                    let tl = gsap.timeline({ scrollTrigger: ST(el) });
-                    tl.set(el, { opacity: 0 }).to(el, { opacity: 1, duration: 0.1 }).to(el, { opacity: 0.2, duration: 0.05 }).to(el, { opacity: 1, duration: 0.1 }).to(el, { opacity: 0, duration: 0.05 }).to(el, { opacity: 1, textShadow: "0 0 20px #3b82f6", duration: 0.3 });
-                });
-                gsap.utils.toArray('.anim-vhs-tracking').forEach(el => {
-                    let tl = gsap.timeline({ scrollTrigger: ST(el) });
-                    tl.set(el, { opacity: 0.7, skewX: 5 }).to(el, { x: -10, skewX: -8, duration: 0.06, repeat: 4, yoyo: true }).to(el, { x: 0, skewX: 0, opacity: 1, duration: 0.3 }).to(el, { x: 5, opacity: 0.6, duration: 0.04 }, "+=0.5").to(el, { x: 0, opacity: 1, duration: 0.2 });
-                });
-
-                // 3. TEXT PLUGINS & NUMBERS
-                gsap.utils.toArray('.anim-decode').forEach(el => {
-                    const originalText = el.innerText;
-                    gsap.to(el, { scrollTrigger: ST(el), text: { value: originalText, chars: "█▓▒░XO!#" }, duration: 1.5, ease: "none" });
-                });
-                gsap.utils.toArray('.anim-typewriter').forEach(el => {
-                    const originalText = el.innerText;
-                    el.innerText = "";
-                    gsap.to(el, { scrollTrigger: ST(el), text: originalText, duration: 2, ease: "none" });
-                });
                 
-                // NUMBER COUNTER: Usage <h2 class="anim-counter" data-target="5000">0</h2>
+                // Numbers
                 gsap.utils.toArray('.anim-counter').forEach(el => {
                     const target = parseInt(el.getAttribute('data-target')) || 100;
                     let obj = { val: 0 };
                     gsap.to(obj, { scrollTrigger: ST(el), val: target, duration: 2.5, ease: "power2.out", onUpdate: () => { el.textContent = Math.round(obj.val).toLocaleString(); } });
                 });
 
-                // 4. SPLIT TYPE ANIMATIONS (Chars, Words, Lines)
-                if (typeof SplitType !== 'undefined') {
-                    // --- CHARACTERS ---
-                    gsap.utils.toArray('.anim-stagger-letters').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.from(text.chars, { scrollTrigger: ST(el), y: 50, opacity: 0, stagger: 0.03, duration: 0.6, ease: "back.out(1.7)" });
-                    });
-                    gsap.utils.toArray('.anim-gravity-fall').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.from(text.chars, { scrollTrigger: ST(el), y: -300, opacity: 0, stagger: 0.05, duration: 0.8, ease: "bounce.out" });
-                    });
-                    gsap.utils.toArray('.anim-matrix-rain').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.from(text.chars, { scrollTrigger: ST(el), y: -100, opacity: 0, stagger: { each: 0.05, from: "random" }, duration: 0.5, ease: "power2.out" });
-                    });
-                    gsap.utils.toArray('.anim-cascade-reveal').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.from(text.chars, { scrollTrigger: ST(el), y: -80, rotation: -15, opacity: 0, stagger: { each: 0.04, from: "start" }, duration: 0.5, ease: "back.out(1.4)" });
-                    });
-                    gsap.utils.toArray('.anim-domino-fall').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.from(text.chars, { scrollTrigger: ST(el), rotationZ: -90, transformOrigin: "bottom left", opacity: 0, stagger: 0.06, duration: 0.5, ease: "power3.out" });
-                    });
-                    gsap.utils.toArray('.anim-popcorn-pop').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.from(text.chars, { scrollTrigger: ST(el), scale: 0, y: 30, rotation: () => gsap.utils.random(-20, 20), stagger: { each: 0.04, from: "random" }, duration: 0.4, ease: "back.out(2)" });
-                    });
-                    gsap.utils.toArray('.anim-magnetic-pull').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.from(text.chars, { scrollTrigger: ST(el), x: () => gsap.utils.random(-200, 200), y: () => gsap.utils.random(-200, 200), opacity: 0, rotation: () => gsap.utils.random(-90, 90), stagger: 0.02, duration: 1, ease: "power3.out" });
-                    });
-                    gsap.utils.toArray('.anim-slot-machine').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.from(text.chars, { scrollTrigger: ST(el), yPercent: -500, stagger: { each: 0.08, from: "start" }, duration: 0.6, ease: "power4.out" });
-                    });
-                    gsap.utils.toArray('.anim-spotlight').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.from(text.chars, { scrollTrigger: ST(el), opacity: 0.1, scale: 0.8, filter: "blur(4px)", stagger: { each: 0.06, from: "center" }, duration: 0.4, ease: "power2.out" });
-                    });
-                    gsap.utils.toArray('.anim-pendulum').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.from(text.chars, { scrollTrigger: ST(el), rotation: 90, transformOrigin: "top center", opacity: 0, stagger: 0.05, duration: 1, ease: "elastic.out(1, 0.5)" });
-                    });
-                    gsap.utils.toArray('.anim-wavy-baseline').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.to(text.chars, { scrollTrigger: ST(el), y: -20, stagger: { each: 0.06, from: "start", repeat: -1, yoyo: true }, duration: 0.4, ease: "sine.inOut" });
-                    });
-                    gsap.utils.toArray('.anim-flip-board').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.from(text.chars, { scrollTrigger: ST(el), rotationX: -90, transformOrigin: "50% 0%", opacity: 0, stagger: { each: 0.1, from: "start" }, duration: 0.3, ease: "power2.out" });
-                    });
-                    gsap.utils.toArray('.anim-neon-sign').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        const tl = gsap.timeline({ scrollTrigger: ST(el) });
-                        text.chars.forEach((ch, i) => {
-                            tl.set(ch, { opacity: 0 })
-                              .to(ch, { opacity: 1, duration: 0.05 }, i * 0.15)
-                              .to(ch, { opacity: 0.3, duration: 0.03 }, i * 0.15 + 0.05)
-                              .to(ch, { opacity: 1, textShadow: "0 0 10px #3b82f6", duration: 0.1 }, i * 0.15 + 0.08);
-                        });
-                    });
-                    gsap.utils.toArray('.anim-vertical-blinds').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.from(text.chars, { scrollTrigger: ST(el), scaleX: 0, opacity: 0, stagger: { each: 0.04, from: "edges" }, duration: 0.4, ease: "power2.out" });
-                    });
-                    gsap.utils.toArray('.anim-firework-burst').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        let tl = gsap.timeline({ scrollTrigger: ST(el) });
-                        tl.set(text.chars, { scale: 0, opacity: 0 }).from(text.chars, { scale: 3, opacity: 0, stagger: { each: 0.03, from: "center" }, duration: 0.6, ease: "power4.out" });
-                    });
-                    gsap.utils.toArray('.anim-origami-unfold').forEach(el => {
-                        const text = new SplitType(el, { types: 'chars' });
-                        gsap.from(text.chars, { scrollTrigger: ST(el), rotationY: -90, rotationX: 45, transformOrigin: "left center", opacity: 0, stagger: 0.05, duration: 0.8, ease: "power3.out" });
-                    });
-
-                    // --- WORDS ---
-                    gsap.utils.toArray('.anim-split-words').forEach(el => {
-                        const text = new SplitType(el, { types: 'words' });
-                        gsap.from(text.words, { scrollTrigger: ST(el), y: 40, opacity: 0, stagger: 0.15, duration: 0.8, ease: "power2.out" });
-                    });
-                    gsap.utils.toArray('.anim-shuffle-words').forEach(el => {
-                        const text = new SplitType(el, { types: 'words' });
-                        gsap.from(text.words, { scrollTrigger: ST(el), x: () => gsap.utils.random(-100, 100), y: () => gsap.utils.random(-50, 50), opacity: 0, rotation: () => gsap.utils.random(-15, 15), stagger: 0.1, duration: 0.8, ease: "power3.out" });
-                    });
-
-                    // --- LINES ---
-                    gsap.utils.toArray('.anim-line-drop').forEach(el => {
-                        const text = new SplitType(el, { types: 'lines' });
-                        gsap.from(text.lines, { scrollTrigger: ST(el), y: -200, opacity: 0, stagger: 0.3, duration: 0.6, ease: "bounce.out" });
-                    });
-                }
-                
-                // 5. REPEATING / CONTINUOUS EFFECTS
-                gsap.utils.toArray('.anim-shadow-pulse').forEach(el => {
-                    gsap.fromTo(el, { textShadow: "0 0 0px #10b981" }, { textShadow: "0 0 30px #10b981, 0 0 60px #10b981", duration: 1, yoyo: true, repeat: -1, ease: "sine.inOut" });
-                });
-
-                // 6. GRID STAGGER
+                // Grid Stagger
                 gsap.utils.toArray('.anim-stagger-grid').forEach(grid => {
                     const items = grid.children;
                     gsap.from(items, { scrollTrigger: ST(grid), y: 40, opacity: 0, duration: 0.6, stagger: 0.15, ease: "power2.out" });
@@ -571,6 +479,19 @@
 
         window.globalLogout = function() {
             if(window.auth) auth.signOut().then(() => { window.location.href = '/login'; });
+        }
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('✅ PWA Service Worker registered securely with scope:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.error('❌ Service Worker registration failed:', error);
+                    });
+            });
         }
     </script>
 </body>

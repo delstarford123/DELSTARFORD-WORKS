@@ -135,9 +135,9 @@
     .badge.open { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
 
     /* SLIDE-OVER DETAIL PANEL */
-    .detail-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 9999; display: flex; justify-content: flex-end; opacity: 0; visibility: hidden; transition: all 0.4s ease; }
+    .detail-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 9999; display: flex; justify-content: flex-end; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
     .detail-overlay.active { opacity: 1; visibility: visible; }
-    .detail-panel { width: 550px; max-width: 100%; height: 100%; background: var(--bg-panel); border-left: 1px solid var(--border-light); box-shadow: -10px 0 30px rgba(0,0,0,0.1); transform: translateX(100%); transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1); display: flex; flex-direction: column; overflow-y: auto;}
+    .detail-panel { width: 550px; max-width: 100%; height: 100%; background: var(--bg-panel); border-left: 1px solid var(--border-light); box-shadow: -10px 0 30px rgba(0,0,0,0.1); transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); display: flex; flex-direction: column; overflow-y: auto;}
     .detail-overlay.active .detail-panel { transform: translateX(0); }
 
     .dp-header { padding: 25px 30px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; background: #f8fafc; position: sticky; top:0; z-index: 10;}
@@ -176,37 +176,29 @@
     @media (max-width: 768px) {
         :root { --sidebar-width: 0px; }
         
-        /* Activate Mobile App Header */
         .mobile-dash-header { display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; background: white; border-bottom: 1px solid var(--border-light); position: fixed; top: 0; left: 0; right: 0; z-index: 900; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .menu-toggle { background: none; border: none; font-size: 1.2rem; color: var(--text-main); cursor: pointer; padding: 5px;}
         .mobile-brand { font-weight: 800; color: var(--text-main); letter-spacing: 1px; font-size: 1rem; }
         .mobile-avatar { width: 32px; height: 32px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; }
         
-        /* Mobile Sidebar Overlay */
         .sidebar-overlay { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 990; opacity: 0; visibility: hidden; transition: 0.3s; }
         .sidebar-overlay.active { opacity: 1; visibility: visible; }
         
-        /* Hide Desktop Elements */
         .admin-header-top { display: none; } 
         
-        /* Sidebar slide-in mechanics */
         .admin-sidebar { position: fixed; left: -280px; top: 0; bottom: 0; width: 280px; z-index: 1000; box-shadow: none; padding: 0; }
         .admin-sidebar.active { left: 0; box-shadow: 4px 0 15px rgba(0,0,0,0.2); }
         
-        /* Restore Sidebar Text for Mobile */
         .sidebar-brand h2, .admin-nav-btn span, .btn-public span, .logout-btn span { display: inline-block; } 
         .admin-nav-btn, .btn-public, .logout-btn { justify-content: flex-start; padding: 14px 20px; }
         .sidebar-brand { justify-content: flex-start; padding: 20px; margin-bottom: 10px; border-bottom: 1px solid var(--border-light);}
         
-        /* Mobile Close Button inside Sidebar */
         .sidebar-header-mobile { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid var(--border-light); background: #f8fafc;}
         .sidebar-header-mobile h3 { margin: 0; color: var(--text-main); font-size: 1.1rem; }
         .sidebar-header-mobile button { background: none; border: none; font-size: 1.2rem; color: var(--text-muted); cursor: pointer; }
 
-        /* Adjust Main Content Area */
-        .admin-main { margin-left: 0; padding: 80px 15px 20px 15px; } /* 80px top padding prevents hiding under fixed header */
+        .admin-main { margin-left: 0; padding: 80px 15px 20px 15px; }
         
-        /* Refine Cards & Tables */
         .stats-grid { grid-template-columns: 1fr; gap: 15px; }
         .data-card { border-radius: 12px; }
         .data-card-header { flex-direction: column; align-items: flex-start; gap: 15px; padding: 15px; }
@@ -319,7 +311,7 @@
             <div class="data-card">
                 <div class="data-card-header">
                     <h3>Marketplace Sales</h3>
-                    <button class="btn-refresh" onclick="loadOrders()"><i class="fas fa-sync-alt"></i> Refresh Data</button>
+                    <button class="btn-refresh" onclick="loadOrders(this)"><i class="fas fa-sync-alt"></i> Refresh Data</button>
                 </div>
                 <div class="table-responsive">
                     <table>
@@ -342,7 +334,7 @@
             <div class="data-card">
                 <div class="data-card-header">
                     <h3>Custom Project Leads</h3>
-                    <button class="btn-refresh" onclick="loadLeads()"><i class="fas fa-sync-alt"></i> Refresh Data</button>
+                    <button class="btn-refresh" onclick="loadLeads(this)"><i class="fas fa-sync-alt"></i> Refresh Data</button>
                 </div>
                 <div class="table-responsive">
                     <table>
@@ -364,7 +356,7 @@
             <div class="data-card">
                 <div class="data-card-header">
                     <h3>Support Tickets</h3>
-                    <button class="btn-refresh" onclick="loadTickets()"><i class="fas fa-sync-alt"></i> Refresh Data</button>
+                    <button class="btn-refresh" onclick="loadTickets(this)"><i class="fas fa-sync-alt"></i> Refresh Data</button>
                 </div>
                 <div class="table-responsive">
                     <table>
@@ -386,7 +378,7 @@
             <div class="data-card">
                 <div class="data-card-header">
                     <h3>Registered Accounts</h3>
-                    <button class="btn-refresh" onclick="loadUsers()"><i class="fas fa-sync-alt"></i> Refresh Data</button>
+                    <button class="btn-refresh" onclick="loadUsers(this)"><i class="fas fa-sync-alt"></i> Refresh Data</button>
                 </div>
                 <div class="table-responsive">
                     <table>
@@ -433,6 +425,27 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <script>
+    // --- UTILITIES ---
+    // Security: Sanitize HTML to prevent XSS attacks from form inputs
+    function sanitizeHTML(str) {
+        if (!str) return 'N/A';
+        const temp = document.createElement('div');
+        temp.textContent = str;
+        return temp.innerHTML;
+    }
+
+    function toggleButtonLoading(btnElement, isLoading) {
+        if (!btnElement) return;
+        if (isLoading) {
+            btnElement.dataset.originalHtml = btnElement.innerHTML;
+            btnElement.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Fetching...`;
+            btnElement.disabled = true;
+        } else {
+            btnElement.innerHTML = btnElement.dataset.originalHtml;
+            btnElement.disabled = false;
+        }
+    }
+
     // --- UI LOGIC ---
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
@@ -441,7 +454,6 @@
         sidebar.classList.toggle('active');
         overlay.classList.toggle('active');
         
-        // Prevent background scrolling on mobile when sidebar is open
         if (sidebar.classList.contains('active')) {
             document.body.style.overflow = 'hidden';
         } else {
@@ -459,20 +471,18 @@
         const spanText = btnElement.querySelector('span');
         const titleText = spanText ? spanText.innerText.trim() : 'Dashboard';
         
-        // Update Desktop Header
         document.getElementById('panel-title').innerText = titleText;
-        // Update Mobile Header
         document.querySelector('.mobile-brand').innerText = titleText.toUpperCase();
 
         if (window.innerWidth <= 768) {
-            toggleSidebar(); // Close sidebar after selecting on mobile
+            toggleSidebar();
         }
 
         if(typeof gsap !== 'undefined') {
             gsap.from(`#${panelId} tbody tr, #${panelId} .stat-card`, { y: 20, opacity: 0, stagger: 0.05, duration: 0.4, ease: "power2.out" });
         }
 
-        // Load data dynamically based on tab
+        // Load data dynamically
         if(panelId === 'overview-panel') loadAllStats();
         if(panelId === 'orders-panel') loadOrders();
         if(panelId === 'users-panel') loadUsers();
@@ -486,7 +496,7 @@
     function openDetailPanel(title, metaHtml, message, contextData = null) {
         document.getElementById('dp-title').innerText = title;
         document.getElementById('dp-meta-content').innerHTML = metaHtml;
-        document.getElementById('dp-message-content').innerText = message || "No message payload provided.";
+        document.getElementById('dp-message-content').innerText = sanitizeHTML(message) || "No message payload provided.";
         
         const replyArea = document.getElementById('dp-reply-area');
         if (contextData && contextData.allowReply) {
@@ -512,12 +522,16 @@
             if (window.auth) {
                 auth.onAuthStateChanged(async (user) => {
                     if (user) {
-                        const snap = await firebase.database().ref('users/' + user.uid).once('value');
-                        if (snap.val() && snap.val().role === 'admin') {
-                            document.getElementById('admin-name').innerText = snap.val().name || "System Admin";
-                            loadAllStats(); // Load stats for the default Overview panel
-                        } else {
-                            adminLogout();
+                        try {
+                            const snap = await firebase.database().ref('users/' + user.uid).once('value');
+                            if (snap.val() && snap.val().role === 'admin') {
+                                document.getElementById('admin-name').innerText = snap.val().name || "System Admin";
+                                loadAllStats();
+                            } else {
+                                adminLogout();
+                            }
+                        } catch(err) {
+                            console.error("Auth verify error:", err);
                         }
                     } else {
                         window.location.href = '/admin-login';
@@ -533,17 +547,14 @@
     async function loadAllStats() {
         const db = firebase.database();
         try {
-            // Users
             const usersSnap = await db.ref('users').once('value');
             const totalUsers = usersSnap.val() ? Object.keys(usersSnap.val()).length : 0;
             animateCounter('stat-users', totalUsers);
 
-            // Leads
             const leadsSnap = await db.ref('leads/service_requests').once('value');
             const totalLeads = leadsSnap.val() ? Object.keys(leadsSnap.val()).length : 0;
             animateCounter('stat-leads', totalLeads);
 
-            // Tickets
             const ticketsSnap = await db.ref('support_tickets').once('value');
             let openTickets = 0;
             if (ticketsSnap.val()) {
@@ -553,7 +564,6 @@
             }
             animateCounter('stat-tickets', openTickets);
 
-            // Sales Revenue
             const ordersSnap = await db.ref('payments/initiated').once('value');
             let totalRev = 0;
             if (ordersSnap.val()) {
@@ -564,7 +574,6 @@
                 });
             }
             
-            // Format Currency
             const el = document.getElementById('stat-revenue');
             gsap.to({val: 0}, { val: totalRev, duration: 1.5, ease: "power2.out", onUpdate: function() { 
                 el.innerText = "KSh " + Math.round(this.targets()[0].val).toLocaleString(); 
@@ -579,37 +588,39 @@
     }
 
     // 2. ORDERS (MARKETPLACE SALES)
-    async function loadOrders() {
+    async function loadOrders(btnElement = null) {
+        toggleButtonLoading(btnElement, true);
         const tbody = document.getElementById('orders-table-body');
         try {
             const snap = await firebase.database().ref('payments/initiated').once('value');
             const data = snap.val();
             tbody.innerHTML = "";
+            
             if (data) {
                 Object.keys(data).reverse().forEach(key => {
                     const o = data[key];
-                    const status = o.status || "Pending";
-                    let statClass = 'badge success'; // green
-                    if (status.includes('Failed') || status.includes('Cancelled')) statClass = 'badge high'; // red
-                    if (status.includes('Pending')) statClass = 'badge open'; // yellow
+                    const status = sanitizeHTML(o.status || "Pending");
+                    let statClass = 'badge success'; 
+                    if (status.includes('Failed') || status.includes('Cancelled')) statClass = 'badge high';
+                    if (status.includes('Pending')) statClass = 'badge open'; 
 
                     let purchasedNames = "AI Model";
                     if (o.items_purchased && Array.isArray(o.items_purchased)) {
-                        purchasedNames = o.items_purchased.map(i => i.name).join(", ");
+                        purchasedNames = sanitizeHTML(o.items_purchased.map(i => i.name).join(", "));
                     }
 
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td>
-                            <div style="font-family: monospace; color: var(--primary); font-weight: bold; font-size:0.85rem;">${key.substring(0,10)}...</div>
-                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">${o.timestamp ? o.timestamp.substring(0,10) : 'N/A'}</div>
+                            <div style="font-family: monospace; color: var(--primary); font-weight: bold; font-size:0.85rem;">${sanitizeHTML(key).substring(0,10)}...</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">${o.timestamp ? sanitizeHTML(o.timestamp).substring(0,10) : 'N/A'}</div>
                         </td>
                         <td>
-                            <div style="font-weight: 700;">${o.phone_number || 'N/A'}</div>
+                            <div style="font-weight: 700;">${sanitizeHTML(o.phone_number) || 'N/A'}</div>
                         </td>
                         <td><div style="font-size: 0.85rem; color: var(--text-muted); max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${purchasedNames}</div></td>
                         <td>
-                            <div style="font-family: monospace; font-weight: bold; margin-bottom: 5px;">KSh ${o.amount_billed}</div>
+                            <div style="font-family: monospace; font-weight: bold; margin-bottom: 5px;">KSh ${sanitizeHTML(o.amount_billed)}</div>
                             <span class="${statClass}">${status}</span>
                         </td>
                         <td><button class="btn-action-view">Inspect</button></td>
@@ -617,166 +628,213 @@
                     
                     tr.onclick = () => {
                         const meta = `
-                            <div><label>Order ID</label><span style="font-family:monospace; font-size:0.8rem;">${key}</span></div>
-                            <div><label>Phone Number</label><span>${o.phone_number}</span></div>
-                            <div><label>Amount Billed</label><span style="color: var(--success);">KSh ${o.amount_billed}</span></div>
+                            <div><label>Order ID</label><span style="font-family:monospace; font-size:0.8rem;">${sanitizeHTML(key)}</span></div>
+                            <div><label>Phone Number</label><span>${sanitizeHTML(o.phone_number)}</span></div>
+                            <div><label>Amount Billed</label><span style="color: var(--success);">KSh ${sanitizeHTML(o.amount_billed)}</span></div>
                             <div><label>Status</label><span class="${statClass}">${status}</span></div>
                         `;
                         
                         let itemsListHtml = "No items detailed.";
                         if (o.items_purchased && Array.isArray(o.items_purchased)) {
-                            itemsListHtml = o.items_purchased.map(i => `- ${i.name} (${i.formatted})`).join("\n");
+                            itemsListHtml = o.items_purchased.map(i => `- ${sanitizeHTML(i.name)} (${sanitizeHTML(i.formatted)})`).join("\n");
                         }
-                        const messageBoxContent = `ITEMS PURCHASED:\n${itemsListHtml}\n\nTRANSACTION LOGS:\n${o.result_desc || o.failure_reason || 'Waiting for Payment Gateway response...'}`;
+                        const messageBoxContent = `ITEMS PURCHASED:\n${itemsListHtml}\n\nTRANSACTION LOGS:\n${sanitizeHTML(o.result_desc || o.failure_reason || 'Waiting for Payment Gateway response...')}`;
                         
                         openDetailPanel(`Marketplace Order`, meta, messageBoxContent, { allowReply: false });
                     };
                     tbody.appendChild(tr);
                 });
-            } else { tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 30px;">No orders processed yet.</td></tr>`; }
-        } catch (e) { tbody.innerHTML = `<tr><td colspan="5" style="color:var(--danger); text-align:center;">Permission Denied.</td></tr>`; }
+            } else { 
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 40px; color: var(--text-muted);"><i class="fas fa-inbox" style="font-size:2rem; margin-bottom:10px; opacity:0.5;"></i><br>No orders processed yet.</td></tr>`; 
+            }
+        } catch (e) { 
+            tbody.innerHTML = `<tr><td colspan="5" style="color:var(--danger); text-align:center;">Database Access Denied.</td></tr>`; 
+        } finally {
+            toggleButtonLoading(btnElement, false);
+        }
     }
 
     // 3. CUSTOM PROJECTS (LEADS)
-    async function loadLeads() {
+    async function loadLeads(btnElement = null) {
+        toggleButtonLoading(btnElement, true);
         const tbody = document.getElementById('leads-table-body');
         try {
             const snap = await firebase.database().ref('leads/service_requests').once('value');
             const data = snap.val();
             tbody.innerHTML = "";
+            
             if (data) {
                 Object.keys(data).reverse().forEach(key => {
                     const l = data[key];
-                    const statClass = l.status === 'Pending' ? 'badge open' : 'badge member';
+                    const status = sanitizeHTML(l.status || 'Pending Review');
+                    const statClass = status.includes('Pending') ? 'badge open' : 'badge member';
+                    
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td style="font-family: monospace;">${l.timestamp ? l.timestamp.substring(0,10) : 'N/A'}</td>
+                        <td style="font-family: monospace;">${l.timestamp ? sanitizeHTML(l.timestamp).substring(0,10) : 'N/A'}</td>
                         <td>
-                            <div style="font-weight: 700;">${l.name}</div>
-                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">${l.email}</div>
+                            <div style="font-weight: 700;">${sanitizeHTML(l.name)}</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">${sanitizeHTML(l.email)}</div>
                         </td>
                         <td>
-                            <div style="color: var(--primary); font-weight: 600;">${l.service}</div>
-                            <div style="margin-top: 6px;"><span class="${statClass}">${l.status || 'Pending Review'}</span></div>
+                            <div style="color: var(--primary); font-weight: 600;">${sanitizeHTML(l.service)}</div>
+                            <div style="margin-top: 6px;"><span class="${statClass}">${status}</span></div>
                         </td>
                         <td><button class="btn-action-view">Assess</button></td>
                     `;
                     tr.onclick = () => {
                         const meta = `
-                            <div><label>Client Name</label><span>${l.name}</span></div>
-                            <div><label>Email Address</label><span>${l.email}</span></div>
-                            <div><label>Service Requested</label><span style="color: var(--primary);">${l.service}</span></div>
-                            <div><label>Budget Estimate</label><span>${l.budget || 'N/A'}</span></div>
+                            <div><label>Client Name</label><span>${sanitizeHTML(l.name)}</span></div>
+                            <div><label>Email Address</label><span>${sanitizeHTML(l.email)}</span></div>
+                            <div><label>Service Requested</label><span style="color: var(--primary);">${sanitizeHTML(l.service)}</span></div>
+                            <div><label>Budget Estimate</label><span>${sanitizeHTML(l.budget || 'N/A')}</span></div>
                         `;
                         const context = { dbPath: `leads/service_requests/${key}`, allowReply: true };
                         openDetailPanel(`Custom Project Request`, meta, l.details, context);
                     };
                     tbody.appendChild(tr);
                 });
-            } else { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 30px;">No leads found.</td></tr>`; }
-        } catch (e) { tbody.innerHTML = `<tr><td colspan="4" style="color:var(--danger); text-align:center;">Database Error.</td></tr>`; }
+            } else { 
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 40px; color: var(--text-muted);"><i class="fas fa-folder-open" style="font-size:2rem; margin-bottom:10px; opacity:0.5;"></i><br>No active leads found.</td></tr>`; 
+            }
+        } catch (e) { 
+            tbody.innerHTML = `<tr><td colspan="4" style="color:var(--danger); text-align:center;">Database Error.</td></tr>`; 
+        } finally {
+            toggleButtonLoading(btnElement, false);
+        }
     }
 
     // 4. TICKETS
-    async function loadTickets() {
+    async function loadTickets(btnElement = null) {
+        toggleButtonLoading(btnElement, true);
         const tbody = document.getElementById('tickets-table-body');
         try {
             const snap = await firebase.database().ref('support_tickets').once('value');
             const data = snap.val();
             tbody.innerHTML = "";
+            
             if (data) {
                 Object.keys(data).reverse().forEach(key => {
                     const t = data[key];
-                    const statClass = t.status === 'Open' ? 'badge open' : 'badge member';
-                    const prioClass = t.priority === 'High' ? 'color: var(--danger); font-weight: bold;' : 'color: var(--text-muted);';
+                    const status = sanitizeHTML(t.status || 'Open');
+                    const statClass = status === 'Open' ? 'badge open' : 'badge member';
+                    const priority = sanitizeHTML(t.priority || 'Normal');
+                    const prioClass = priority === 'High' ? 'color: var(--danger); font-weight: bold;' : 'color: var(--text-muted);';
+                    
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td style="color: var(--primary); font-family: monospace; font-weight: bold;">${t.ticket_id || key.substring(0,8)}</td>
-                        <td style="font-weight: 600;">${t.email}</td>
+                        <td style="color: var(--primary); font-family: monospace; font-weight: bold;">${sanitizeHTML(t.ticket_id || key.substring(0,8))}</td>
+                        <td style="font-weight: 600;">${sanitizeHTML(t.email)}</td>
                         <td>
-                            <span class="${statClass}" style="margin-right: 10px;">${t.status}</span>
-                            <span style="font-size: 0.8rem; text-transform: uppercase; ${prioClass}">${t.priority || 'Normal'}</span>
+                            <span class="${statClass}" style="margin-right: 10px;">${status}</span>
+                            <span style="font-size: 0.8rem; text-transform: uppercase; ${prioClass}">${priority}</span>
                         </td>
                         <td><button class="btn-action-view">Review</button></td>
                     `;
                     tr.onclick = () => {
                         const meta = `
-                            <div><label>Client Name</label><span>${t.name}</span></div>
-                            <div><label>Client Email</label><span>${t.email}</span></div>
-                            <div><label>Priority Level</label><span style="text-transform:capitalize;">${t.priority || 'Normal'}</span></div>
-                            <div><label>Date Logged</label><span>${t.timestamp ? t.timestamp.substring(0,16) : 'N/A'}</span></div>
+                            <div><label>Client Name</label><span>${sanitizeHTML(t.name)}</span></div>
+                            <div><label>Client Email</label><span>${sanitizeHTML(t.email)}</span></div>
+                            <div><label>Priority Level</label><span style="text-transform:capitalize;">${priority}</span></div>
+                            <div><label>Date Logged</label><span>${t.timestamp ? sanitizeHTML(t.timestamp).substring(0,16) : 'N/A'}</span></div>
                         `;
                         const context = { dbPath: `support_tickets/${key}`, allowReply: true };
-                        openDetailPanel(`Ticket: ${t.subject}`, meta, t.message, context);
+                        openDetailPanel(`Ticket: ${sanitizeHTML(t.subject)}`, meta, t.message, context);
                     };
                     tbody.appendChild(tr);
                 });
-            } else { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 30px;">No active tickets.</td></tr>`; }
-        } catch (e) { tbody.innerHTML = `<tr><td colspan="4" style="color:var(--danger); text-align:center;">Database Error.</td></tr>`; }
+            } else { 
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 40px; color: var(--text-muted);"><i class="fas fa-check-circle" style="font-size:2rem; margin-bottom:10px; opacity:0.5;"></i><br>Inbox Zero. No active tickets.</td></tr>`; 
+            }
+        } catch (e) { 
+            tbody.innerHTML = `<tr><td colspan="4" style="color:var(--danger); text-align:center;">Database Error.</td></tr>`; 
+        } finally {
+            toggleButtonLoading(btnElement, false);
+        }
     }
 
     // 5. USERS
-    async function loadUsers() {
+    async function loadUsers(btnElement = null) {
+        toggleButtonLoading(btnElement, true);
         const tbody = document.getElementById('users-table-body');
         try {
             const snap = await firebase.database().ref('users').once('value');
             const data = snap.val();
             tbody.innerHTML = "";
+            
             if (data) {
-                for (let key in data) {
+                Object.keys(data).forEach(key => {
                     const u = data[key];
-                    const roleClass = u.role === 'admin' ? 'badge admin' : 'badge member';
+                    const role = sanitizeHTML(u.role || 'Client');
+                    const roleClass = role === 'admin' ? 'badge admin' : 'badge member';
+                    
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td>
-                            <div style="font-weight: 700;">${u.email || 'N/A'}</div>
-                            <div style="font-size: 0.75rem; color: var(--text-muted); font-family: monospace; margin-top: 4px;">UID: ${key.substring(0,12)}...</div>
+                            <div style="font-weight: 700;">${sanitizeHTML(u.email || 'N/A')}</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted); font-family: monospace; margin-top: 4px;">UID: ${sanitizeHTML(key).substring(0,12)}...</div>
                         </td>
-                        <td style="font-weight: 600;">${u.name || 'N/A'}</td>
-                        <td><span class="${roleClass}">${u.role || 'Client'}</span></td>
+                        <td style="font-weight: 600;">${sanitizeHTML(u.name || 'N/A')}</td>
+                        <td><span class="${roleClass}">${role}</span></td>
                         <td><button class="btn-action-view">View Dossier</button></td>
                     `;
                     tr.onclick = () => {
                         const meta = `
-                            <div><label>Full Name</label><span>${u.name || 'N/A'}</span></div>
-                            <div><label>Email Address</label><span>${u.email}</span></div>
-                            <div><label>System UID</label><span style="font-family: monospace;">${key}</span></div>
-                            <div><label>Clearance Level</label><span class="${roleClass}">${u.role || 'Client'}</span></div>
+                            <div><label>Full Name</label><span>${sanitizeHTML(u.name || 'N/A')}</span></div>
+                            <div><label>Email Address</label><span>${sanitizeHTML(u.email)}</span></div>
+                            <div><label>System UID</label><span style="font-family: monospace;">${sanitizeHTML(key)}</span></div>
+                            <div><label>Clearance Level</label><span class="${roleClass}">${role}</span></div>
                         `;
                         openDetailPanel("User Profile", meta, "Profile active. Check Support Tickets or Custom Projects to view client interactions.", { allowReply: false });
                     };
                     tbody.appendChild(tr);
-                }
-            } else { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 30px;">No users found.</td></tr>`; }
-        } catch (e) { tbody.innerHTML = `<tr><td colspan="4" style="color:var(--danger); text-align:center;">Permission Denied.</td></tr>`; }
+                });
+            } else { 
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 40px; color: var(--text-muted);"><i class="fas fa-users-slash" style="font-size:2rem; margin-bottom:10px; opacity:0.5;"></i><br>No users registered.</td></tr>`; 
+            }
+        } catch (e) { 
+            tbody.innerHTML = `<tr><td colspan="4" style="color:var(--danger); text-align:center;">Permission Denied.</td></tr>`; 
+        } finally {
+            toggleButtonLoading(btnElement, false);
+        }
     }
 
     async function sendAdminReply() {
         if (!currentRecordContext) return;
-        const text = document.getElementById('dp-reply-text').value;
+        const textElement = document.getElementById('dp-reply-text');
+        const text = textElement.value;
         if(!text) return alert("Please type a message first.");
 
         const btn = document.querySelector('.btn-reply');
+        const originalBtnHtml = btn.innerHTML;
         btn.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Transmitting...`; 
         btn.disabled = true;
 
         try {
             await firebase.database().ref(currentRecordContext.dbPath).update({
-                last_admin_response: text,
+                last_admin_response: sanitizeHTML(text),
                 status: "In Progress", 
                 updated_at: new Date().toISOString()
             });
 
-            closeDetailPanel();
+            // Show success briefly before closing
+            btn.innerHTML = `<i class="fas fa-check"></i> Sent`;
+            btn.style.background = "var(--success)";
             
-            const activeTabId = document.querySelector('.data-panel.active').id;
-            if(activeTabId === 'tickets-panel') loadTickets();
-            if(activeTabId === 'leads-panel') loadLeads();
+            setTimeout(() => {
+                closeDetailPanel();
+                btn.innerHTML = originalBtnHtml;
+                btn.style.background = "";
+                btn.disabled = false;
+                
+                const activeTabId = document.querySelector('.data-panel.active').id;
+                if(activeTabId === 'tickets-panel') loadTickets();
+                if(activeTabId === 'leads-panel') loadLeads();
+            }, 800);
 
         } catch (e) {
             alert("Database Error: " + e.message);
-        } finally {
-            btn.innerHTML = `<i class="fas fa-paper-plane"></i> Transmit Update`; 
+            btn.innerHTML = originalBtnHtml;
             btn.disabled = false;
         }
     }

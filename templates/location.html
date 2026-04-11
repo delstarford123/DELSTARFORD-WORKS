@@ -1,24 +1,161 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<section class="location-hero" style="overflow: hidden;">
-    <div class="container text-center">
-        <span class="hero-badge anim-scale-up">Global Reach, Local Roots</span>
-        
-        <h1 class="anim-reveal-wipe">Our Headquarters</h1>
-        
-        <p class="anim-split-words">Situated at the heart of Kenya's academic and technological ecosystem.</p>
+<style>
+    /* --- CSS VARIABLES & RESET --- */
+    :root {
+        --loc-primary: #3b82f6;
+        --loc-primary-hover: #2563eb;
+        --loc-dark: #0f172a;
+        --loc-bg: #f8fafc;
+        --loc-card: #ffffff;
+        --loc-border: #e2e8f0;
+        --loc-text: #334155;
+        --loc-muted: #64748b;
+        --loc-success: #10b981;
+    }
+
+    body { background: var(--loc-bg); font-family: 'Plus Jakarta Sans', sans-serif; }
+
+    /* --- HERO SECTION --- */
+    .location-hero { 
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); 
+        padding: 100px 20px 80px; 
+        text-align: center; 
+        position: relative;
+        overflow: hidden;
+    }
+    .location-hero::before { 
+        content: ""; position: absolute; top: -50%; left: 50%; transform: translateX(-50%); 
+        width: 600px; height: 600px; background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%); 
+        z-index: 0; pointer-events: none; 
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
+    .hero-badge { 
+        display: inline-block; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); 
+        color: #60a5fa; padding: 6px 15px; border-radius: 50px; font-size: 0.85rem; font-weight: 800; 
+        margin-bottom: 20px; letter-spacing: 1px; text-transform: uppercase; 
+    }
+    .location-hero h1 { color: #ffffff; font-size: 3rem; font-weight: 800; letter-spacing: -1px; margin: 0 0 15px; }
+    .location-hero p { color: #cbd5e1; font-size: 1.15rem; line-height: 1.6; margin: 0; }
+
+    /* --- LAYOUT WRAPPER --- */
+    .location-container { padding: 60px 20px; max-width: 1200px; margin: 0 auto; }
+    .location-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        background: var(--loc-card);
+        border-radius: 20px;
+        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15);
+        overflow: hidden;
+        border: 1px solid var(--loc-border);
+    }
+
+    /* --- LEFT SIDE: DETAILS --- */
+    .location-details {
+        background: var(--loc-dark);
+        color: white;
+        padding: 60px 50px;
+        position: relative;
+    }
+    /* Subtle geometric overlay for dark panel */
+    .location-details::before {
+        content: '';
+        position: absolute;
+        top: 0; right: 0; bottom: 0; left: 0;
+        background-image: radial-gradient(circle at top right, rgba(59, 130, 246, 0.15) 0%, transparent 50%);
+        pointer-events: none;
+    }
+    
+    .location-details h3 { font-size: 2rem; margin: 0; color: white; font-weight: 800; letter-spacing: -0.5px; position: relative; z-index: 1;}
+    .location-details .subtitle { color: var(--loc-primary); font-weight: 700; margin: 5px 0 40px 0; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; position: relative; z-index: 1;}
+
+    .address-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 30px; position: relative; z-index: 1;}
+    .address-list li { display: flex; align-items: flex-start; gap: 20px; }
+    
+    .icon-box {
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        color: var(--loc-primary);
+        width: 48px; height: 48px;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.3rem; flex-shrink: 0; transition: 0.3s;
+    }
+    .address-list li:hover .icon-box { background: var(--loc-primary); color: white; transform: scale(1.05); }
+
+    .list-text { display: flex; flex-direction: column; gap: 4px; }
+    .list-text strong { color: #f8fafc; font-size: 1.1rem; margin-bottom: 2px; font-weight: 800; letter-spacing: 0.5px;}
+    .list-text span { color: #cbd5e1; font-size: 0.95rem; line-height: 1.5; font-weight: 500;}
+    .highlight-text { color: var(--loc-success) !important; font-weight: 700 !important; margin-top: 5px; display: inline-block;}
+
+    .btn-primary {
+        background: var(--loc-primary);
+        color: white;
+        padding: 16px 30px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 800;
+        transition: all 0.3s ease;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 40px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 6px 15px rgba(59, 130, 246, 0.3);
+    }
+    .btn-primary:hover {
+        background: var(--loc-primary-hover);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+    }
+
+    /* --- RIGHT SIDE: MAP --- */
+    .location-map {
+        min-height: 500px;
+        background: #e2e8f0;
+        position: relative;
+    }
+    .location-map iframe {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        object-fit: cover;
+        border: none;
+    }
+
+    /* --- MOBILE RESPONSIVENESS --- */
+    @media (max-width: 992px) {
+        .location-grid { grid-template-columns: 1fr; }
+        .location-map { height: 400px; min-height: auto; position: relative; display: block;}
+        .location-map iframe { position: relative; height: 100%; width: 100%;}
+    }
+    @media (max-width: 600px) {
+        .location-hero h1 { font-size: 2.2rem; }
+        .location-details { padding: 40px 30px; }
+    }
+</style>
+
+<section class="location-hero">
+    <div class="hero-content gsap-anim" style="visibility: hidden;">
+        <span class="hero-badge">Global Reach, Local Roots</span>
+        <h1>Our Headquarters</h1>
+        <p>Situated at the heart of Kenya's academic and technological ecosystem.</p>
     </div>
 </section>
 
-<section class="container py-50" style="overflow: hidden;">
-    <div class="location-wrapper">
+<section class="location-container">
+    <div class="location-grid">
         
-        <div class="location-details gsap-slide-left">
-            <h3 class="anim-fade-up">Kakamega Innovation Hub</h3>
-            <p class="subtitle anim-fade-up">Delstarford Works</p>
+        <div class="location-details gsap-slide-left" style="visibility: hidden;">
+            <h3>Kakamega Innovation Hub</h3>
+            <p class="subtitle">Delstarford Works</p>
             
-            <ul class="address-list anim-stagger-grid">
+            <ul class="address-list">
                 <li>
                     <div class="icon-box"><i class="fas fa-map-marker-alt"></i></div>
                     <div class="list-text">
@@ -32,7 +169,7 @@
                     <div class="list-text">
                         <strong>Operating Hours</strong>
                         <span>Mon - Fri: 8:00 AM - 5:00 PM (EAT)</span>
-                        <span class="highlight-text">Server Support: 24/7 Active</span>
+                        <span class="highlight-text"><i class="fas fa-check-circle" style="margin-right: 5px;"></i> Server Support: 24/7 Active</span>
                     </div>
                 </li>
                 <li>
@@ -45,203 +182,59 @@
                 </li>
             </ul>
             
-            <a href="https://maps.google.com/?q=Masinde+Muliro+University+Kakamega" target="_blank" class="btn-primary anim-bounce-in" style="margin-top: 20px; display: inline-flex; align-items: center; gap: 10px;">
+            <a href="https://goo.gl/maps/Qz11vUjQx9d71H1Y9" target="_blank" class="btn-primary">
                 <i class="fas fa-directions"></i> Get Directions
             </a>
         </div>
 
-        <div class="location-map gsap-slide-right">
+        <div class="location-map gsap-slide-right" style="visibility: hidden;">
             <iframe 
-                src="https://maps.google.com/maps?q=Masinde+Muliro+University+Kakamega&t=&z=15&ie=UTF8&iwloc=&output=embed" 
-                width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy">
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15959.088195822362!2d34.75549045!3d0.28695995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x17803d085959ff4d%3A0xc3dd697e887b415a!2sMasinde%20Muliro%20University%20of%20Science%20and%20Technology!5e0!3m2!1sen!2ske!4v1689880000000!5m2!1sen!2ske" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade">
             </iframe>
         </div>
         
     </div>
 </section>
 
-<style>
-    /* Hero Section */
-    .location-hero {
-        padding: 80px 20px 40px;
-        background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
-    }
-    .hero-badge {
-        display: inline-block;
-        background: #e0e7ff;
-        color: #4338ca;
-        padding: 6px 16px;
-        border-radius: 50px;
-        font-size: 0.85rem;
-        font-weight: 700;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        margin-bottom: 20px;
-    }
-    .location-hero h1 {
-        font-size: 3rem;
-        color: #0f172a;
-        margin: 0 0 15px 0;
-        font-weight: 800;
-    }
-    .location-hero p {
-        color: #64748b;
-        font-size: 1.1rem;
-        max-width: 600px;
-        margin: 0 auto;
-    }
-
-    /* Layout Wrapper */
-    .location-wrapper {
-        display: grid;
-        grid-template-columns: 1fr 1.2fr;
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1);
-        overflow: hidden;
-        border: 1px solid #e2e8f0;
-        max-width: 1100px;
-        margin: 0 auto;
-    }
-
-    /* Left Side: Details */
-    .location-details {
-        background: #0f172a; /* Corporate Navy */
-        color: white;
-        padding: 50px 40px;
-        position: relative;
-    }
-    .location-details h3 {
-        font-size: 1.8rem;
-        margin: 0;
-        color: white;
-    }
-    .location-details .subtitle {
-        color: #3b82f6;
-        font-weight: 600;
-        margin: 5px 0 30px 0;
-        font-size: 1rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-
-    .address-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 25px;
-    }
-    .address-list li {
-        display: flex;
-        align-items: flex-start;
-        gap: 15px;
-    }
-    .icon-box {
-        background: rgba(59, 130, 246, 0.15);
-        color: #3b82f6;
-        width: 45px;
-        height: 45px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.2rem;
-        flex-shrink: 0;
-    }
-    .list-text {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
-    .list-text strong {
-        color: #f8fafc;
-        font-size: 1.05rem;
-        margin-bottom: 2px;
-    }
-    .list-text span {
-        color: #cbd5e1;
-        font-size: 0.95rem;
-        line-height: 1.5;
-    }
-    .highlight-text {
-        color: #10b981 !important; /* Emerald Green */
-        font-weight: 600;
-    }
-
-    .btn-primary {
-        background: #2563eb;
-        color: white;
-        padding: 14px 28px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        border: none;
-    }
-    .btn-primary:hover {
-        background: #1d4ed8;
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
-    }
-
-    /* Right Side: Map */
-    .location-map {
-        min-height: 400px;
-        background: #e2e8f0;
-        position: relative;
-    }
-    .location-map iframe {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    /* Mobile Responsiveness */
-    @media (max-width: 850px) {
-        .location-wrapper {
-            grid-template-columns: 1fr;
-        }
-        .location-map {
-            height: 350px;
-            min-height: auto;
-        }
-        .location-hero h1 {
-            font-size: 2.2rem;
-        }
-    }
-</style>
-
 <script>
+    // --- GSAP BULLETPROOF ANIMATIONS ---
     document.addEventListener("DOMContentLoaded", () => {
-        if(typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
-            
-            const tl = gsap.timeline({
-                scrollTrigger: {
-                    trigger: ".location-wrapper",
-                    start: "top 80%"
-                }
-            });
-
-            // Slide left panel in
-            tl.from(".gsap-slide-left", {
-                x: -100,
-                opacity: 0,
-                duration: 0.8,
-                ease: "power3.out"
-            })
-            // Slide map in from right
-            .from(".gsap-slide-right", {
-                x: 100,
-                opacity: 0,
-                duration: 0.8,
-                ease: "power3.out"
-            }, "-=0.6");
+        if(typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+            // Fallback if GSAP fails to load
+            document.querySelectorAll('.gsap-anim, .gsap-slide-left, .gsap-slide-right').forEach(el => el.style.visibility = 'visible');
+            return;
         }
+
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Hero Entrance (Instant)
+        gsap.fromTo(".gsap-anim", 
+            { y: 30, autoAlpha: 0 }, 
+            { y: 0, autoAlpha: 1, duration: 0.8, ease: "power3.out" }
+        );
+
+        // Grid Scroll Reveal
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: ".location-grid",
+                start: "top 85%"
+            }
+        });
+
+        // Slide left panel in
+        tl.fromTo(".gsap-slide-left", 
+            { x: -50, autoAlpha: 0 },
+            { x: 0, autoAlpha: 1, duration: 0.8, ease: "power3.out" }
+        )
+        // Slide map in from right
+        .fromTo(".gsap-slide-right", 
+            { x: 50, autoAlpha: 0 },
+            { x: 0, autoAlpha: 1, duration: 0.8, ease: "power3.out" }, 
+            "-=0.6" // Start slightly before the left panel finishes
+        );
     });
 </script>
 

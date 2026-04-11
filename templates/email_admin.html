@@ -18,7 +18,7 @@
             margin: 0;
             padding: 0;
             width: 100% !important;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             background-color: #f1f5f9;
         }
         
@@ -34,134 +34,158 @@
             background: #ffffff;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            border-top: 6px solid #10b981; /* Emerald Accent */
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border-top: 6px solid #3b82f6; /* Primary Blue Accent */
         }
         
         /* Header */
         .header {
-            background: #0f172a; /* Navy */
-            padding: 30px 20px;
+            background: #0f172a; /* Deep Navy */
+            padding: 35px 20px;
             text-align: center;
         }
         .logo {
             display: block;
-            margin: 0 auto 15px auto;
-            max-width: 140px;
+            margin: 0 auto 20px auto;
+            max-width: 150px;
             height: auto;
         }
         .header h2 {
             color: #ffffff;
             margin: 0;
-            font-size: 22px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
         }
         .header-badge {
             display: inline-block;
-            background: rgba(16, 185, 129, 0.2);
-            color: #34d399;
-            padding: 4px 12px;
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            padding: 5px 15px;
             border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
+            font-size: 11px;
+            font-weight: 800;
             text-transform: uppercase;
-            margin-top: 10px;
+            margin-top: 12px;
             letter-spacing: 1px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
         }
 
         /* Content Area */
         .content {
-            padding: 40px 30px;
+            padding: 40px 35px;
         }
         .lead-intro {
             font-size: 15px;
-            color: #64748b;
+            color: #475569;
+            margin-top: 0;
             margin-bottom: 30px;
             text-align: center;
+            line-height: 1.6;
         }
         
         /* Data Grid */
         .data-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 30px;
+            margin-bottom: 35px;
         }
         .data-table td {
-            padding: 15px 10px;
-            border-bottom: 1px solid #e2e8f0;
+            padding: 16px 12px;
+            border-bottom: 1px solid #f1f5f9;
         }
         .label {
-            font-weight: 700;
-            color: #475569;
-            font-size: 14px;
+            font-weight: 800;
+            color: #64748b;
+            font-size: 12px;
             width: 35%;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
         .value {
             color: #0f172a;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 15px;
             width: 65%;
+        }
+        .value.highlight {
+            color: #2563eb;
         }
         .value a {
             color: #2563eb;
             text-decoration: none;
         }
         
-        /* Project Details Box */
+        /* Project Details Box (Terminal Style for compiled data) */
         .details-container {
             background: #f8fafc;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 30px;
+            border: 1px solid #e2e8f0;
+            border-left: 4px solid #10b981; /* Success Green */
+            border-radius: 6px;
+            padding: 25px;
+            margin-bottom: 35px;
         }
         .details-label {
-            font-weight: 700;
+            font-weight: 800;
             color: #0f172a;
-            font-size: 14px;
+            font-size: 12px;
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
         }
         .details-content {
             color: #334155;
-            font-size: 15px;
-            line-height: 1.6;
+            font-size: 14px;
+            line-height: 1.7;
             margin: 0;
+            white-space: pre-wrap; /* Crucial: Formats the compiled payload beautifully */
+            font-family: 'Courier New', Courier, monospace;
         }
 
-        /* Action Button */
+        /* Action Buttons */
         .action-container {
             text-align: center;
-            margin-top: 30px;
+            margin-top: 10px;
         }
         .btn-reply {
             display: inline-block;
             background-color: #2563eb;
             color: #ffffff;
             text-decoration: none;
-            padding: 14px 30px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 16px;
-            transition: background-color 0.3s ease; /* Safe hover effect */
+            padding: 16px 30px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
         }
-        .btn-reply:hover {
-            background-color: #1d4ed8 !important;
+        .btn-dashboard {
+            display: inline-block;
+            background-color: #ffffff;
+            color: #0f172a;
+            text-decoration: none;
+            padding: 14px 30px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            border: 1px solid #cbd5e1;
         }
 
         /* Footer */
         .footer {
             background-color: #f8fafc;
-            padding: 20px;
+            padding: 25px;
             text-align: center;
             font-size: 12px;
             color: #94a3b8;
             border-top: 1px solid #e2e8f0;
+            line-height: 1.5;
+        }
+        .footer a {
+            color: #64748b;
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -171,17 +195,17 @@
             <tr>
                 <td>
                     <div class="header">
-                        <img src="https://delstarford-works.onrender.com/static/images/DEL%20SVG.svg" alt="Delstarford Works" class="logo">
+                        <img src="https://delstarfordworks.co.ke/static/images/DEL%20SVG.svg" alt="Delstarford Works" class="logo">
                         <h2>New Project Lead Received</h2>
-                        <span class="header-badge">Action Required</span>
+                        <span class="header-badge">High Council Action Required</span>
                     </div>
 
                     <div class="content">
-                        <p class="lead-intro">A new potential client has submitted a request via the Delstarford Works web portal.</p>
+                        <p class="lead-intro">A new custom architecture request has been submitted via the <strong>delstarfordworks.co.ke</strong> secure portal.</p>
                         
                         <table class="data-table" role="presentation" border="0" cellpadding="0" cellspacing="0">
                             <tr>
-                                <td class="label">Client Name</td>
+                                <td class="label">Client Identity</td>
                                 <td class="value">{{ name }}</td>
                             </tr>
                             <tr>
@@ -189,36 +213,30 @@
                                 <td class="value"><a href="mailto:{{ email }}">{{ email }}</a></td>
                             </tr>
                             <tr>
-                                <td class="label">Service Interest</td>
-                                <td class="value" style="color: #2563eb;">{{ service }}</td>
-                            </tr>
-                            <tr>
-                                <td class="label">Est. Budget</td>
-                                <td class="value">{{ budget }}</td>
-                            </tr>
-                            <tr>
-                                <td class="label">Timeline</td>
-                                <td class="value">{{ timeline }}</td>
+                                <td class="label">Service Requested</td>
+                                <td class="value highlight">{{ service }}</td>
                             </tr>
                         </table>
 
                         <div class="details-container">
-                            <span class="details-label">Project Requirements & Notes</span>
-                            <p class="details-content">
-                                {{ details }}
-                            </p>
+                            <span class="details-label">Transmitted Payload (Parameters & Details)</span>
+                            <p class="details-content">{{ details }}</p>
                         </div>
 
                         <div class="action-container">
                             <a href="mailto:{{ email }}?subject=Re: Your Project Inquiry - Delstarford Works" class="btn-reply">
-                                Reply to Client
+                                Direct Reply to Client
+                            </a>
+                            <br>
+                            <a href="https://delstarfordworks.co.ke/admin-login" class="btn-dashboard">
+                                Open Admin Console
                             </a>
                         </div>
                     </div>
 
                     <div class="footer">
                         &copy; 2026 Delstarford Works Internal System.<br>
-                        This is an automated message generated from your secure portal.
+                        This is an automated encrypted message generated from <a href="https://delstarfordworks.co.ke">delstarfordworks.co.ke</a>.
                     </div>
                 </td>
             </tr>

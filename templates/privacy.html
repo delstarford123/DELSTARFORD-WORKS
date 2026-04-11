@@ -1,216 +1,251 @@
 {% extends 'base.html' %}
-
 {% block content %}
 
-<div class="privacy-header" style="overflow: hidden;">
-    <div class="container">
-        <h1 class="anim-reveal-wipe">Privacy Policy</h1>
-        
-        <p class="anim-split-words">Your trust is the foundation of our innovation.</p>
-        
-        <span class="last-updated anim-scale-up" style="animation-delay: 0.4s;">Last Updated: January 8, 2026</span>
+<style>
+    /* --- CSS VARIABLES & RESET --- */
+    :root {
+        --pr-primary: #3b82f6;
+        --pr-dark: #0f172a;
+        --pr-bg: #f8fafc;
+        --pr-card: #ffffff;
+        --pr-border: #e2e8f0;
+        --pr-border-heavy: #cbd5e1;
+        --pr-text: #334155;
+        --pr-muted: #64748b;
+        --pr-success: #10b981;
+    }
+
+    body { background: var(--pr-bg); font-family: 'Plus Jakarta Sans', sans-serif; }
+
+    /* --- HERO SECTION --- */
+    .privacy-hero { 
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); 
+        padding: 100px 20px 120px; 
+        text-align: center; 
+        position: relative;
+        overflow: hidden;
+    }
+    .privacy-hero::before { 
+        content: ""; position: absolute; top: -50%; left: 50%; transform: translateX(-50%); 
+        width: 800px; height: 800px; background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%); 
+        z-index: 0; pointer-events: none; 
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
+    
+    .hero-badge { 
+        display: inline-block; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); 
+        color: #60a5fa; padding: 6px 15px; border-radius: 50px; font-size: 0.85rem; font-weight: 800; 
+        margin-bottom: 20px; letter-spacing: 1px; text-transform: uppercase; 
+    }
+    .privacy-hero h1 { color: #ffffff; font-size: 3.5rem; font-weight: 800; letter-spacing: -1.5px; margin: 0 0 15px; }
+    .privacy-hero p { color: #cbd5e1; font-size: 1.2rem; line-height: 1.6; margin: 0 0 25px; font-weight: 500;}
+    
+    .last-updated {
+        display: inline-block; font-size: 0.85rem; font-weight: 700; color: #94a3b8;
+        background: rgba(255,255,255,0.05); padding: 8px 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
+        text-transform: uppercase; letter-spacing: 1px;
+    }
+
+    /* --- CONTENT WRAPPER & CARD --- */
+    .privacy-wrapper { 
+        max-width: 950px; 
+        margin: -70px auto 80px; 
+        padding: 0 20px; 
+        position: relative; 
+        z-index: 10; 
+    }
+    .privacy-card { 
+        background: var(--pr-card); 
+        border-radius: 20px; 
+        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.1); 
+        border: 1px solid var(--pr-border);
+        padding: 60px 70px;
+    }
+
+    /* --- TYPOGRAPHY & SECTIONS --- */
+    .policy-section {
+        margin-bottom: 50px;
+        padding-bottom: 50px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .policy-section:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+
+    .policy-section h3 { 
+        font-size: 1.4rem; 
+        color: var(--pr-dark); 
+        margin: 0 0 20px 0; 
+        font-weight: 800; 
+        display: flex; 
+        align-items: center; 
+        gap: 12px;
+        letter-spacing: -0.5px;
+    }
+    .policy-section h3 i { color: var(--pr-primary); font-size: 1.2rem; }
+
+    .policy-section p, .policy-section li { 
+        font-size: 1.05rem; 
+        color: var(--pr-text); 
+        line-height: 1.8; 
+        margin: 0 0 15px 0; 
+        font-weight: 500;
+    }
+    .policy-section p:last-child { margin-bottom: 0; }
+    
+    .policy-section strong { color: var(--pr-dark); font-weight: 700; }
+
+    .policy-section ul { padding-left: 20px; margin: 0 0 20px 0; }
+    .policy-section li { margin-bottom: 12px; padding-left: 5px;}
+    .policy-section li::marker { color: var(--pr-primary); }
+
+    /* --- CONTACT BOX --- */
+    .contact-box { 
+        background: #f8fafc; 
+        padding: 25px 30px; 
+        border-radius: 12px; 
+        border: 1px solid var(--pr-border);
+        border-left: 4px solid var(--pr-primary); 
+        margin-top: 25px;
+    }
+    .contact-box p { margin-bottom: 10px; display: flex; align-items: center; gap: 10px;}
+    .contact-box p:last-child { margin-bottom: 0; }
+    .contact-box i { color: var(--pr-muted); width: 20px; text-align: center;}
+    .contact-box a { color: var(--pr-primary); text-decoration: none; font-weight: 700; transition: 0.2s;}
+    .contact-box a:hover { color: var(--pr-dark); text-decoration: underline; }
+
+    /* --- MOBILE RESPONSIVENESS --- */
+    @media (max-width: 768px) {
+        .privacy-hero { padding: 80px 20px 100px; }
+        .privacy-hero h1 { font-size: 2.5rem; }
+        .privacy-card { padding: 40px 25px; border-radius: 16px; }
+        .policy-section { margin-bottom: 40px; padding-bottom: 40px; }
+        .policy-section h3 { font-size: 1.25rem; }
+        .policy-section p, .policy-section li { font-size: 0.95rem; }
+    }
+</style>
+
+<section class="privacy-hero">
+    <div class="hero-content">
+        <span class="hero-badge gsap-hero" style="visibility: hidden;">Legal & Compliance</span>
+        <h1 class="gsap-hero" style="visibility: hidden;">Privacy Policy</h1>
+        <p class="gsap-hero" style="visibility: hidden;">Your trust is the foundational architecture of our innovation.</p>
+        <div class="last-updated gsap-hero" style="visibility: hidden;"><i class="fas fa-history" style="margin-right: 6px;"></i> Last Updated: April 11, 2026</div>
     </div>
-</div>
+</section>
 
-<div class="container privacy-content-wrapper">
-    <div class="privacy-card anim-fade-up">
+<div class="privacy-wrapper">
+    <div class="privacy-card gsap-card" style="visibility: hidden;">
         
-        <section class="gsap-policy-section">
-            <h3>1. Introduction</h3>
-            <p>Welcome to <strong>Delstarford Works</strong> ("we," "our," or "us"). We are committed to protecting your personal information and your right to privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website, use our AI Lab, or engage our agricultural technologies.</p>
-            <p>By accessing or using our services, you signify that you have read, understood, and agree to our collection, storage, use, and disclosure of your personal information as described in this Privacy Policy.</p>
+        <section class="policy-section gsap-section" style="visibility: hidden;">
+            <h3><i class="fas fa-file-contract"></i> 1. Introduction</h3>
+            <p>Welcome to <strong>Delstarford Works</strong> ("we," "our," or "us"). We are committed to protecting your corporate and personal information, and your right to privacy. This Privacy Policy explains how we collect, use, process, disclose, and safeguard your information when you visit our website, deploy models from our AI Marketplace, or engage our custom agricultural technologies.</p>
+            <p>By accessing or using our high-level architectural services, you signify that you have read, understood, and mathematically agree to our collection, storage, and use of your data as described in this framework.</p>
         </section>
 
-        <section class="gsap-policy-section">
-            <h3>2. Information We Collect</h3>
-            <p>We collect information that identifies, relates to, describes, references, is capable of being associated with, or could reasonably be linked, directly or indirectly, with a particular consumer or device.</p>
+        <section class="policy-section gsap-section" style="visibility: hidden;">
+            <h3><i class="fas fa-database"></i> 2. Information We Collect</h3>
+            <p>We systematically collect information that identifies, relates to, describes, or could reasonably be linked, directly or indirectly, with a particular client or organizational entity.</p>
             <ul>
-                <li><strong>Personal Identifiers:</strong> Name, email address, phone number, and postal address (for our Kakamega office coordination).</li>
-                <li><strong>Account Data:</strong> Passwords (encrypted via Firebase), login timestamps, and usage logs.</li>
-                <li><strong>Project Data:</strong> Information you provide regarding custom AI models, biotechnology requirements, or farm data logs uploaded to our systems.</li>
-                <li><strong>Financial Data:</strong> We do not store credit card information directly. Payment processing is handled by third-party providers (e.g., M-Pesa, Stripe).</li>
+                <li><strong>Identifiers:</strong> Legal name, corporate email address, contact number, and operational location (for Kakamega HQ hardware deployment coordination).</li>
+                <li><strong>Authentication Data:</strong> Secure passwords (encrypted via Firebase AES-256), login timestamps, IP addresses, and terminal usage logs.</li>
+                <li><strong>Proprietary Project Data:</strong> Information you securely transmit regarding custom AI parameters, biotechnology thresholds, or biometric logs uploaded to our testing environments.</li>
+                <li><strong>Financial Nodes:</strong> We do not store raw credit card data. All financial processing is securely vaulted and handled by third-party PCI-DSS compliant providers (Stripe, PayPal, M-Pesa).</li>
             </ul>
         </section>
 
-        <section class="gsap-policy-section">
-            <h3>3. How We Use Your Information</h3>
-            <p>We use the data we collect to engineer better solutions for you:</p>
+        <section class="policy-section gsap-section" style="visibility: hidden;">
+            <h3><i class="fas fa-cogs"></i> 3. How We Utilize Your Data</h3>
+            <p>We process the inputs we collect exclusively to engineer superior technological solutions for you:</p>
             <ul>
-                <li>To provide and manage your access to the <strong>Delstarford Dashboard</strong>.</li>
-                <li>To train and improve our custom AI models (only using anonymized data).</li>
-                <li>To respond to your service requests and provide technical support.</li>
-                <li>To send administrative information, such as security alerts or policy updates.</li>
+                <li>To authenticate, provide, and manage your access to the secure <strong>Client Dashboard</strong>.</li>
+                <li>To execute localized training and epoch runs for custom AI models (utilizing strictly anonymized or synthetic data clones).</li>
+                <li>To dispatch system status updates, respond to support tickets, and resolve technical anomalies.</li>
+                <li>To transmit administrative protocol updates, such as security patches or pricing schedule modifications.</li>
             </ul>
         </section>
 
-        <section class="gsap-policy-section">
-            <h3>4. Data Storage and Security</h3>
-            <p>We utilize industry-standard security measures to protect your data. Our backend is hosted on secure cloud infrastructure (Render) and our database utilizes Google Firebase's real-time encryption standards.</p>
-            <p>However, please note that no electronic transmission over the Internet or information storage technology can be guaranteed to be 100% secure, so we cannot promise or guarantee that hackers, cybercriminals, or other unauthorized third parties will not be able to defeat our security.</p>
+        <section class="policy-section gsap-section" style="visibility: hidden;">
+            <h3><i class="fas fa-shield-alt"></i> 4. Data Storage and Cyber Security</h3>
+            <p>We deploy rigorous, industry-standard security architectures to protect your payloads. Our application backend is hosted on secure cloud infrastructure, and our client database utilizes Google Firebase's real-time AES encryption standards in transit and at rest.</p>
+            <p>However, please note that no electronic transmission over the global Internet or deep-storage technology can be mathematically guaranteed to be 100% secure. While we deploy advanced countermeasures, we cannot absolutely guarantee that hostile cybercriminals or unauthorized third parties will not attempt to defeat our firewalls.</p>
         </section>
 
-        <section class="gsap-policy-section">
-            <h3>5. Sharing Your Information</h3>
-            <p>We <strong>never</strong> sell your personal data. We may share information only in the following situations:</p>
+        <section class="policy-section gsap-section" style="visibility: hidden;">
+            <h3><i class="fas fa-share-alt"></i> 5. Disclosure and Sharing</h3>
+            <p>We <strong>never</strong> sell your corporate or personal data. We may execute secure data transfers only in the following specific operational scenarios:</p>
             <ul>
-                <li><strong>Service Providers:</strong> With third-party vendors who perform services for us (e.g., email delivery, hosting).</li>
-                <li><strong>Legal Obligations:</strong> If required to do so by law or in response to valid requests by public authorities (e.g., a court or a government agency).</li>
+                <li><strong>Infrastructure Partners:</strong> With verified third-party vendors who perform infrastructural services for us (e.g., SMTP email delivery, cloud server hosting).</li>
+                <li><strong>Legal Compliance:</strong> If legally compelled to do so by a court of competent jurisdiction or in response to valid subpoenas by public authorities.</li>
             </ul>
         </section>
 
-        <section class="gsap-policy-section">
-            <h3>6. Your Rights</h3>
-            <p>Depending on your location, you have the right to:</p>
+        <section class="policy-section gsap-section" style="visibility: hidden;">
+            <h3><i class="fas fa-user-shield"></i> 6. Your Corporate Rights</h3>
+            <p>Depending on your global operational jurisdiction, you maintain the fundamental right to:</p>
             <ul>
-                <li>Request access to the personal data we hold about you.</li>
-                <li>Request corrections to any inaccurate data.</li>
-                <li>Request deletion of your account and associated data ("Right to be Forgotten").</li>
+                <li>Request a full payload extraction of the personal data we hold regarding your entity.</li>
+                <li>Request immediate corrections to any inaccurate system records.</li>
+                <li>Request absolute deletion of your dashboard account and total wiping of associated data ("Right to be Forgotten").</li>
             </ul>
-            <p>To exercise these rights, please contact us using the information below.</p>
+            <p>To execute a command for any of these rights, please initiate a request via our official communication nodes below.</p>
         </section>
 
-        <section class="gsap-policy-section">
-            <h3>7. Contact Us</h3>
-            <p>If you have questions or comments about this policy, you may email us at:</p>
+        <section class="policy-section gsap-section" style="visibility: hidden;">
+            <h3><i class="fas fa-headset"></i> 7. Official Contact Nodes</h3>
+            <p>If you require clarification on any clauses within this architectural policy, you may establish contact with our High Council at:</p>
             <div class="contact-box">
-                <p><strong>Email:</strong> <a href="mailto:delstarfordisaiah@gmail.com">delstarfordisaiah@gmail.com</a></p>
-                <p><strong>Phone:</strong> +254 707 605 751</p>
-                <p><strong>Address:</strong> Kakamega, Kenya</p>
+                <p><i class="fas fa-envelope"></i> <strong>Secure Email:</strong> <a href="mailto:delstarfordisaiah@gmail.com">delstarfordisaiah@gmail.com</a></p>
+                <p><i class="fas fa-phone-alt"></i> <strong>Voice / Direct:</strong> +254 707 605 751</p>
+                <p><i class="fas fa-map-marker-alt"></i> <strong>HQ Node:</strong> Innovation Hub, Kakamega, Kenya</p>
             </div>
         </section>
 
     </div>
 </div>
 
-<style>
-    /* Page Specific Styles */
-    .privacy-header {
-        background: #0f172a;
-        color: white;
-        padding: 80px 0 60px;
-        text-align: center;
-    }
-    
-    .privacy-header h1 {
-        font-size: 3rem;
-        font-weight: 800;
-        margin-bottom: 10px;
-        background: linear-gradient(to right, #4ade80, #3b82f6);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    .last-updated {
-        display: inline-block;
-        margin-top: 20px;
-        font-size: 0.9rem;
-        color: #94a3b8;
-        background: rgba(255,255,255,0.1);
-        padding: 5px 15px;
-        border-radius: 20px;
-    }
-
-    .privacy-content-wrapper {
-        margin-top: -40px; /* Pull up into header */
-        padding-bottom: 80px;
-        position: relative;
-        z-index: 10;
-    }
-
-    .privacy-card {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1);
-        padding: 50px;
-        border: 1px solid #e2e8f0;
-    }
-
-    section {
-        margin-bottom: 40px;
-        border-bottom: 1px solid #f1f5f9;
-        padding-bottom: 40px;
-    }
-
-    section:last-child {
-        border-bottom: none;
-        margin-bottom: 0;
-        padding-bottom: 0;
-    }
-
-    h3 {
-        font-size: 1.5rem;
-        color: #1e293b;
-        margin-bottom: 20px;
-        font-weight: 700;
-    }
-
-    p, li {
-        font-size: 1rem;
-        color: #475569;
-        line-height: 1.7;
-        margin-bottom: 15px;
-    }
-
-    ul {
-        padding-left: 20px;
-        margin-bottom: 20px;
-    }
-
-    li {
-        margin-bottom: 10px;
-    }
-
-    .contact-box {
-        background: #f8fafc;
-        padding: 20px;
-        border-radius: 10px;
-        border-left: 4px solid #2563eb;
-        transition: transform 0.3s, box-shadow 0.3s;
-    }
-    
-    .contact-box:hover {
-        transform: translateX(5px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
-
-    .contact-box p {
-        margin-bottom: 5px;
-    }
-
-    .contact-box a {
-        color: #2563eb;
-        text-decoration: none;
-        font-weight: 600;
-    }
-    
-    @media (max-width: 768px) {
-        .privacy-card {
-            padding: 30px;
-        }
-        .privacy-header h1 {
-            font-size: 2.2rem;
-        }
-    }
-</style>
-
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        if(typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+        // Fallback if GSAP is not loaded
+        if(typeof gsap === 'undefined') {
+            document.querySelectorAll('.gsap-hero, .gsap-card, .gsap-section').forEach(el => el.style.visibility = 'visible');
+            return;
+        }
+
+        const tl = gsap.timeline();
+
+        // Hero Content Entrance
+        tl.fromTo(".gsap-hero", 
+            { y: 20, autoAlpha: 0 }, 
+            { y: 0, autoAlpha: 1, stagger: 0.1, duration: 0.8, ease: "power3.out" }
+        )
+        // Main Card Slide Up
+        .fromTo(".gsap-card", 
+            { y: 40, autoAlpha: 0 }, 
+            { y: 0, autoAlpha: 1, duration: 0.8, ease: "power3.out" }, 
+            "-=0.4"
+        );
+
+        // Section Scroll Reveal
+        if (typeof ScrollTrigger !== 'undefined') {
+            gsap.registerPlugin(ScrollTrigger);
             
-            // Gently fade and slide up each section as the user scrolls down
-            gsap.utils.toArray(".gsap-policy-section").forEach((section) => {
-                gsap.from(section, {
-                    scrollTrigger: {
-                        trigger: section,
-                        start: "top 85%", // Triggers when top of section hits 85% down the viewport
-                        toggleActions: "play none none reverse" // Reverses if they scroll back up
-                    },
-                    y: 30,
-                    opacity: 0,
-                    duration: 0.8,
-                    ease: "power2.out"
-                });
+            gsap.utils.toArray(".gsap-section").forEach((section) => {
+                gsap.fromTo(section, 
+                    { y: 30, autoAlpha: 0 },
+                    {
+                        scrollTrigger: {
+                            trigger: section,
+                            start: "top 85%", // Triggers when top of section hits 85% down the viewport
+                        },
+                        y: 0,
+                        autoAlpha: 1,
+                        duration: 0.7,
+                        ease: "power2.out"
+                    }
+                );
             });
+        } else {
+            // Backup if ScrollTrigger fails
+            gsap.set(".gsap-section", { autoAlpha: 1 });
         }
     });
 </script>

@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<section class="hero-section">
+<section class="hero-section" id="heroSection" style="visibility: hidden;">
     <div class="container">
         <div class="hero-content">
-            <span class="hero-badge anim-scale-up">Powering Kenya's Digital Revolution</span>
-            <h1 class="anim-decode" style="color: #f8fafc;">Engineering the <span class="highlight">Future</span> of <br>Biology & Code</h1>
-            <p class="anim-split-words" style="color: #f8fafc;">From <strong>Kenya</strong> to the world. We are a specialized Service Provider Consortium combining digital intelligence with physical science.</p>
+            <span class="hero-badge hero-anim">Powering Kenya's Digital Revolution</span>
+            <h1 class="hero-anim" style="color: #f8fafc;">Engineering the <span class="highlight">Future</span> of <br>Biology & Code</h1>
+            <p class="hero-anim" style="color: #f8fafc;">From <strong>Kenya</strong> to the world. We are a specialized Service Provider Consortium combining digital intelligence with physical science.</p>
             
-            <div class="hero-btns anim-bounce-in">
+            <div class="hero-btns hero-anim">
                 <a href="/ai-lab" class="btn btn-primary">Browse AI Models</a>
                 <a href="/contact" class="btn btn-secondary">Book Consultation</a>
             </div>
@@ -31,12 +31,11 @@
 <section class="pillars-container">
     <div class="container">
         <div class="section-header text-center">
-            <h2 class="anim-reveal-wipe">Our Core Expertise</h2>
-            <p class="anim-fade-up">Delstarford Works is divided into five primary "Silos" of expertise.</p>
+            <h2>Our Core Expertise</h2>
+            <p>Delstarford Works is divided into five primary "Silos" of expertise.</p>
         </div>
 
-        <div class="pillars-grid anim-stagger-grid">
-            
+        <div class="pillars-grid">
             <div class="pillar-card">
                 <div class="icon-box ai-icon"><i class="fas fa-brain" style="font-size: 1.5rem;"></i></div>
                 <h3>The Silicon Silo</h3>
@@ -76,7 +75,6 @@
                 <p>Bridging biological data and physical laws by analyzing the physical properties of biological systems and molecular dynamics.</p>
                 <a href="/services" class="text-link">Explore Physics &rarr;</a>
             </div>
-
         </div>
     </div>
 </section>
@@ -84,14 +82,14 @@
 <section class="stats-section">
     <div class="container stats-grid">
         <div class="stat-item anim-fade-up">
-            <h2><span class="anim-counter" data-target="98">0</span>%</h2>
+            <h2><span class="anim-counter" data-target="100">0</span>%</h2>
             <p>Model Accuracy</p>
         </div>
-        <div class="stat-item anim-fade-up" style="animation-delay: 0.1s;">
+        <div class="stat-item anim-fade-up">
             <h2><span class="anim-counter" data-target="5">0</span>+</h2>
             <p>Silos of Expertise</p>
         </div>
-        <div class="stat-item anim-fade-up" style="animation-delay: 0.2s;">
+        <div class="stat-item anim-fade-up">
             <h2><span class="anim-counter" data-target="24">0</span>/7</h2>
             <p>Cloud Uptime</p>
         </div>
@@ -100,18 +98,18 @@
 
 <section class="spotlight-section">
     <div class="container spotlight-flex">
-        <div class="spotlight-text gsap-slide-left">
+        <div class="spotlight-text gsap-slide-left" style="visibility: hidden;">
             <span class="badge">FEATURED PROJECT</span>
             <h2>DexaGen AI</h2>
             <p>Our flagship predictive pharmacology model helps researchers identify Drug-Drug Interactions (DDIs) instantly.</p>
-            <ul class="check-list anim-stagger-grid">
+            <ul class="check-list">
                 <li><i class="fas fa-check-circle" style="color:var(--primary);"></i> Reduces lab testing time by 40%</li>
                 <li><i class="fas fa-check-circle" style="color:var(--primary);"></i> Powered by Neural Networks</li>
                 <li><i class="fas fa-check-circle" style="color:var(--primary);"></i> Used by medical researchers</li>
             </ul>
             <a href="https://dexagenai-v3.onrender.com/" target="_blank" class="btn btn-primary anim-bounce-in" style="margin-top: 20px;">Try DexaGen Demo</a>
         </div>
-        <div class="spotlight-image gsap-slide-right">
+        <div class="spotlight-image gsap-slide-right" style="visibility: hidden;">
             <div class="code-window">
                 <div class="dots"><span></span><span></span><span></span></div>
                 <pre class="anim-typewriter">> import dexagen_ai
@@ -127,9 +125,55 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        if(typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
-            gsap.from(".gsap-slide-left", { scrollTrigger: { trigger: ".spotlight-section", start: "top 80%" }, x: -100, opacity: 0, duration: 1, ease: "power3.out" });
-            gsap.from(".gsap-slide-right", { scrollTrigger: { trigger: ".spotlight-section", start: "top 80%" }, x: 100, opacity: 0, duration: 1, ease: "power3.out" });
+        // Fallback: If GSAP fails to load, ensure content remains visible
+        if (typeof gsap === 'undefined') {
+            document.getElementById('heroSection').style.visibility = 'visible';
+            document.querySelectorAll('.gsap-slide-left, .gsap-slide-right').forEach(el => el.style.visibility = 'visible');
+            return;
+        }
+
+        // 1. DEDICATED HERO TIMELINE (Plays instantly, no ScrollTrigger)
+        const heroTl = gsap.timeline();
+        
+        // Unhide the section before animating
+        gsap.set("#heroSection", { visibility: "visible" });
+        
+        heroTl.from(".hero-anim", {
+            y: 40,
+            autoAlpha: 0,
+            duration: 0.8,
+            stagger: 0.2,
+            ease: "power3.out",
+            delay: 0.2 // Slight delay to ensure smooth loading
+        });
+
+        // 2. BULLETPROOF SCROLL TRIGGERS FOR THE REST OF THE PAGE
+        if (typeof ScrollTrigger !== 'undefined') {
+            gsap.set(".gsap-slide-left, .gsap-slide-right", { visibility: "visible" });
+
+            gsap.from(".gsap-slide-left", { 
+                scrollTrigger: { 
+                    trigger: ".spotlight-section", 
+                    start: "top 75%",
+                    toggleActions: "play none none reverse"
+                }, 
+                x: -50, 
+                autoAlpha: 0, 
+                duration: 0.8, 
+                ease: "power3.out" 
+            });
+
+            gsap.from(".gsap-slide-right", { 
+                scrollTrigger: { 
+                    trigger: ".spotlight-section", 
+                    start: "top 75%",
+                    toggleActions: "play none none reverse"
+                }, 
+                x: 50, 
+                autoAlpha: 0, 
+                duration: 0.8, 
+                ease: "power3.out" 
+            });
         }
     });
 </script>
@@ -157,7 +201,7 @@
     .partner-logo { font-size: 1.2rem; font-weight: 800; color: #cbd5e1; filter: grayscale(100%); transition: 0.3s; cursor: default; }
     .partner-logo:hover { color: #0f172a; filter: grayscale(0%); }
 
-    /* OFFICIAL SILOS GRID & BLACK/WHITE HOVER EFFECT */
+    /* OFFICIAL SILOS GRID & DARK BLUE DESIGN */
     .pillars-container { padding: 100px 0; background: #f8fafc; }
     .text-center { text-align: center; }
     .section-header { margin-bottom: 60px; }
@@ -167,39 +211,41 @@
     .pillars-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
     
     .pillar-card { 
-        background: white; padding: 40px 30px; border-radius: 20px; 
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
-        border: 1px solid #e2e8f0; display: flex; flex-direction: column;
+        background: #0f172a; /* Changed to Dark Blue */
+        padding: 40px 30px; border-radius: 20px; 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+        border: 1px solid #1e293b; display: flex; flex-direction: column;
     }
     
-    /* THE BLACK AND WHITE HOVER MAGIC */
+    /* Hover Glow Effect */
     .pillar-card:hover { 
         transform: translateY(-10px); 
-        background: #000000; /* Pure Black Background */
-        border-color: #000000; 
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4); 
+        background: #1e293b; /* Slightly lighter blue on hover */
+        border-color: #3b82f6; 
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3); 
     }
     
+    /* Adjusted Icon Colors for Dark Background */
     .icon-box { width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; transition: 0.4s; }
-    .ai-icon { background: #eff6ff; color: #3b82f6; }
-    .web-icon { background: #fdf4ff; color: #c026d3; }
-    .insight-icon { background: #fef3c7; color: #d97706; }
-    .bio-icon { background: #fff7ed; color: #ea580c; }
-    .agri-icon { background: #f0fdf4; color: #16a34a; }
+    .ai-icon { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .web-icon { background: rgba(192, 38, 211, 0.2); color: #e879f9; }
+    .insight-icon { background: rgba(217, 119, 6, 0.2); color: #fbbf24; }
+    .bio-icon { background: rgba(234, 88, 12, 0.2); color: #fb923c; }
+    .agri-icon { background: rgba(22, 163, 74, 0.2); color: #4ade80; }
     
-    .pillar-card h3 { font-size: 1.4rem; font-weight: 800; color: #0f172a; margin: 0 0 5px 0; transition: color 0.4s ease; }
+    /* Adjusted Text Colors for Dark Background */
+    .pillar-card h3 { font-size: 1.4rem; font-weight: 800; color: #f8fafc; margin: 0 0 5px 0; transition: color 0.4s ease; }
     .role-subtitle { font-size: 0.85rem; font-weight: 700; color: #3b82f6; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; margin-top: 0; }
-    .pillar-card p { color: #64748b; line-height: 1.6; margin-bottom: 25px; flex-grow: 1; transition: color 0.4s ease; }
+    .pillar-card p { color: #cbd5e1; line-height: 1.6; margin-bottom: 25px; flex-grow: 1; transition: color 0.4s ease; }
     .text-link { color: #3b82f6; font-weight: 700; text-decoration: none; transition: 0.3s; display: inline-block; margin-top: auto; }
     
-    /* Text Turns White Inside Black Card */
-    .pillar-card:hover h3, .pillar-card:hover p { color: #ffffff; /* Pure White Text */ }
+    .pillar-card:hover h3, .pillar-card:hover p { color: #ffffff; }
     .pillar-card:hover .text-link { color: #ffffff; transform: translateX(5px); }
-    .pillar-card:hover .role-subtitle { color: #10b981; } /* Subtitle turns green to pop against black */
+    .pillar-card:hover .role-subtitle { color: #10b981; }
     .pillar-card:hover .icon-box { background: rgba(255,255,255,0.1); color: #ffffff; }
 
     /* STATS & SPOTLIGHT */
-    .stats-section { background: #0f172a; padding: 80px 0; color: white; }
+    .stats-section { background: #0f172a; padding: 80px 0; color: white; border-top: 1px solid #1e293b; }
     .stats-grid { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 40px; text-align: center; }
     .stat-item h2 { font-size: 4rem; font-weight: 800; color: #3b82f6; margin: 0; line-height: 1; }
     .stat-item p { color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; }

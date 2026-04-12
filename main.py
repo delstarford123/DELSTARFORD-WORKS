@@ -760,6 +760,10 @@ def get_announcements():
         return jsonify({"success": True, "updates": updates_list})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
+@app.route('/terms')
+def terms():
+    """Renders the Terms of Service page."""
+    return render_template('terms.html')
 
 @app.route('/post-announcement', methods=['POST'])
 def post_announcement():

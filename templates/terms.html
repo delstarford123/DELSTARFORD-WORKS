@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    /* --- CSS VARIABLES & RESET --- */
+    :root {
+        --term-primary: #3b82f6;
+        --term-dark: #0f172a;
+        --term-bg: #f8fafc;
+        --term-card: #ffffff;
+        --term-border: #e2e8f0;
+        --term-border-heavy: #cbd5e1;
+        --term-text: #334155;
+        --term-muted: #64748b;
+        --term-success: #10b981;
+    }
+
+    body { background: var(--term-bg); font-family: 'Plus Jakarta Sans', sans-serif; }
+
+    /* --- HERO SECTION --- */
+    .terms-hero { 
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); 
+        padding: 100px 20px 120px; 
+        text-align: center; 
+        position: relative;
+        overflow: hidden;
+    }
+    .terms-hero::before { 
+        content: ""; position: absolute; top: -50%; left: 50%; transform: translateX(-50%); 
+        width: 800px; height: 800px; background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%); 
+        z-index: 0; pointer-events: none; 
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
+    
+    .hero-badge { 
+        display: inline-block; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); 
+        color: #60a5fa; padding: 6px 15px; border-radius: 50px; font-size: 0.85rem; font-weight: 800; 
+        margin-bottom: 20px; letter-spacing: 1px; text-transform: uppercase; 
+    }
+    .terms-hero h1 { color: #ffffff; font-size: 3.5rem; font-weight: 800; letter-spacing: -1.5px; margin: 0 0 15px; }
+    .terms-hero p { color: #cbd5e1; font-size: 1.2rem; line-height: 1.6; margin: 0 0 25px; font-weight: 500;}
+    
+    .last-updated {
+        display: inline-block; font-size: 0.85rem; font-weight: 700; color: #94a3b8;
+        background: rgba(255,255,255,0.05); padding: 8px 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
+        text-transform: uppercase; letter-spacing: 1px;
+    }
+
+    /* --- CONTENT WRAPPER & CARD --- */
+    .terms-wrapper { 
+        max-width: 950px; 
+        margin: -70px auto 80px; 
+        padding: 0 20px; 
+        position: relative; 
+        z-index: 10; 
+    }
+    .terms-card { 
+        background: var(--term-card); 
+        border-radius: 20px; 
+        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.1); 
+        border: 1px solid var(--term-border);
+        padding: 60px 70px;
+    }
+
+    /* --- TYPOGRAPHY & SECTIONS --- */
+    .policy-section {
+        margin-bottom: 50px;
+        padding-bottom: 50px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .policy-section:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+
+    .policy-section h3 { 
+        font-size: 1.4rem; 
+        color: var(--term-dark); 
+        margin: 0 0 20px 0; 
+        font-weight: 800; 
+        display: flex; 
+        align-items: center; 
+        gap: 12px;
+        letter-spacing: -0.5px;
+    }
+    .policy-section h3 i { color: var(--term-primary); font-size: 1.2rem; }
+
+    .policy-section p, .policy-section li { 
+        font-size: 1.05rem; 
+        color: var(--term-text); 
+        line-height: 1.8; 
+        margin: 0 0 15px 0; 
+        font-weight: 500;
+    }
+    .policy-section p:last-child { margin-bottom: 0; }
+    
+    .policy-section strong { color: var(--term-dark); font-weight: 700; }
+
+    .policy-section ul { padding-left: 20px; margin: 0 0 20px 0; }
+    .policy-section li { margin-bottom: 12px; padding-left: 5px;}
+    .policy-section li::marker { color: var(--term-primary); }
+
+    /* --- HIGHLIGHT / WARNING BOX --- */
+    .warning-box { 
+        background: #fffbeb; 
+        padding: 25px 30px; 
+        border-radius: 12px; 
+        border: 1px solid #fde68a;
+        border-left: 4px solid #f59e0b; 
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    .warning-box p { color: #b45309; margin: 0; font-weight: 600; font-size: 0.95rem; }
+
+    /* --- CONTACT BOX --- */
+    .contact-box { 
+        background: #f8fafc; 
+        padding: 25px 30px; 
+        border-radius: 12px; 
+        border: 1px solid var(--term-border);
+        border-left: 4px solid var(--term-primary); 
+        margin-top: 25px;
+    }
+    .contact-box p { margin-bottom: 10px; display: flex; align-items: center; gap: 10px;}
+    .contact-box p:last-child { margin-bottom: 0; }
+    .contact-box i { color: var(--term-muted); width: 20px; text-align: center;}
+    .contact-box a { color: var(--term-primary); text-decoration: none; font-weight: 700; transition: 0.2s;}
+    .contact-box a:hover { color: var(--term-dark); text-decoration: underline; }
+
+    /* --- MOBILE RESPONSIVENESS --- */
+    @media (max-width: 768px) {
+        .terms-hero { padding: 80px 20px 100px; }
+        .terms-hero h1 { font-size: 2.5rem; }
+        .terms-card { padding: 40px 25px; border-radius: 16px; }
+        .policy-section { margin-bottom: 40px; padding-bottom: 40px; }
+        .policy-section h3 { font-size: 1.25rem; }
+        .policy-section p, .policy-section li { font-size: 0.95rem; }
+    }
+</style>
+
+<section class="terms-hero">
+    <div class="hero-content">
+        <span class="hero-badge gsap-hero" style="visibility: hidden;">Legal & Compliance</span>
+        <h1 class="gsap-hero" style="visibility: hidden;">Terms of Service</h1>
+        <p class="gsap-hero" style="visibility: hidden;">The operational framework governing your use of Delstarford Works technology.</p>
+        <div class="last-updated gsap-hero" style="visibility: hidden;"><i class="fas fa-history" style="margin-right: 6px;"></i> Effective Date: April 12, 2026</div>
+    </div>
+</section>
+
+<div class="terms-wrapper">
+    <div class="terms-card gsap-card" style="visibility: hidden;">
+        
+        <section class="policy-section gsap-section" style="visibility: hidden;">
+            <h3><i class="fas fa-handshake"></i> 1. Agreement to Terms</h3>
+            <p>These Terms of Service constitute a legally binding agreement made between you, whether personally or on behalf of an entity ("you" or "Client"), and <strong>Delstarford Works</strong> ("Company," "we," "us," or "our"), concerning your access to and use of the <a href="https://delstarfordworks.co.ke" style="color: var(--term-primary); font-weight: 600;">delstarfordworks.co.ke</a> website, the Secure Client Portal, the AI Marketplace, and any custom software or biotechnology services we provide.</p>
+            <p>By accessing the system or executing a deployment, you acknowledge that you have read, understood, and agree to be bound by all of these Terms of Service. If you do not agree, you are expressly prohibited from using our proprietary systems and must discontinue use immediately.</p>
+        </section>
+
+        <section class="policy-section gsap-section" style="visibility: hidden;">
+            <h3><i class="fas fa-microchip"></i> 2. Intellectual Property & Licensing</h3>
+            <p>Unless otherwise indicated or established in a signed Custom Service Agreement (CNT), the systems, proprietary AI algorithms (including but not limited to DexaGen AI and ANIPRO AI), source code, databases, and structural designs are the exclusive intellectual property of Delstarford Works.</p>
+            <ul>
+                <li><strong>Marketplace Models:</strong> Purchasing an AI model from our lab grants you a non-exclusive, non-transferable, revocable license to utilize the API endpoint or compiled software for your internal business operations. You may not reverse-engineer, decompile, or resell the core algorithmic logic.</li>
+                <li><strong>Custom Architecture:</strong> For bespoke enterprise builds, intellectual property rights will be transferred to the Client only upon 100% completion of all financial remittances, as detailed in your specific Project Contract.</li>
+            </ul>
+        </section>
+
+        <section class="policy-section gsap-section" style="visibility: hidden;">
+            <h3><i class="fas fa-user-shield"></i> 3. Client Obligations & Acceptable Use</h3>
+            <p>As a user of the Delstarford Works ecosystem, you agree not to use the system for any purpose other than that for which we make the services available. Prohibited activities include:</p>
+            <ul>
+                <li>Attempting to bypass, disable, or interfere with security-related features of the site, including Firebase authentication protocols.</li>
+                <li>Using our computational biology or pharmacology models (e.g., DexaGen AI) as a definitive substitute for certified clinical trials or professional medical diagnostics.</li>
+                <li>Deploying our systems to transmit malware, viruses, or any material that disrupts the uninterrupted use of our cloud infrastructure.</li>
+            </ul>
+            <div class="warning-box">
+                <p><i class="fas fa-exclamation-triangle" style="margin-right: 5px;"></i> Violation of these operational protocols will result in immediate termination of your API keys, dashboard access, and potential legal action under Kenyan cyber-law.</p>
+            </div>
+        </section>
+
+        <section class="policy-section gsap-section" style="visibility: hidden;">
+            <h3><i class="fas fa-wallet"></i> 4. Financial Remittance & Subscriptions</h3>
+            <p>We accept payments via localized mobile money (Safaricom M-Pesa) and global gateways (Stripe/PayPal). By initiating a transaction, you authorize us to process the specified amount.</p>
+            <ul>
+                <li><strong>Custom Projects:</strong> Require an upfront deposit as dictated by your custom quote. Milestone payments must be cleared before the deployment of subsequent architectural phases.</li>
+                <li><strong>Refund Policy:</strong> Due to the computational costs and irreversible nature of deploying AI models and compiling custom codebases, <strong>all finalized sales are strictly non-refundable</strong> once API keys or source files have been transmitted.</li>
+            </ul>
+        </section>
+
+        <section class="policy-section gsap-section" style="visibility: hidden;">
+            <h3><i class="fas fa-server"></i> 5. Service Modifications & Uptime</h3>
+            <p>Delstarford Works reserves the right to modify, update, or suspend components of our platform to execute maintenance or deploy architectural upgrades. While our Service Level Agreement (SLA) aims for 99.9% uptime on enterprise deployments, we will not be liable to you or any third party for any modification, price change, suspension, or discontinuance of the platform.</p>
+        </section>
+
+        <section class="policy-section gsap-section" style="visibility: hidden;">
+            <h3><i class="fas fa-balance-scale"></i> 6. Limitation of Liability</h3>
+            <p>In no event will Delstarford Works, nor our High Council, directors, or employees, be liable to you or any third party for any direct, indirect, consequential, exemplary, incidental, special, or punitive damages—including lost profit, lost revenue, or loss of data—arising from your use of the site or our deployed algorithms.</p>
+            <p>Our agricultural and biotechnological models are provided on an "as-is" basis for predictive and analytical assistance. The final execution of farming or clinical procedures remains the sole responsibility of the Client.</p>
+        </section>
+
+        <section class="policy-section gsap-section" style="visibility: hidden;">
+            <h3><i class="fas fa-globe-africa"></i> 7. Governing Law</h3>
+            <p>These Terms shall be governed by and defined following the laws of the Republic of Kenya. Delstarford Works and yourself irrevocably consent that the courts of Kenya shall have exclusive jurisdiction to resolve any dispute which may arise in connection with these terms.</p>
+        </section>
+
+        <section class="policy-section gsap-section" style="visibility: hidden;">
+            <h3><i class="fas fa-envelope-open-text"></i> 8. Official Contact Nodes</h3>
+            <p>To resolve a complaint regarding the Services or to receive further information regarding the use of the Services, please contact our administrative node at:</p>
+            <div class="contact-box">
+                <p><i class="fas fa-building"></i> <strong>Entity:</strong> Delstarford Works HQ</p>
+                <p><i class="fas fa-envelope"></i> <strong>Legal Email:</strong> <a href="mailto:delstarfordisaiah@gmail.com">delstarfordisaiah@gmail.com</a></p>
+                <p><i class="fas fa-phone-alt"></i> <strong>Direct Line:</strong> +254 707 605 751</p>
+                <p><i class="fas fa-map-marker-alt"></i> <strong>Location:</strong> Innovation Hub, Kakamega, Kenya</p>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Fallback if GSAP is not loaded
+        if(typeof gsap === 'undefined') {
+            document.querySelectorAll('.gsap-hero, .gsap-card, .gsap-section').forEach(el => el.style.visibility = 'visible');
+            return;
+        }
+
+        const tl = gsap.timeline();
+
+        // Hero Content Entrance
+        tl.fromTo(".gsap-hero", 
+            { y: 20, autoAlpha: 0 }, 
+            { y: 0, autoAlpha: 1, stagger: 0.1, duration: 0.8, ease: "power3.out" }
+        )
+        // Main Card Slide Up
+        .fromTo(".gsap-card", 
+            { y: 40, autoAlpha: 0 }, 
+            { y: 0, autoAlpha: 1, duration: 0.8, ease: "power3.out" }, 
+            "-=0.4"
+        );
+
+        // Section Scroll Reveal
+        if (typeof ScrollTrigger !== 'undefined') {
+            gsap.registerPlugin(ScrollTrigger);
+            
+            gsap.utils.toArray(".gsap-section").forEach((section) => {
+                gsap.fromTo(section, 
+                    { y: 30, autoAlpha: 0 },
+                    {
+                        scrollTrigger: {
+                            trigger: section,
+                            start: "top 85%", // Triggers when top of section hits 85% down the viewport
+                        },
+                        y: 0,
+                        autoAlpha: 1,
+                        duration: 0.7,
+                        ease: "power2.out"
+                    }
+                );
+            });
+        } else {
+            gsap.set(".gsap-section", { autoAlpha: 1 });
+        }
+    });
+</script>
+
+{% endblock %}

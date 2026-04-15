@@ -9,7 +9,7 @@
     <meta property="og:title" content="Delstarford Works | Engineering the Future">
     <meta property="og:description" content="Where Biology Meets Technology. Custom AI, Biotech, and AI-Powered Web and application Solutions.">
     <meta property="og:image" content="{{ url_for('static', filename='images/logo.png') }}">
-    <meta property="og:url" content="https://delstarford-works.onrender.com">
+    <meta property="og:url" content="https://delstarfordworks.co.ke">
     <link rel="manifest" href="/manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -151,7 +151,7 @@
 
         .btn-mobile-cta { background: var(--primary); color: white; padding: 15px 30px; border-radius: 12px; margin-top: 20px; font-size: 1.2rem; text-decoration: none; font-weight: 700; display: inline-block; }
 
-        /* --- PWA INSTALL BANNER (NEW) --- */
+        /* --- PWA INSTALL BANNER --- */
         .pwa-banner {
             position: fixed; top: -120px; left: 50%; transform: translateX(-50%);
             width: 90%; max-width: 450px; background: rgba(15, 23, 42, 0.95);
@@ -159,7 +159,7 @@
             border: 1px solid rgba(255,255,255,0.15); border-radius: 16px;
             z-index: 9999; display: flex; align-items: center; justify-content: space-between;
             padding: 15px 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-            transition: top 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy drop-down */
+            transition: top 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .pwa-banner.show { top: 20px; }
         .pwa-banner-content { display: flex; align-items: center; gap: 15px; }
@@ -330,8 +330,181 @@
         </div>
     </footer>
 
+    <button id="fab-pay" class="fab-pay-btn" onclick="toggleQuickPay()" aria-label="Make a Payment">
+        <i class="fas fa-wallet"></i>
+        <span class="fab-text">Quick Pay</span>
+    </button>
+
+    <div id="quickPayOverlay" class="qp-overlay" onclick="toggleQuickPay(event)">
+        <div class="qp-card" onclick="event.stopPropagation()">
+            
+            <button class="qp-close" onclick="toggleQuickPay()">&times;</button>
+            
+            <div class="qp-header">
+                <div class="qp-icon"><i class="fas fa-mobile-alt"></i></div>
+                <h3>Secure Remittance</h3>
+                <p>Initiate a direct M-Pesa STK push to your device.</p>
+            </div>
+
+            <form id="quickPayForm">
+                <div class="qp-form-group">
+                    <label>M-Pesa Phone Number</label>
+                    <div class="qp-input-wrap">
+                        <i class="fas fa-phone-alt"></i>
+                        <input type="tel" id="qp-phone" placeholder="07XX XXX XXX" required>
+                    </div>
+                </div>
+
+                <div class="qp-form-group">
+                    <label>Amount (KSh)</label>
+                    <div class="qp-input-wrap">
+                        <span style="color:#94a3b8; margin-right:10px; font-weight:700;">KSh</span>
+                        <input type="number" id="qp-amount" min="1" placeholder="5000" required>
+                    </div>
+                </div>
+
+                <div class="qp-form-group">
+                    <label>Service / Invoice Reference</label>
+                    <div class="qp-input-wrap">
+                        <i class="fas fa-file-invoice"></i>
+                        <input type="text" id="qp-service" placeholder="e.g., Deposit for AI Model" required>
+                    </div>
+                </div>
+
+                <div class="qp-form-group">
+                    <label>Brief Reason / Note</label>
+                    <div class="qp-input-wrap">
+                        <i class="fas fa-pen"></i>
+                        <input type="text" id="qp-reason" placeholder="e.g., Clearing Phase 1 balance" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="qp-submit-btn" id="qp-submit">
+                    <span id="qp-btn-text">Send Payment Prompt</span>
+                    <i class="fas fa-paper-plane" id="qp-btn-icon"></i>
+                    <div class="qp-spinner" id="qp-spinner"></div>
+                </button>
+                
+                <div id="qp-status" class="qp-status-box"></div>
+            </form>
+
+            <div class="qp-footer">
+                <i class="fas fa-lock"></i> Secured by Delstarford Works Encryption
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* --- FLOATING BUTTON --- */
+        .fab-pay-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 25px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+            z-index: 9998;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .fab-pay-btn:hover {
+            transform: translateY(-5px);
+            background: #059669;
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.5);
+        }
+        .fab-pay-btn i { font-size: 1.2rem; }
+
+        /* --- MODAL OVERLAY --- */
+        .qp-overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(8px);
+            z-index: 9999; display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.3s ease; padding: 20px;
+        }
+        .qp-overlay.active { opacity: 1; visibility: visible; }
+
+        /* --- MODAL CARD --- */
+        .qp-card {
+            background: #ffffff; width: 100%; max-width: 450px; border-radius: 24px;
+            padding: 40px; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+            transform: translateY(30px) scale(0.95); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-top: 6px solid #3b82f6; font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .qp-overlay.active .qp-card { transform: translateY(0) scale(1); }
+
+        .qp-close {
+            position: absolute; top: 20px; right: 20px; background: #f1f5f9; border: none;
+            width: 35px; height: 35px; border-radius: 50%; font-size: 1.5rem; color: #64748b;
+            cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center;
+        }
+        .qp-close:hover { background: #fee2e2; color: #ef4444; transform: rotate(90deg);}
+
+        /* --- MODAL HEADER --- */
+        .qp-header { text-align: center; margin-bottom: 30px; }
+        .qp-icon {
+            width: 60px; height: 60px; background: #eff6ff; color: #3b82f6; border-radius: 16px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 15px;
+        }
+        .qp-header h3 { margin: 0 0 5px 0; color: #0f172a; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px;}
+        .qp-header p { margin: 0; color: #64748b; font-size: 0.95rem; font-weight: 500;}
+
+        /* --- FORM ELEMENTS --- */
+        .qp-form-group { margin-bottom: 20px; }
+        .qp-form-group label { display: block; font-size: 0.8rem; font-weight: 800; color: #64748b; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;}
+        
+        .qp-input-wrap {
+            display: flex; align-items: center; background: #f8fafc; border: 1px solid #cbd5e1;
+            border-radius: 10px; padding: 0 15px; transition: 0.3s;
+        }
+        .qp-input-wrap:focus-within { border-color: #3b82f6; background: #ffffff; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
+        .qp-input-wrap i { color: #94a3b8; margin-right: 12px; transition: 0.3s;}
+        .qp-input-wrap:focus-within i { color: #3b82f6; }
+        
+        .qp-input-wrap input {
+            width: 100%; border: none; background: transparent; padding: 14px 0;
+            outline: none; color: #0f172a; font-size: 1rem; font-weight: 600; font-family: inherit;
+        }
+        .qp-input-wrap input::placeholder { color: #94a3b8; font-weight: 400;}
+
+        /* --- SUBMIT BUTTON --- */
+        .qp-submit-btn {
+            width: 100%; background: #3b82f6; color: white; border: none; padding: 18px;
+            border-radius: 10px; font-weight: 800; font-size: 1.05rem; cursor: pointer;
+            display: flex; justify-content: center; align-items: center; gap: 10px;
+            transition: 0.3s; margin-top: 30px; text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3); font-family: inherit;
+        }
+        .qp-submit-btn:hover { background: #2563eb; transform: translateY(-2px); box-shadow: 0 12px 25px rgba(59, 130, 246, 0.4); }
+        .qp-submit-btn:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .qp-spinner { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: qp-spin 1s linear infinite; display: none; }
+        @keyframes qp-spin { to { transform: rotate(360deg); } }
+
+        /* --- STATUS & FOOTER --- */
+        .qp-status-box { margin-top: 15px; text-align: center; font-size: 0.9rem; font-weight: 700; padding: 12px; border-radius: 8px; display: none;}
+        .qp-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; display: block;}
+        .qp-error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; display: block;}
+
+        .qp-footer { text-align: center; margin-top: 25px; font-size: 0.8rem; color: #94a3b8; font-weight: 600;}
+        .qp-footer i { color: #10b981; margin-right: 5px;}
+
+        @media (max-width: 600px) {
+            .fab-pay-btn { bottom: 20px; right: 20px; padding: 14px 20px; }
+            .fab-text { display: none; }
+            .qp-card { padding: 30px 20px; }
+        }
+    </style>
+
     <script>
-        // --- Preloader & Scroll Progress ---
+        // --- BASE JS SCRIPTS ---
         window.addEventListener('load', () => {
             const preloader = document.getElementById('preloader');
             preloader.style.opacity = '0';
@@ -351,7 +524,7 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        // --- Mobile Menu Logic ---
+        // Mobile Menu
         const mobileToggle = document.getElementById('mobileToggle');
         const mobileOverlay = document.getElementById('mobileOverlay');
 
@@ -379,67 +552,45 @@
             });
         });
 
-        // --- PWA INSTALLATION LOGIC ---
+        // PWA Install
         let deferredPrompt;
         const pwaBanner = document.getElementById('pwa-install-banner');
         const installBtn = document.getElementById('pwa-install-btn');
         const closeBtn = document.getElementById('pwa-close-btn');
 
-        // Listen for the native install prompt event
         window.addEventListener('beforeinstallprompt', (e) => {
-            // Prevent Chrome from automatically showing its default mini-infobar
             e.preventDefault();
-            // Stash the event so it can be triggered when the user clicks 'Install'
             deferredPrompt = e;
-
-            // Only show if the user hasn't explicitly dismissed it before
             if (!localStorage.getItem('dsw_app_dismissed')) {
-                // Wait 2 seconds so it feels natural, then slide the banner in
                 setTimeout(() => { pwaBanner.classList.add('show'); }, 2000);
             }
         });
 
-        // Handle Install Button Click
         installBtn.addEventListener('click', async () => {
             pwaBanner.classList.remove('show');
             if (deferredPrompt) {
-                // Show the native installation prompt
                 deferredPrompt.prompt();
-                // Wait for the user to respond to the prompt
                 const { outcome } = await deferredPrompt.userChoice;
-                console.log(`User response to install prompt: ${outcome}`);
-                // Clear the deferred prompt variable
                 deferredPrompt = null;
             }
         });
 
-        // Handle Close 'X' Button Click
         closeBtn.addEventListener('click', () => {
             pwaBanner.classList.remove('show');
-            // Save preference so we don't spam them on next page reload
             localStorage.setItem('dsw_app_dismissed', 'true');
         });
 
-        // --- GSAP ANIMATIONS ---
+        // GSAP Setup
         document.addEventListener("DOMContentLoaded", () => {
             if(typeof gsap !== 'undefined') {
                 gsap.registerPlugin(ScrollTrigger, TextPlugin);
                 const ST = (el) => ({ trigger: el, start: "top 85%", toggleActions: "play none none reverse" });
 
-                // Standard Animations
                 gsap.utils.toArray('.anim-fade-up').forEach(el => gsap.from(el, { scrollTrigger: ST(el), y: 50, opacity: 0, duration: 0.8, ease: "power3.out" }));
                 gsap.utils.toArray('.anim-scale-up').forEach(el => gsap.from(el, { scrollTrigger: ST(el), scale: 0, opacity: 0, duration: 0.8, ease: "back.out(1.7)" }));
                 gsap.utils.toArray('.anim-slide-left').forEach(el => gsap.from(el, { scrollTrigger: ST(el), x: -200, opacity: 0, duration: 1, ease: "power2.out" }));
                 gsap.utils.toArray('.anim-bounce-in').forEach(el => gsap.from(el, { scrollTrigger: ST(el), y: -100, opacity: 0, duration: 1, ease: "bounce.out" }));
                 
-                // Numbers
-                gsap.utils.toArray('.anim-counter').forEach(el => {
-                    const target = parseInt(el.getAttribute('data-target')) || 100;
-                    let obj = { val: 0 };
-                    gsap.to(obj, { scrollTrigger: ST(el), val: target, duration: 2.5, ease: "power2.out", onUpdate: () => { el.textContent = Math.round(obj.val).toLocaleString(); } });
-                });
-
-                // Grid Stagger
                 gsap.utils.toArray('.anim-stagger-grid').forEach(grid => {
                     const items = grid.children;
                     gsap.from(items, { scrollTrigger: ST(grid), y: 40, opacity: 0, duration: 0.6, stagger: 0.15, ease: "power2.out" });
@@ -447,7 +598,7 @@
             }
         });
 
-        // --- Firebase Auth UI Update ---
+        // Firebase Auth
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 if (window.auth) {
@@ -482,19 +633,148 @@
         window.globalLogout = function() {
             if(window.auth) auth.signOut().then(() => { window.location.href = '/login'; });
         }
-    </script>
-    <script>
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then((registration) => {
-                        console.log('✅ PWA Service Worker registered securely with scope:', registration.scope);
-                    })
-                    .catch((error) => {
-                        console.error('❌ Service Worker registration failed:', error);
-                    });
+                navigator.serviceWorker.register('/sw.js').catch(err => console.error(err));
             });
         }
-    </script>
+
+        // --- QUICK PAY POLLING & SUBMIT LOGIC ---
+        function toggleQuickPay(e) {
+            if (e && e.target.classList.contains('qp-card')) return;
+            
+            const overlay = document.getElementById('quickPayOverlay');
+            overlay.classList.toggle('active');
+            
+            if (!overlay.classList.contains('active')) {
+                setTimeout(() => {
+                    document.getElementById('quickPayForm').reset();
+                    document.getElementById('qp-status').style.display = 'none';
+                    document.getElementById('qp-submit').style.background = '#3b82f6';
+                    document.getElementById('qp-btn-text').textContent = 'Send Payment Prompt';
+                    document.getElementById('qp-btn-icon').className = 'fas fa-paper-plane';
+                    document.getElementById('qp-btn-icon').style.display = 'block';
+                    document.getElementById('qp-spinner').style.display = 'none';
+                    document.getElementById('qp-submit').disabled = false;
+                }, 300);
+            }
+        }
+
+        document.getElementById('quickPayForm').onsubmit = async (e) => {
+            e.preventDefault();
+            
+            const btn = document.getElementById('qp-submit');
+            const btnText = document.getElementById('qp-btn-text');
+            const btnIcon = document.getElementById('qp-btn-icon');
+            const spinner = document.getElementById('qp-spinner');
+            const statusBox = document.getElementById('qp-status');
+
+            if(btn.disabled) return;
+
+            // 1. Initial Loading State
+            btn.disabled = true;
+            btnText.textContent = "Connecting to Safaricom...";
+            btnIcon.style.display = 'none';
+            spinner.style.display = 'block';
+            statusBox.style.display = 'none';
+
+            const phone = document.getElementById('qp-phone').value;
+            const amount = document.getElementById('qp-amount').value;
+            const service = document.getElementById('qp-service').value;
+            const reason = document.getElementById('qp-reason').value;
+            
+            const combinedItemName = `${service} (${reason})`;
+
+            const payload = {
+                phone: phone,
+                amount: amount,
+                items: [{ name: combinedItemName }]
+            };
+
+            try {
+                // 2. Trigger STK Push
+                const response = await fetch('/pay', { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+
+                if (response.ok && result.ResponseCode === '0') {
+                    // Success State - Prompt Sent
+                    statusBox.innerHTML = '<i class="fas fa-mobile-alt"></i> Prompt sent! Please enter your M-Pesa PIN on your phone.';
+                    statusBox.className = 'qp-status-box qp-success';
+                    statusBox.style.display = 'block';
+                    
+                    btn.style.background = "#10b981";
+                    btnText.textContent = "Awaiting PIN...";
+                    
+                    // 3. START POLLING BACKEND
+                    const checkoutId = result.CheckoutRequestID;
+                    let pollCount = 0;
+                    const maxPolls = 20; // 60 seconds max timeout
+                    
+                    const pollInterval = setInterval(async () => {
+                        pollCount++;
+                        
+                        try {
+                            const statusRes = await fetch(`/check-payment-status/${checkoutId}`);
+                            if(!statusRes.ok) return; // Keep trying if network blip
+                            
+                            const statusData = await statusRes.json();
+                            
+                            if (statusData.status === 'Payment Successful') {
+                                clearInterval(pollInterval);
+                                statusBox.innerHTML = '<i class="fas fa-check-circle"></i> Payment Received! Thank you.';
+                                btnText.textContent = "Success";
+                                spinner.style.display = 'none';
+                                btnIcon.className = "fas fa-check";
+                                btnIcon.style.display = "block";
+                                
+                                setTimeout(() => { window.location.href = "/dashboard"; }, 1500);
+                                
+                            } else if (statusData.status === 'Payment Failed') {
+                                clearInterval(pollInterval);
+                                statusBox.innerHTML = `<i class="fas fa-times-circle"></i> Payment Failed: ${statusData.failure_reason || 'Transaction cancelled.'}`;
+                                statusBox.className = 'qp-status-box qp-error';
+                                resetButton();
+                            }
+                            
+                            // Timeout handling
+                            if (pollCount >= maxPolls) {
+                                clearInterval(pollInterval);
+                                statusBox.innerHTML = '<i class="fas fa-clock"></i> Request timed out. Did you receive the prompt?';
+                                statusBox.className = 'qp-status-box qp-error';
+                                resetButton();
+                            }
+                            
+                        } catch (pollErr) {
+                            console.error("Polling error:", pollErr);
+                        }
+                    }, 3000); // Poll every 3 seconds
+                    
+                } else {
+                    throw new Error(result.error || result.errorMessage || "Failed to initiate STK push.");
+                }
+            } catch (error) {
+                console.error(error);
+                statusBox.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${error.message}`;
+                statusBox.className = 'qp-status-box qp-error';
+                statusBox.style.display = 'block';
+                resetButton();
+            }
+
+            function resetButton() {
+                btn.disabled = false;
+                btn.style.background = '#3b82f6';
+                btnText.textContent = "Try Again";
+                spinner.style.display = 'none';
+                btnIcon.className = "fas fa-redo";
+                btnIcon.style.display = "block";
+            }
+        };
+    </script>    
 </body>
 </html>

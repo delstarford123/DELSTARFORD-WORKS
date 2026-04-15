@@ -2,119 +2,184 @@
 {% block content %}
 
 <style>
+    /* --- CSS VARIABLES & RESET --- */
     :root {
-        --mp-primary: #2563eb;
+        --mp-primary: #3b82f6;
+        --mp-primary-hover: #2563eb;
         --mp-dark: #0f172a;
         --mp-success: #10b981;
         --mp-danger: #ef4444;
+        --mp-warning: #f59e0b;
         --mp-bg: #f8fafc;
+        --mp-card: #ffffff;
+        --mp-border: #e2e8f0;
     }
 
-    body { background: var(--mp-bg); }
+    body { background: var(--mp-bg); font-family: 'Plus Jakarta Sans', sans-serif;}
 
     /* Flash Sale Banner */
     .flash-banner {
-        background: linear-gradient(90deg, #ef4444, #f59e0b);
-        color: white; text-align: center; padding: 10px; font-weight: 700;
-        font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase;
-        position: relative; z-index: 100;
+        background: linear-gradient(90deg, var(--mp-danger), var(--mp-warning));
+        color: white; text-align: center; padding: 12px; font-weight: 800;
+        font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;
+        position: relative; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
-    /* Floating Cart Button */
-    .floating-cart {
-        position: fixed; top: 100px; right: 30px; background: var(--mp-dark);
-        color: white; width: 60px; height: 60px; border-radius: 50%;
-        display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.2); cursor: pointer; z-index: 900;
-        transition: transform 0.3s;
+    /* --- HERO SECTION --- */
+    .marketplace-hero {
+        padding: 80px 20px; text-align: center; border-bottom: 1px solid var(--mp-border); 
+        background: var(--mp-card); position: relative; overflow: hidden;
     }
-    .floating-cart:hover { transform: scale(1.1); }
+    .hero-badge {
+        display: inline-block; background: rgba(59, 130, 246, 0.1); color: var(--mp-primary); 
+        padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 800; 
+        text-transform: uppercase; letter-spacing: 1px; border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+    .marketplace-hero h1 { font-size: 3.5rem; margin: 15px 0; color: var(--mp-dark); font-weight: 800; letter-spacing: -1px;}
+    .marketplace-hero p { font-size: 1.15rem; color: #64748b; max-width: 650px; margin: 0 auto 30px; line-height: 1.6; font-weight: 500;}
+    
+    .voice-btn { 
+        border: none; background: var(--mp-primary); color: white; border-radius: 50px; 
+        padding: 14px 30px; font-size: 0.95rem; font-weight: 800; box-shadow: 0 8px 20px rgba(37,99,235,0.3); 
+        cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 10px; 
+    }
+    .voice-btn:hover { transform: translateY(-3px); background: var(--mp-primary-hover); box-shadow: 0 12px 25px rgba(37,99,235,0.4);}
+
+    /* --- FLOATING CART --- */
+    .floating-cart {
+        position: fixed; top: 120px; right: 30px; background: var(--mp-dark);
+        color: white; width: 65px; height: 65px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+        box-shadow: 0 15px 30px rgba(15, 23, 42, 0.4); cursor: pointer; z-index: 900;
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .floating-cart:hover { transform: scale(1.1); background: var(--mp-primary); }
     .cart-badge {
         position: absolute; top: -5px; right: -5px; background: var(--mp-danger);
-        color: white; font-size: 0.8rem; font-weight: bold; width: 24px; height: 24px;
+        color: white; font-size: 0.8rem; font-weight: 800; width: 26px; height: 26px;
         border-radius: 50%; display: flex; align-items: center; justify-content: center;
-        border: 2px solid var(--mp-bg);
+        border: 3px solid var(--mp-bg); box-shadow: 0 4px 8px rgba(239, 68, 68, 0.4);
     }
 
-    /* Slide-out Cart Panel */
+    /* --- MARKETPLACE GRID --- */
+    .marketplace-grid { 
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+        gap: 35px; padding: 60px 20px; max-width: 1300px; margin: 0 auto; 
+    }
+    
+    .product-card {
+        background: var(--mp-card); border-radius: 20px; border: 1px solid var(--mp-border); padding: 30px;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); position: relative; display: flex; flex-direction: column; 
+        overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+    }
+    .product-card:hover { transform: translateY(-8px); box-shadow: 0 30px 60px rgba(15, 23, 42, 0.1); border-color: var(--mp-primary); }
+    
+    .category-tag { background: #f1f5f9; color: #475569; padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; width: fit-content; margin-bottom: 15px; letter-spacing: 0.5px;}
+    .urgency-tag { position: absolute; top: 18px; right: -35px; background: var(--mp-danger); color: white; font-size: 0.75rem; font-weight: 800; padding: 6px 40px; transform: rotate(45deg); letter-spacing: 1px; z-index: 10; box-shadow: 0 4px 10px rgba(239,68,68,0.3);}
+    
+    .product-card h3 { margin: 0 0 10px 0; color: var(--mp-dark); font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px;}
+    .social-proof { display: flex; align-items: center; gap: 4px; font-size: 0.85rem; color: var(--mp-warning); margin-bottom: 15px; }
+    .social-proof span { color: #64748b; font-weight: 700; margin-left: 6px; }
+    
+    .product-desc { color: #64748b; font-size: 0.95rem; line-height: 1.6; flex-grow: 1; font-weight: 500;}
+    .tech-stack { font-family: 'Courier New', monospace; color: #94a3b8; font-size: 0.85rem; margin: 20px 0; border-bottom: 1px dashed var(--mp-border); padding-bottom: 20px; font-weight: 600;}
+    
+    .price-container { margin: 15px 0; display: flex; align-items: baseline; gap: 12px;}
+    .price-strike { text-decoration: line-through; color: #94a3b8; font-size: 1rem; font-weight: 600;}
+    .price-current { color: var(--mp-success); font-weight: 800; font-size: 1.6rem; letter-spacing: -0.5px;}
+
+    .btn-add-cart { 
+        background: var(--mp-dark); color: white; border: none; padding: 15px; border-radius: 10px; 
+        font-weight: 800; cursor: pointer; width: 100%; transition: 0.3s; display: flex; justify-content: center; 
+        align-items: center; gap: 10px; margin-top: auto; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .btn-add-cart:hover { background: var(--mp-primary); box-shadow: 0 8px 20px rgba(59,130,246,0.3);}
+
+    /* --- SLIDE-OUT CART PANEL --- */
     .cart-overlay {
-        position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
-        z-index: 1000; display: flex; justify-content: flex-end; opacity: 0; visibility: hidden; transition: 0.3s;
+        position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(8px);
+        z-index: 2000; display: flex; justify-content: flex-end; opacity: 0; visibility: hidden; transition: 0.4s ease;
     }
     .cart-overlay.active { opacity: 1; visibility: visible; }
     
     .cart-panel {
-        width: 100%; max-width: 400px; background: white; height: 100%;
-        transform: translateX(100%); transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-        display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+        width: 100%; max-width: 450px; background: var(--mp-card); height: 100%;
+        transform: translateX(100%); transition: 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+        display: flex; flex-direction: column; box-shadow: -20px 0 50px rgba(0,0,0,0.2);
     }
     .cart-overlay.active .cart-panel { transform: translateX(0); }
 
-    .cart-header { padding: 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
-    .cart-header h2 { margin: 0; font-size: 1.5rem; color: var(--mp-dark); }
-    .cart-items { padding: 20px; overflow-y: auto; flex: 1; }
+    .cart-header { padding: 30px; border-bottom: 1px solid var(--mp-border); display: flex; justify-content: space-between; align-items: center; background: #f8fafc;}
+    .cart-header h2 { margin: 0; font-size: 1.6rem; color: var(--mp-dark); font-weight: 800; letter-spacing: -0.5px;}
+    .cart-close { background: white; border: 1px solid #cbd5e1; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #64748b; cursor: pointer; transition: 0.2s; font-size: 1.2rem;}
+    .cart-close:hover { background: #fee2e2; color: #ef4444; border-color: #fecaca; transform: rotate(90deg);}
     
-    .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f1f5f9; }
-    .cart-item-info h4 { margin: 0 0 5px 0; font-size: 1rem; color: var(--mp-dark); }
-    .cart-item-info p { margin: 0; color: var(--mp-success); font-weight: 700; }
-    .remove-item { background: none; border: none; color: var(--mp-danger); cursor: pointer; font-size: 1.2rem; }
+    .cart-items { padding: 30px; overflow-y: auto; flex: 1; background: white;}
+    .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--mp-bg); }
+    .cart-item-info h4 { margin: 0 0 8px 0; font-size: 1.1rem; color: var(--mp-dark); font-weight: 800;}
+    .cart-item-info p { margin: 0; color: var(--mp-success); font-weight: 800; font-family: monospace; font-size: 1.1rem;}
+    .remove-item { background: #fee2e2; border: none; color: var(--mp-danger); cursor: pointer; width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+    .remove-item:hover { background: #ef4444; color: white;}
 
-    .cart-footer { padding: 20px; border-top: 1px solid #e2e8f0; background: #f8fafc; }
-    .cart-total { display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 800; margin-bottom: 15px; color: var(--mp-dark); }
-    .btn-checkout { background: var(--mp-primary); color: white; width: 100%; padding: 15px; border: none; border-radius: 10px; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2); text-transform: uppercase; }
-    .btn-checkout:hover { background: #1d4ed8; transform: translateY(-2px); }
+    .cart-footer { padding: 30px; border-top: 1px solid var(--mp-border); background: #f8fafc; }
+    .cart-total { display: flex; justify-content: space-between; font-size: 1.3rem; font-weight: 800; margin-bottom: 20px; color: var(--mp-dark); }
+    .btn-checkout { background: var(--mp-primary); color: white; width: 100%; padding: 18px; border: none; border-radius: 12px; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3); text-transform: uppercase; letter-spacing: 1px; }
+    .btn-checkout:hover { background: var(--mp-primary-hover); transform: translateY(-3px); }
 
-    /* Marketplace Grid Enhancements */
-    .marketplace-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; padding: 40px 20px; max-width: 1250px; margin: 0 auto; }
-    
-    .product-card {
-        background: white; border-radius: 16px; border: 1px solid #e2e8f0; padding: 25px;
-        transition: all 0.3s; position: relative; display: flex; flex-direction: column; overflow: hidden;
-    }
-    .product-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); border-color: var(--mp-primary); }
-    
-    .category-tag { background: #f1f5f9; color: #475569; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; width: fit-content; margin-bottom: 10px; display: inline-block;}
-    
-    /* Impulse Triggers */
-    .urgency-tag { position: absolute; top: 15px; right: -30px; background: var(--mp-danger); color: white; font-size: 0.7rem; font-weight: 800; padding: 5px 35px; transform: rotate(45deg); letter-spacing: 1px; z-index: 10;}
-    .social-proof { display: flex; align-items: center; gap: 5px; font-size: 0.85rem; color: #f59e0b; margin-bottom: 10px; }
-    .social-proof span { color: #64748b; font-weight: 600; margin-left: 5px; }
-    
-    .price-container { margin: 15px 0; display: flex; align-items: baseline; gap: 10px;}
-    .price-strike { text-decoration: line-through; color: #94a3b8; font-size: 0.9rem; }
-    .price-current { color: var(--mp-success); font-weight: 800; font-size: 1.4rem; }
-
-    .btn-add-cart { background: var(--mp-dark); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: auto; }
-    .btn-add-cart:hover { background: var(--mp-primary); }
-
-    /* Audio Button */
-    .voice-btn { border: none; background: #2563eb; color: white; border-radius: 50px; padding: 12px 25px; font-size: 0.9rem; font-weight: 600; box-shadow: 0 4px 15px rgba(37,99,235,0.3); cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 10px; margin: 0 auto 30px; width: fit-content; }
-    .voice-btn:hover { transform: translateY(-2px); background: #1d4ed8; }
-
-    /* Payment Modal */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); opacity: 0; visibility: hidden; transition: 0.3s; }
+    /* --- SECURE CHECKOUT MODAL --- */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); z-index: 3000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); opacity: 0; visibility: hidden; transition: 0.4s ease; padding: 20px;}
     .modal-overlay.active { opacity: 1; visibility: visible; }
-    .modal-content { background: white; width: 90%; max-width: 500px; border-radius: 16px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); transform: scale(0.9); transition: 0.3s; max-height: 90vh; overflow-y: auto; }
-    .modal-overlay.active .modal-content { transform: scale(1); }
+    
+    .modal-content { 
+        background: white; width: 100%; max-width: 500px; border-radius: 24px; box-shadow: 0 30px 60px rgba(0,0,0,0.3); 
+        transform: scale(0.95) translateY(20px); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-height: 90vh; overflow-y: auto; 
+    }
+    .modal-overlay.active .modal-content { transform: scale(1) translateY(0); }
+
+    .modal-header { background: #f8fafc; padding: 25px 30px; border-bottom: 1px solid var(--mp-border); display: flex; justify-content: space-between; align-items: center; border-radius: 24px 24px 0 0;}
+    .modal-header h3 { margin: 0; color: var(--mp-dark); font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px;}
+    
+    .modal-body { padding: 30px; }
+    .summary-box { background: #eff6ff; padding: 20px; border-radius: 12px; border-left: 4px solid var(--mp-primary); margin-bottom: 30px; }
+    
+    .tab-container { display: flex; border-bottom: 2px solid var(--mp-border); margin-bottom: 25px; }
+    .tab-link { flex: 1; padding: 15px 10px; background: none; border: none; border-bottom: 3px solid transparent; font-weight: 800; color: var(--mp-muted); cursor: pointer; transition: 0.2s; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px;}
+    .tab-link.active { border-bottom-color: var(--mp-success); color: var(--mp-dark); }
+    .tab-link:hover:not(.active) { color: var(--mp-primary); }
+
+    /* M-Pesa Input Styling */
+    .mpesa-input-wrap { display: flex; align-items: center; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; padding: 0 15px; transition: 0.3s; margin-bottom: 15px;}
+    .mpesa-input-wrap:focus-within { border-color: var(--mp-success); background: white; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1); }
+    .mpesa-input-wrap i { color: #94a3b8; margin-right: 12px; font-size: 1.1rem; }
+    .mpesa-input-wrap input { width: 100%; border: none; background: transparent; padding: 16px 0; outline: none; color: var(--mp-dark); font-size: 1.05rem; font-weight: 700; font-family: inherit; }
+
+    .btn-pay-action { background: var(--mp-success); color: white; border: none; padding: 16px; border-radius: 10px; font-weight: 800; cursor: pointer; width: 100%; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3); transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px;}
+    .btn-pay-action:hover { background: #059669; transform: translateY(-2px); box-shadow: 0 12px 25px rgba(16, 185, 129, 0.4);}
+    .btn-pay-action:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .status-alert { font-size: 0.95rem; font-weight: 700; padding: 15px; border-radius: 8px; margin-top: 15px; display: none; text-align: center;}
+    .status-alert.success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; display: block;}
+    .status-alert.error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; display: block;}
+    .status-alert.warning { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; display: block;}
 
     @media (max-width: 768px) {
         .floating-cart { bottom: 30px; top: auto; right: 20px; }
-        .marketplace-grid { padding: 20px 15px; grid-template-columns: 1fr; }
-        .product-card { padding: 20px; }
-        .hero-section h1 { font-size: 2.2rem !important; }
+        .marketplace-grid { padding: 40px 15px; grid-template-columns: 1fr; }
+        .marketplace-hero h1 { font-size: 2.5rem; }
+        .modal-content { padding: 0; }
+        .modal-body { padding: 20px; }
     }
 </style>
 
 <div class="flash-banner">
-    ⚡ End of Quarter Sale: Save up to 35% on all Enterprise Models. Ends in <span id="countdown">14:59:59</span>
+    ⚡ High Council Directive: Save up to 35% on Enterprise Licenses. Closes in <span id="countdown">14:59:59</span>
 </div>
 
-<section class="hero-section" style="padding: 60px 20px; text-align: center; border-bottom: 1px solid #e2e8f0; background: white;">
-    <span style="display: inline-block; background: #e0e7ff; color: #4338ca; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase;">Delstarford Works Marketplace</span>
-    <h1 style="font-size: 3rem; margin: 15px 0; color: #0f172a; font-weight: 800;">Marketplace of <span style="color: #2563eb;">Intelligence</span></h1>
-    <p style="font-size: 1.1rem; color: #64748b; max-width: 650px; margin: 0 auto 25px;">Browse our portfolio of 22 production-ready AI models. Add to cart and deploy instantly to your infrastructure.</p>
-    
-    <button onclick="toggleAudio()" id="audioControl" class="voice-btn">
+<section class="marketplace-hero">
+    <span class="hero-badge gsap-hero" style="visibility: hidden;">Delstarford Works Marketplace</span>
+    <h1 class="gsap-hero" style="visibility: hidden;">The Ecosystem of <span style="color: var(--mp-primary);">Intelligence</span></h1>
+    <p class="gsap-hero" style="visibility: hidden;">Browse our portfolio of 22 production-ready algorithmic models. Secure your licenses and deploy instantly to your infrastructure.</p>
+    <button onclick="toggleAudio()" id="audioControl" class="voice-btn gsap-hero" style="visibility: hidden;">
         <i class="fas fa-volume-up"></i> Listen to Catalog Overview
     </button>
 </section>
@@ -126,272 +191,66 @@
 
 <div class="marketplace-grid" id="productGrid">
 
-    <div class="product-card" style="border-color: var(--mp-primary); background: radial-gradient(circle at top right, rgba(37,99,235,0.05), white);">
+    <div class="product-card gsap-product" style="visibility: hidden; border-color: var(--mp-primary); background: radial-gradient(circle at top right, rgba(37,99,235,0.05), white);">
         <div class="urgency-tag">HOT</div>
         <span class="category-tag">BioTech / Pharma</span>
-        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">⚡ DexaGen-AI</h3>
+        <h3>⚡ DexaGen-AI</h3>
         <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><span>(4.9)</span></div>
-        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">Neuro-Symbolic Pharmacological Engine. Simulates drug interactions in 3D using DeepChem and RDKit.</p>
-        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
-            <i class="fas fa-microchip" style="color: #3b82f6;"></i> Flask, DeepChem, 3Dmol.js
-        </div>
+        <p class="product-desc">Neuro-Symbolic Pharmacological Engine. Simulates drug interactions in 3D using DeepChem and RDKit.</p>
+        <div class="tech-stack"><i class="fas fa-microchip" style="color: var(--mp-primary);"></i> Flask, DeepChem, 3Dmol.js</div>
         <div class="price-container"><span class="price-strike">KSh 250,000</span><span class="price-current">KSh 185,000</span></div>
         <button class="btn-add-cart" onclick="addToCart('DexaGen-AI', 'KSh 185,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
     </div>
 
-    <div class="product-card">
+    <div class="product-card gsap-product" style="visibility: hidden;">
         <span class="category-tag">NLP / Theology</span>
-        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">📜 ScriptureAI</h3>
+        <h3>📜 ScriptureAI</h3>
         <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><span>(5.0)</span></div>
-        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">Semantic search engine for theological texts using Vector Embeddings and RAG (Retrieval Augmented Generation).</p>
-        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
-            <i class="fas fa-microchip" style="color: #3b82f6;"></i> Python, Vector DB, React
-        </div>
+        <p class="product-desc">Semantic search engine for theological texts using Vector Embeddings and RAG (Retrieval Augmented Generation).</p>
+        <div class="tech-stack"><i class="fas fa-microchip" style="color: var(--mp-primary);"></i> Python, Vector DB, React</div>
         <div class="price-container"><span class="price-strike">KSh 120,000</span><span class="price-current">KSh 85,000</span></div>
         <button class="btn-add-cart" onclick="addToCart('ScriptureAI', 'KSh 85,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
     </div>
 
-    <div class="product-card">
+    <div class="product-card gsap-product" style="visibility: hidden;">
         <span class="category-tag">Security / Biometrics</span>
-        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">Usherbot Biometrics</h3>
+        <h3>Usherbot Biometrics</h3>
         <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><span>(4.6)</span></div>
-        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">Fingerprint capture, embedding extraction, and robust matcher with audit logs and configurable thresholds.</p>
-        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
-            <i class="fas fa-microchip" style="color: #3b82f6;"></i> Flask, ONNX, Docker
-        </div>
+        <p class="product-desc">Fingerprint capture, embedding extraction, and robust matcher with audit logs and configurable thresholds.</p>
+        <div class="tech-stack"><i class="fas fa-microchip" style="color: var(--mp-primary);"></i> Flask, ONNX, Docker</div>
         <div class="price-container"><span class="price-strike">KSh 95,000</span><span class="price-current">KSh 65,000</span></div>
         <button class="btn-add-cart" onclick="addToCart('Usherbot Biometrics', 'KSh 65,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
     </div>
 
-    <div class="product-card">
-        <span class="category-tag">Enterprise Web</span>
-        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">Attendance Dashboard</h3>
-        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><span>(4.2)</span></div>
-        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">Web dashboard with registration logs, attendance summaries, and scheduled PDF reports.</p>
-        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
-            <i class="fas fa-microchip" style="color: #3b82f6;"></i> React, WebSockets, Redis
-        </div>
-        <div class="price-container"><span class="price-strike">KSh 60,000</span><span class="price-current">KSh 45,000</span></div>
-        <button class="btn-add-cart" onclick="addToCart('Attendance Dashboard', 'KSh 45,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
-    </div>
-
-    <div class="product-card" style="border-color: var(--mp-primary); background: radial-gradient(circle at top right, rgba(37,99,235,0.05), white);">
-        <div class="urgency-tag">HOT</div>
+    <div class="product-card gsap-product" style="visibility: hidden; border-color: var(--mp-success); background: radial-gradient(circle at top right, rgba(16, 185, 129, 0.05), white);">
+        <div class="urgency-tag" style="background: var(--mp-success);">NEW</div>
         <span class="category-tag">Smart City / IoT</span>
-        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">AI Traffic Manager</h3>
+        <h3>AI Traffic Manager</h3>
         <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><span>(4.9)</span></div>
-        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">AI-powered traffic management system with a voice assistant for seamless city navigation and routing.</p>
-        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
-            <i class="fas fa-microchip" style="color: #3b82f6;"></i> PyTorch, TensorFlow, IoT
-        </div>
+        <p class="product-desc">AI-powered traffic management system with a voice assistant for seamless city navigation and routing.</p>
+        <div class="tech-stack"><i class="fas fa-microchip" style="color: var(--mp-primary);"></i> PyTorch, TensorFlow, IoT</div>
         <div class="price-container"><span class="price-strike">KSh 300,000</span><span class="price-current">KSh 210,000</span></div>
         <button class="btn-add-cart" onclick="addToCart('AI Traffic Manager', 'KSh 210,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
     </div>
 
-    <div class="product-card">
+    <div class="product-card gsap-product" style="visibility: hidden;">
         <span class="category-tag">AgriTech</span>
-        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">Field Trial Manager</h3>
+        <h3>Field Trial Manager</h3>
         <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><span>(4.8)</span></div>
-        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">Reproducible lab-to-field experiment tracking, data ingestion, and analytics for modern agronomists.</p>
-        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
-            <i class="fas fa-microchip" style="color: #3b82f6;"></i> Django, Postgres, Plotly
-        </div>
+        <p class="product-desc">Reproducible lab-to-field experiment tracking, data ingestion, and analytics for modern agronomists.</p>
+        <div class="tech-stack"><i class="fas fa-microchip" style="color: var(--mp-primary);"></i> Django, Postgres, Plotly</div>
         <div class="price-container"><span class="price-strike">KSh 180,000</span><span class="price-current">KSh 125,000</span></div>
         <button class="btn-add-cart" onclick="addToCart('Field Trial Manager', 'KSh 125,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
     </div>
-
-    <div class="product-card">
-        <span class="category-tag">NLP / Automation</span>
-        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">Enterprise Chatbot</h3>
-        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><span>(4.3)</span></div>
-        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">AI Powered Chatbot customized for E-Learning, Agriculture, Bulk Email, and SMS Operations.</p>
-        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
-            <i class="fas fa-microchip" style="color: #3b82f6;"></i> Flask, TensorFlow, ReportLab
-        </div>
-        <div class="price-container"><span class="price-strike">KSh 70,000</span><span class="price-current">KSh 50,000</span></div>
-        <button class="btn-add-cart" onclick="addToCart('Enterprise Chatbot', 'KSh 50,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
-    </div>
-
-    <div class="product-card">
-        <span class="category-tag">GreenTech</span>
-        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">Eco-Ride App</h3>
-        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><span>(4.7)</span></div>
-        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">A logistics solution targeting climate change through the use of artificial intelligence and route optimization.</p>
-        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
-            <i class="fas fa-microchip" style="color: #3b82f6;"></i> React Native, Flask, TensorFlow
-        </div>
-        <div class="price-container"><span class="price-strike">KSh 150,000</span><span class="price-current">KSh 95,000</span></div>
-        <button class="btn-add-cart" onclick="addToCart('Eco-Ride App', 'KSh 95,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
-    </div>
-
-    <div class="product-card" style="border-color: var(--mp-primary); background: radial-gradient(circle at top right, rgba(37,99,235,0.05), white);">
-        <div class="urgency-tag">HOT</div>
-        <span class="category-tag">EcoTech / Vision</span>
-        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">KWS AI Surveillance</h3>
-        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><span>(5.0)</span></div>
-        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">Wildlife park surveillance for the early detection of poachers and abnormal environmental conditions.</p>
-        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
-            <i class="fas fa-microchip" style="color: #3b82f6;"></i> PyTorch, TensorFlow, IoT
-        </div>
-        <div class="price-container"><span class="price-strike">KSh 280,000</span><span class="price-current">KSh 195,000</span></div>
-        <button class="btn-add-cart" onclick="addToCart('KWS AI Surveillance', 'KSh 195,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
-    </div>
-
-    <div class="product-card">
-        <span class="category-tag">FinTech / AgriTech</span>
-        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">ANIPRO AI</h3>
-        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><span>(4.8)</span></div>
-        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">Banking service connecting small scale farmers to insurance for algorithmic de-risking.</p>
-        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
-            <i class="fas fa-microchip" style="color: #3b82f6;"></i> Flask, TensorFlow, PyTorch
-        </div>
-        <div class="price-container"><span class="price-strike">KSh 200,000</span><span class="price-current">KSh 160,000</span></div>
-        <button class="btn-add-cart" onclick="addToCart('ANIPRO AI', 'KSh 160,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
-    </div>
-
-    <div class="product-card">
-        <span class="category-tag">FinTech</span>
-        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">BKING Systems</h3>
-        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><span>(4.4)</span></div>
-        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">AI-Intelligent Banking system tailored for Insurers and credit facilities.</p>
-        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
-            <i class="fas fa-microchip" style="color: #3b82f6;"></i> Flask, NumPy, TensorFlow
-        </div>
-        <div class="price-container"><span class="price-strike">KSh 220,000</span><span class="price-current">KSh 175,000</span></div>
-        <button class="btn-add-cart" onclick="addToCart('BKING Systems', 'KSh 175,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
-    </div>
-
-    <div class="product-card">
-        <span class="category-tag">AgriTech / Vision</span>
-        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">Plant Pathology AI</h3>
-        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><span>(4.5)</span></div>
-        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">AI system for plant disease detection via visual analysis, with voice navigation for field workers.</p>
-        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
-            <i class="fas fa-microchip" style="color: #3b82f6;"></i> PyTorch, GTTS, IoT
-        </div>
-        <div class="price-container"><span class="price-strike">KSh 140,000</span><span class="price-current">KSh 95,000</span></div>
-        <button class="btn-add-cart" onclick="addToCart('Plant Pathology AI', 'KSh 95,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
-    </div>
-
-    <div class="product-card">
-        <span class="category-tag">AgriTech / Audio</span>
-        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">InsectAI Sensor</h3>
-        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><span>(4.3)</span></div>
-        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">An AI-powered system for intelligent insect detection using frequency sound analysis.</p>
-        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
-            <i class="fas fa-microchip" style="color: #3b82f6;"></i> TensorFlow, PyTorch, Audio AI
-        </div>
-        <div class="price-container"><span class="price-strike">KSh 130,000</span><span class="price-current">KSh 85,000</span></div>
-        <button class="btn-add-cart" onclick="addToCart('InsectAI Sensor', 'KSh 85,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
-    </div>
-
-    <div class="product-card">
-        <span class="category-tag">AgriTech / Vision</span>
-        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">Poli AI Vision</h3>
-        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><span>(4.7)</span></div>
-        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">AI-Intelligent poultry management and surveillance system to monitor flock health.</p>
-        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
-            <i class="fas fa-microchip" style="color: #3b82f6;"></i> TensorFlow, PyTorch, OpenCV
-        </div>
-        <div class="price-container"><span class="price-strike">KSh 110,000</span><span class="price-current">KSh 75,000</span></div>
-        <button class="btn-add-cart" onclick="addToCart('Poli AI Vision', 'KSh 75,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
-    </div>
-
-    <div class="product-card">
-        <span class="category-tag">IoT / Supply Chain</span>
-        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">FREEZE AI</h3>
-        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><span>(4.9)</span></div>
-        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">AI-Intelligent refrigerator maintenance for the early detection of food spoilage patterns.</p>
-        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
-            <i class="fas fa-microchip" style="color: #3b82f6;"></i> TensorFlow, IoT Sensors
-        </div>
-        <div class="price-container"><span class="price-strike">KSh 160,000</span><span class="price-current">KSh 110,000</span></div>
-        <button class="btn-add-cart" onclick="addToCart('FREEZE AI', 'KSh 110,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
-    </div>
-
-    <div class="product-card" style="border-color: var(--mp-primary); background: radial-gradient(circle at top right, rgba(37,99,235,0.05), white);">
-        <div class="urgency-tag">HOT</div>
+    
+    <div class="product-card gsap-product" style="visibility: hidden;">
         <span class="category-tag">HealthTech</span>
-        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">Smart Health AI</h3>
+        <h3>Smart Health AI</h3>
         <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><span>(4.8)</span></div>
-        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">Predicts malaria prone regions based on mosquito species and intelligently connects patients to doctors.</p>
-        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
-            <i class="fas fa-microchip" style="color: #3b82f6;"></i> Scikit-learn, TensorFlow
-        </div>
+        <p class="product-desc">Predicts malaria prone regions based on mosquito species and intelligently connects patients to doctors.</p>
+        <div class="tech-stack"><i class="fas fa-microchip" style="color: var(--mp-primary);"></i> Scikit-learn, TensorFlow</div>
         <div class="price-container"><span class="price-strike">KSh 190,000</span><span class="price-current">KSh 145,000</span></div>
         <button class="btn-add-cart" onclick="addToCart('Smart Health AI', 'KSh 145,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
-    </div>
-
-    <div class="product-card">
-        <span class="category-tag">EdTech / BioTech</span>
-        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">Reen AI</h3>
-        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><span>(4.4)</span></div>
-        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">Biochemistry education tool for visualizing drug molecules, 3D structures, and pharmacology data.</p>
-        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
-            <i class="fas fa-microchip" style="color: #3b82f6;"></i> Flask, 3D Rendering JS
-        </div>
-        <div class="price-container"><span class="price-strike">KSh 110,000</span><span class="price-current">KSh 80,000</span></div>
-        <button class="btn-add-cart" onclick="addToCart('Reen AI', 'KSh 80,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
-    </div>
-
-    <div class="product-card">
-        <span class="category-tag">EdTech</span>
-        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">LEARN AI</h3>
-        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><span>(4.7)</span></div>
-        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">Online digital college infrastructure specifically optimized for teaching Artificial Intelligence curriculums.</p>
-        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
-            <i class="fas fa-microchip" style="color: #3b82f6;"></i> PyTorch, Video SDK
-        </div>
-        <div class="price-container"><span class="price-strike">KSh 150,000</span><span class="price-current">KSh 95,000</span></div>
-        <button class="btn-add-cart" onclick="addToCart('LEARN AI', 'KSh 95,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
-    </div>
-
-    <div class="product-card">
-        <span class="category-tag">EdTech / NLP</span>
-        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">MIRA AI</h3>
-        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><span>(4.6)</span></div>
-        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">A weather-aware generative AI learning assistant that adapts study focus based on environmental context.</p>
-        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
-            <i class="fas fa-microchip" style="color: #3b82f6;"></i> Generative AI, Weather API
-        </div>
-        <div class="price-container"><span class="price-strike">KSh 100,000</span><span class="price-current">KSh 75,000</span></div>
-        <button class="btn-add-cart" onclick="addToCart('MIRA AI', 'KSh 75,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
-    </div>
-
-    <div class="product-card">
-        <span class="category-tag">Productivity AI</span>
-        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">Digital Assistant Core</h3>
-        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><span>(4.2)</span></div>
-        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">AI-powered enterprise assistant API for automated scheduling, reminders, and team task management.</p>
-        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
-            <i class="fas fa-microchip" style="color: #3b82f6;"></i> React, WebSockets, NLP
-        </div>
-        <div class="price-container"><span class="price-strike">KSh 80,000</span><span class="price-current">KSh 55,000</span></div>
-        <button class="btn-add-cart" onclick="addToCart('Digital Assistant Core', 'KSh 55,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
-    </div>
-
-    <div class="product-card">
-        <span class="category-tag">Productivity AI</span>
-        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">Smart Day Planner</h3>
-        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><span>(4.9)</span></div>
-        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">Mobile-ready AI planner that links user scheduling directly with health and wellness tracking.</p>
-        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
-            <i class="fas fa-microchip" style="color: #3b82f6;"></i> React Native, TensorFlow
-        </div>
-        <div class="price-container"><span class="price-strike">KSh 50,000</span><span class="price-current">KSh 35,000</span></div>
-        <button class="btn-add-cart" onclick="addToCart('Smart Day Planner', 'KSh 35,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
-    </div>
-
-    <div class="product-card">
-        <span class="category-tag">Social / Matching</span>
-        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">Date Me AI Alg.</h3>
-        <div class="social-proof"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><span>(4.1)</span></div>
-        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; flex-grow: 1;">A humor-based compatibility matching algorithm utilizing complex data scoring for social platforms.</p>
-        <div style="font-family: monospace; color: #94a3b8; font-size: 0.8rem; margin: 15px 0; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;">
-            <i class="fas fa-microchip" style="color: #3b82f6;"></i> JS, Similarity Scoring
-        </div>
-        <div class="price-container"><span class="price-strike">KSh 40,000</span><span class="price-current">KSh 25,000</span></div>
-        <button class="btn-add-cart" onclick="addToCart('Date Me AI Alg.', 'KSh 25,000')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
     </div>
 
 </div>
@@ -399,66 +258,75 @@
 <div class="cart-overlay" id="cartOverlay" onclick="closeCart(event)">
     <div class="cart-panel" onclick="event.stopPropagation()">
         <div class="cart-header">
-            <h2>Your Cart</h2>
-            <button onclick="toggleCart()" style="background:none; border:none; font-size: 1.5rem; cursor:pointer; color: #0f172a;">&times;</button>
+            <h2><i class="fas fa-shopping-bag" style="color: var(--mp-primary); margin-right: 10px;"></i> Order Summary</h2>
+            <button class="cart-close" onclick="toggleCart()">&times;</button>
         </div>
         <div class="cart-items" id="cartItemsContainer">
-            <p style="color: #94a3b8; text-align: center; margin-top: 50px;">Your cart is empty.</p>
+            <p style="color: #94a3b8; text-align: center; margin-top: 50px; font-weight: 600;">Your cart is currently empty.</p>
         </div>
         <div class="cart-footer">
             <div class="cart-total">
-                <span>Total:</span>
+                <span>Total Investment:</span>
                 <span id="cartTotalDisplay">KSh 0</span>
             </div>
-            <button class="btn-checkout" onclick="openCheckout()">Proceed to Checkout</button>
+            <button class="btn-checkout" onclick="openCheckout()"><i class="fas fa-lock"></i> Secure Checkout</button>
         </div>
     </div>
 </div>
 
 <div id="paymentModal" class="modal-overlay" onclick="closePaymentModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
-        <div style="background: #f8fafc; padding: 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
-            <h3 style="margin: 0; color: #0f172a; font-size: 1.2rem;"><i class="fas fa-lock" style="color: #10b981;"></i> Secure Checkout</h3>
-            <button onclick="closePaymentModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #94a3b8;">&times;</button>
+        
+        <div class="modal-header">
+            <h3><i class="fas fa-shield-check" style="color: var(--mp-success); margin-right: 8px;"></i> Encrypted Gateway</h3>
+            <button class="cart-close" onclick="closePaymentModal()">&times;</button>
         </div>
 
-        <div style="padding: 25px;">
-            <div style="background: #eff6ff; padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6; margin-bottom: 25px;">
-                <p style="margin: 0; font-size: 0.85rem; color: #1e40af; font-weight: 700; text-transform: uppercase;">Total Amount Due</p>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
-                    <strong style="font-size: 1.1rem; color: #1e3a8a;" id="checkoutItemCount">0 Items</strong>
-                    <span id="modalModelPrice" style="font-weight: 800; color: #059669; font-size: 1.4rem;">0</span>
+        <div class="modal-body">
+            <div class="summary-box">
+                <p style="margin: 0; font-size: 0.85rem; color: #1e40af; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Amount Due</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                    <strong style="font-size: 1.1rem; color: #1e3a8a;" id="checkoutItemCount">0 Licenses</strong>
+                    <span id="modalModelPrice" style="font-weight: 800; color: #059669; font-size: 1.6rem; font-family: monospace;">0</span>
                 </div>
             </div>
 
-            <div style="display: flex; border-bottom: 1px solid #e2e8f0; margin-bottom: 20px;">
-                <button class="tab-link active" onclick="openTab(event, 'tabMpesa')" style="flex: 1; padding: 10px; background: none; border: none; border-bottom: 2px solid #10b981; font-weight: 600; color: #0f172a; cursor: pointer;">M-PESA</button>
-                <button class="tab-link" onclick="openTab(event, 'tabCard')" style="flex: 1; padding: 10px; background: none; border: none; color: #64748b; cursor: pointer;">Card</button>
-                <button class="tab-link" onclick="openTab(event, 'tabPaypal')" style="flex: 1; padding: 10px; background: none; border: none; color: #64748b; cursor: pointer;">PayPal</button>
+            <div class="tab-container">
+                <button class="tab-link active" onclick="openTab(event, 'tabMpesa')">M-PESA</button>
+                <button class="tab-link" onclick="openTab(event, 'tabCard')">Bank Card</button>
+                <button class="tab-link" onclick="openTab(event, 'tabPaypal')">PayPal</button>
             </div>
 
             <div id="tabMpesa" class="tab-content" style="display: block;">
-                <p style="font-size: 0.9rem; color: #475569; margin-bottom: 10px; font-weight: 600;">M-Pesa Express Checkout:</p>
-                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                    <input type="text" id="mpesaPhone" placeholder="e.g. 0712345678" style="flex: 1; padding: 14px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; font-size: 1rem;">
-                    <button onclick="initiateMpesa()" id="btnPayMpesa" style="background: #10b981; color: white; border: none; padding: 0 25px; border-radius: 8px; font-weight: 800; cursor: pointer;">PAY</button>
+                <p style="font-size: 0.95rem; color: var(--mp-muted); margin-bottom: 15px; font-weight: 600;">Initiate Express STK Push:</p>
+                
+                <div class="mpesa-input-wrap">
+                    <i class="fas fa-phone-alt"></i>
+                    <input type="tel" id="mpesaPhone" placeholder="07XX XXX XXX" required>
                 </div>
-                <div id="mpesaStatus" style="font-size: 0.85rem; display: none; padding: 10px; border-radius: 6px; margin-top: 10px;"></div>
+                
+                <button onclick="initiateMpesa()" id="btnPayMpesa" class="btn-pay-action">
+                    <span id="mpesaBtnText">Pay via M-Pesa</span>
+                    <i class="fas fa-paper-plane" id="mpesaBtnIcon"></i>
+                </button>
+                
+                <div id="mpesaStatus" class="status-alert"></div>
             </div>
 
             <div id="tabCard" class="tab-content" style="display: none;">
                 <form id="payment-form">
-                    <div id="card-element" style="padding: 14px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 15px; background: #f8fafc;"></div>
-                    <button id="submit-stripe" style="width: 100%; background: #0f172a; color: white; padding: 14px; border: none; border-radius: 8px; font-weight: 800; cursor: pointer;">
-                        Pay Securely
+                    <div id="card-element" style="padding: 16px; border: 1px solid #cbd5e1; border-radius: 10px; margin-bottom: 20px; background: #f8fafc;"></div>
+                    <button id="submit-stripe" class="btn-pay-action" style="background: var(--mp-dark);">
+                        <i class="fas fa-lock"></i> Pay Securely
                     </button>
-                    <div id="card-errors" style="color: #ef4444; font-size: 0.85rem; margin-top: 10px;"></div>
+                    <div id="card-errors" style="color: #ef4444; font-size: 0.85rem; margin-top: 10px; font-weight: 600; text-align: center;"></div>
                 </form>
             </div>
 
             <div id="tabPaypal" class="tab-content" style="display: none;">
                 <div id="paypal-button-container"></div>
             </div>
+            
         </div>
     </div>
 </div>
@@ -467,6 +335,36 @@
 <script src="https://www.paypal.com/sdk/js?client-id={{ paypal_client_id }}&currency=USD"></script>
 
 <script>
+    // --- GSAP ENTRANCE ANIMATIONS ---
+    document.addEventListener("DOMContentLoaded", () => {
+        if(typeof gsap === 'undefined') {
+            document.querySelectorAll('.gsap-hero, .gsap-product').forEach(el => el.style.visibility = 'visible');
+            return;
+        }
+
+        const tl = gsap.timeline();
+        
+        // Hero Content
+        tl.fromTo(".gsap-hero", 
+            { y: 20, autoAlpha: 0 }, 
+            { y: 0, autoAlpha: 1, stagger: 0.1, duration: 0.8, ease: "power3.out" }
+        );
+
+        // Product Grid Stagger
+        if (typeof ScrollTrigger !== 'undefined') {
+            gsap.registerPlugin(ScrollTrigger);
+            gsap.fromTo(".gsap-product", 
+                { y: 50, autoAlpha: 0, scale: 0.95 },
+                {
+                    scrollTrigger: { trigger: "#productGrid", start: "top 85%" },
+                    y: 0, autoAlpha: 1, scale: 1, stagger: 0.1, duration: 0.7, ease: "back.out(1.2)"
+                }
+            );
+        } else {
+            gsap.set(".gsap-product", { autoAlpha: 1 });
+        }
+    });
+
     // --- 1. SHOPPING CART LOGIC ---
     let cart = JSON.parse(localStorage.getItem('delstarfordCart')) || [];
     let cartTotalValue = 0;
@@ -482,8 +380,9 @@
         updateCartUI();
         
         const cartIcon = document.querySelector('.floating-cart');
-        cartIcon.style.transform = 'scale(1.3)';
-        setTimeout(() => cartIcon.style.transform = 'scale(1)', 200);
+        if(typeof gsap !== 'undefined') {
+            gsap.fromTo(cartIcon, {scale: 1.3}, {scale: 1, duration: 0.4, ease: "back.out(3)"});
+        }
         
         toggleCart(true);
     }
@@ -504,7 +403,7 @@
         document.getElementById('cartTotalDisplay').innerText = "KSh " + cartTotalValue.toLocaleString();
 
         if (cart.length === 0) {
-            container.innerHTML = '<p style="color: #94a3b8; text-align: center; margin-top: 50px;">Your cart is empty.</p>';
+            container.innerHTML = '<p style="color: #94a3b8; text-align: center; margin-top: 50px; font-weight: 600;"><i class="fas fa-box-open" style="font-size: 2rem; margin-bottom: 10px; display: block; opacity: 0.5;"></i> Your cart is empty.</p>';
             return;
         }
 
@@ -514,7 +413,7 @@
                     <h4>${item.name}</h4>
                     <p>KSh ${item.price.toLocaleString()}</p>
                 </div>
-                <button class="remove-item" onclick="removeFromCart(${index})"><i class="fas fa-trash-alt"></i></button>
+                <button class="remove-item" onclick="removeFromCart(${index})" title="Remove"><i class="fas fa-trash-alt"></i></button>
             </div>
         `).join('');
     }
@@ -531,18 +430,21 @@
 
     updateCartUI();
 
-    // --- 2. CHECKOUT MODAL LOGIC ---
+    // --- 2. SECURE CHECKOUT MODAL LOGIC ---
     function openCheckout() {
-        if (cart.length === 0) return alert("Your cart is empty!");
+        if (cart.length === 0) return alert("Your cart is empty. Add a model to proceed.");
         document.getElementById('cartOverlay').classList.remove('active');
         
-        document.getElementById('checkoutItemCount').innerText = cart.length + (cart.length > 1 ? " Items" : " Item");
+        document.getElementById('checkoutItemCount').innerText = cart.length + (cart.length > 1 ? " Licenses" : " License");
         document.getElementById('modalModelPrice').innerText = "KSh " + cartTotalValue.toLocaleString();
         document.getElementById('paymentModal').classList.add('active');
     }
 
     function closePaymentModal(e) {
-        if (!e || e.target.classList.contains('modal-overlay')) document.getElementById('paymentModal').classList.remove('active');
+        if (!e || e.target.classList.contains('modal-overlay')) {
+            document.getElementById('paymentModal').classList.remove('active');
+            resetMpesaUI();
+        }
     }
 
     function openTab(evt, tabName) {
@@ -550,27 +452,13 @@
         for (let i = 0; i < tabcontent.length; i++) tabcontent[i].style.display = "none";
         
         const tablinks = document.getElementsByClassName("tab-link");
-        for (let i = 0; i < tablinks.length; i++) {
-            tablinks[i].style.borderBottom = "none";
-            tablinks[i].style.color = "#64748b";
-        }
+        for (let i = 0; i < tablinks.length; i++) tablinks[i].classList.remove("active");
         
         document.getElementById(tabName).style.display = "block";
-        evt.currentTarget.style.borderBottom = "2px solid #10b981";
-        evt.currentTarget.style.color = "#0f172a";
+        evt.currentTarget.classList.add("active");
     }
 
-    // Fake Countdown Timer for FOMO
-    let time = 14 * 3600 + 59 * 60 + 59;
-    setInterval(() => {
-        const h = Math.floor(time / 3600).toString().padStart(2, '0');
-        const m = Math.floor((time % 3600) / 60).toString().padStart(2, '0');
-        const s = (time % 60).toString().padStart(2, '0');
-        document.getElementById('countdown').innerText = `${h}:${m}:${s}`;
-        time--;
-    }, 1000);
-
-    // --- 3. SPEECH SYNTHESIS (Audio Reader) ---
+    // --- 3. SPEECH SYNTHESIS (Voice Overview) ---
     let isSpeaking = false;
     const synth = window.speechSynthesis;
 
@@ -580,11 +468,11 @@
             synth.cancel();
             isSpeaking = false;
             btn.innerHTML = '<i class="fas fa-volume-up"></i> Listen to Catalog Overview';
-            btn.style.background = "#2563eb";
+            btn.style.background = "var(--mp-primary)";
         } else {
             isSpeaking = true;
             btn.innerHTML = '<i class="fas fa-volume-mute"></i> Stop Listening';
-            btn.style.background = "#ef4444";
+            btn.style.background = "var(--mp-danger)";
             speakProjects();
         }
     }
@@ -595,104 +483,189 @@
         
         const cards = document.querySelectorAll('.product-card');
         cards.forEach((card, index) => {
-            // Read only the first 6 to keep it short and sweet
-            if(index < 6) { 
-                const title = card.querySelector('h3')?.innerText;
+            if(index < 5) { // Read first 5 to keep it concise
+                const title = card.querySelector('h3')?.innerText.replace(/[^\w\s]/gi, ''); // Remove emojis for TTS
                 const price = card.querySelector('.price-current')?.innerText;
                 textToRead += `System: ${title}. Enterprise License: ${price}. `;
             }
         });
-        textToRead += "Browse the rest of the 22 models below. Add desired models to your cart to checkout.";
+        textToRead += "Browse the rest of the catalog below. Add desired models to your cart to securely checkout.";
         
         const utterance = new SpeechSynthesisUtterance(textToRead);
-        utterance.rate = 0.9;
+        utterance.rate = 0.95;
         utterance.onend = function() {
             isSpeaking = false;
             btn.innerHTML = '<i class="fas fa-volume-up"></i> Listen to Catalog Overview';
-            btn.style.background = "#2563eb";
+            btn.style.background = "var(--mp-primary)";
         };
         synth.speak(utterance);
     }
 
-    // --- 4. PAYMENT API INTEGRATIONS ---
-    function initiateMpesa() {
-        const phone = document.getElementById('mpesaPhone').value;
+    // Fake Countdown Timer
+    let time = 14 * 3600 + 59 * 60 + 59;
+    setInterval(() => {
+        const h = Math.floor(time / 3600).toString().padStart(2, '0');
+        const m = Math.floor((time % 3600) / 60).toString().padStart(2, '0');
+        const s = (time % 60).toString().padStart(2, '0');
+        const countEl = document.getElementById('countdown');
+        if(countEl) countEl.innerText = `${h}:${m}:${s}`;
+        time--;
+    }, 1000);
+
+    // --- 4. M-PESA REAL-TIME POLLING INTEGRATION ---
+    let mpesaPollInterval;
+
+    function resetMpesaUI() {
         const btn = document.getElementById('btnPayMpesa');
         const status = document.getElementById('mpesaStatus');
-
-        if(phone.length < 10) return alert("Please enter a valid phone number.");
-
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-        status.style.display = 'block';
-        status.innerText = "Initiating Secure STK Push...";
-        status.style.background = "#fffbeb"; status.style.color = "#d97706";
-
-        fetch('/pay', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ phone: phone, amount: cartTotalValue, items: cart })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.ResponseCode === "0") {
-                status.innerHTML = "✅ <b>Authorization Sent!</b> Check your phone to enter M-Pesa PIN.";
-                status.style.background = "#ecfdf5"; status.style.color = "#059669";
-                cart = []; saveCart(); updateCartUI();
-            } else {
-                throw new Error(data.errorMessage || "M-Pesa API Failed");
-            }
-        })
-        .catch(err => {
-            status.innerHTML = "❌ " + err.message;
-            status.style.background = "#fef2f2"; status.style.color = "#dc2626";
-            btn.innerText = "PAY";
-            btn.disabled = false;
-        });
+        btn.disabled = false;
+        document.getElementById('mpesaBtnText').innerText = "Pay via M-Pesa";
+        document.getElementById('mpesaBtnIcon').className = "fas fa-paper-plane";
+        status.style.display = 'none';
+        if(mpesaPollInterval) clearInterval(mpesaPollInterval);
     }
 
+    async function initiateMpesa() {
+        const phone = document.getElementById('mpesaPhone').value.trim();
+        const btn = document.getElementById('btnPayMpesa');
+        const btnText = document.getElementById('mpesaBtnText');
+        const btnIcon = document.getElementById('mpesaBtnIcon');
+        const status = document.getElementById('mpesaStatus');
+
+        if(phone.length < 9) {
+            status.innerHTML = "<i class='fas fa-exclamation-triangle'></i> Please enter a valid phone number.";
+            status.className = "status-alert error";
+            return;
+        }
+
+        // 1. Loading State
+        btn.disabled = true;
+        btnText.innerText = "Connecting to Safaricom...";
+        btnIcon.className = "fas fa-circle-notch fa-spin";
+        status.style.display = 'none';
+
+        try {
+            // 2. Trigger STK Push
+            const response = await fetch('/pay', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ phone: phone, amount: cartTotalValue, items: cart })
+            });
+            
+            const data = await response.json();
+
+            if (response.ok && data.ResponseCode === "0") {
+                
+                // 3. Prompt Sent UI
+                status.innerHTML = "<i class='fas fa-mobile-alt'></i> <b>Prompt Sent!</b> Check your phone and enter your M-Pesa PIN.";
+                status.className = "status-alert warning";
+                btnText.innerText = "Awaiting PIN...";
+                btnIcon.className = "fas fa-lock";
+                
+                // 4. START BACKEND POLLING
+                const checkoutId = data.CheckoutRequestID;
+                let pollCount = 0;
+                const maxPolls = 20; // 60 seconds timeout
+                
+                mpesaPollInterval = setInterval(async () => {
+                    pollCount++;
+                    
+                    try {
+                        const statusRes = await fetch(`/check-payment-status/${checkoutId}`);
+                        if(!statusRes.ok) return; 
+                        
+                        const statusData = await statusRes.json();
+                        
+                        if (statusData.status === 'Payment Successful') {
+                            clearInterval(mpesaPollInterval);
+                            status.innerHTML = "<i class='fas fa-check-circle'></i> <b>Payment Received!</b> Redirecting to your dashboard...";
+                            status.className = "status-alert success";
+                            btnText.innerText = "Success";
+                            btnIcon.className = "fas fa-check";
+                            cart = []; saveCart(); updateCartUI();
+                            
+                            setTimeout(() => { window.location.href = "/dashboard"; }, 2000);
+                            
+                        } else if (statusData.status === 'Payment Failed') {
+                            clearInterval(mpesaPollInterval);
+                            status.innerHTML = `<i class='fas fa-times-circle'></i> Payment Failed: ${statusData.failure_reason || 'Transaction cancelled.'}`;
+                            status.className = "status-alert error";
+                            
+                            btn.disabled = false;
+                            btnText.innerText = "Try Again";
+                            btnIcon.className = "fas fa-redo";
+                        }
+                        
+                        if (pollCount >= maxPolls) {
+                            clearInterval(mpesaPollInterval);
+                            status.innerHTML = "<i class='fas fa-clock'></i> Request timed out. Did you receive the prompt?";
+                            status.className = "status-alert error";
+                            btn.disabled = false;
+                            btnText.innerText = "Try Again";
+                            btnIcon.className = "fas fa-redo";
+                        }
+                    } catch (err) { console.error("Poll Error", err); }
+                }, 3000);
+
+            } else {
+                throw new Error(data.error || data.errorMessage || "M-Pesa API Failed");
+            }
+        } catch (error) {
+            console.error(error);
+            status.innerHTML = `<i class='fas fa-exclamation-triangle'></i> ${error.message}`;
+            status.className = "status-alert error";
+            btn.disabled = false;
+            btnText.innerText = "Pay via M-Pesa";
+            btnIcon.className = "fas fa-paper-plane";
+        }
+    }
+
+    // --- 5. STRIPE INTEGRATION ---
     if (typeof Stripe !== 'undefined' && '{{ stripe_publishable_key }}' !== '') {
         const stripe = Stripe('{{ stripe_publishable_key }}');
         const elements = stripe.elements();
-        const card = elements.create('card', { style: { base: { fontSize: '16px', color: '#0f172a' } } });
+        const card = elements.create('card', { style: { base: { fontSize: '16px', color: '#0f172a', fontFamily: '"Plus Jakarta Sans", sans-serif' } } });
         card.mount('#card-element');
 
         document.getElementById('payment-form').addEventListener('submit', async (event) => {
             event.preventDefault();
             const btn = document.getElementById('submit-stripe');
-            btn.disabled = true; btn.innerText = "Processing...";
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...';
 
             try {
                 const res = await fetch('/create-payment-intent', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ amount: cartTotalValue })
+                    body: JSON.stringify({ amount: cartTotalValue }) // Stripe expects raw amount for KES
                 });
                 const { clientSecret } = await res.json();
                 const result = await stripe.confirmCardPayment(clientSecret, { payment_method: { card: card } });
 
                 if (result.error) throw result.error;
                 
-                alert("Payment Successful! Licenses added to your dashboard.");
+                alert("Payment Successful! Licenses have been deployed to your dashboard.");
                 cart = []; saveCart(); updateCartUI(); closePaymentModal();
+                window.location.href = "/dashboard";
                 
             } catch(e) {
                 document.getElementById('card-errors').textContent = e.message;
-                btn.disabled = false; btn.innerText = "Pay Securely";
+                btn.disabled = false; btn.innerHTML = '<i class="fas fa-lock"></i> Pay Securely';
             }
         });
     }
 
+    // --- 6. PAYPAL INTEGRATION ---
     if(typeof paypal !== 'undefined') {
         paypal.Buttons({
             createOrder: function(data, actions) {
-                const usdAmount = (cartTotalValue / 130).toFixed(2);
-                return actions.order.create({ purchase_units: [{ amount: { value: usdAmount }, description: "AI Lab Order" }] });
+                const usdAmount = (cartTotalValue / 130).toFixed(2); // Approximate conversion
+                return actions.order.create({ purchase_units: [{ amount: { value: usdAmount }, description: "Delstarford AI Licenses" }] });
             },
             onApprove: function(data, actions) {
                 return actions.order.capture().then(function(details) {
-                    alert('Transaction completed by ' + details.payer.name.given_name);
+                    alert('Transaction securely completed by ' + details.payer.name.given_name);
                     cart = []; saveCart(); updateCartUI(); closePaymentModal();
+                    window.location.href = "/dashboard";
                 });
             }
         }).render('#paypal-button-container');

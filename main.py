@@ -211,7 +211,7 @@ MPESA_CALLBACK_URL = os.environ.get('CALLBACK_URL')
 
 def get_mpesa_access_token():
     """Authenticates with Daraja to get a temporary access token."""
-    api_url = "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
+    api_url = "https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
     try:
         # HTTPBasicAuth automatically handles the required Base64 encoding of Key:Secret
         response = requests.get(api_url, auth=HTTPBasicAuth(MPESA_CONSUMER_KEY, MPESA_CONSUMER_SECRET))
@@ -285,11 +285,11 @@ def pay():
         "PartyB": MPESA_SHORT_CODE,
         "PhoneNumber": formatted_phone, 
         "CallBackURL": MPESA_CALLBACK_URL,
-        "AccountReference": "D.S.W LTD",
+        "AccountReference": "WORKS LTD",
         "TransactionDesc": f"Order of {len(cart_items)} AI Models"
     }
 
-    stk_url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
+    stk_url = "https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
     
     try:
         response = requests.post(stk_url, json=payload, headers=headers)
@@ -367,7 +367,25 @@ def callback():
         print("Error processing callback:", e)
         
     return "OK"
-
+@app.route('/check-payment-status/<checkout_id>', methods=['GET'])
+def check_payment_status(checkout_id):
+    """Allows the frontend to poll the status of an M-Pesa transaction"""
+    try:
+        payment_ref = db.reference(f'payments/initiated/{checkout_id}')
+        payment_data = payment_ref.get()
+        
+        if not payment_data:
+            return jsonify({"status": "Not Found"}), 404
+            
+        return jsonify({
+            "status": payment_data.get('status', 'Pending Verification'),
+            "failure_reason": payment_data.get('failure_reason', '')
+        })
+    except Exception as e:
+        print(f"Status Check Error: {e}")
+        return jsonify({"error": str(e)}), 500
+    
+    
 # --- STRIPE PAYMENT INTENT ---
 @app.route('/create-payment-intent', methods=['POST'])
 def create_payment_intent():

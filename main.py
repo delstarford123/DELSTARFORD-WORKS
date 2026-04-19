@@ -178,9 +178,104 @@ def login(): return render_template('login.html')
 @app.route('/register')
 def register_page(): return render_template('register.html')
 
-@app.route('/register2')
-def register2_page(): return render_template('register2.html')
+# ==============================================================================
+# TEAM ONBOARDING & REGISTRATION ROUTES
+# ==============================================================================
 
+@app.route('/register2', methods=['GET'])
+def team_onboarding():
+    """
+    Serves the Enterprise Team & Partner Application Portal.
+    """
+    return render_template('register2.html')
+
+
+@app.route('/submit-registration', methods=['POST'])
+def submit_registration():
+    """
+    Processes the cryptographic team application. 
+    Handles file size validations and triggers the frontend fallback if payload limits are exceeded.
+    """
+    try:
+        data = request.form
+        role = data.get('role', 'Applicant')
+        email = data.get('email')
+        full_name = data.get('full_name')
+        user_id = f"USR-{random.randint(10000, 99999)}"
+        
+        # 1. FILE PAYLOAD VALIDATION (Triggers Fallback if too large)
+        # Check total size of uploaded files to prevent server memory crashes
+        total_file_size = 0
+        for file_key in ['doc_id', 'doc_kra', 'doc_photo']:
+            file = request.files.get(file_key)
+            if file:
+                file.seek(0, os.SEEK_END) # Go to end of file to get size
+                total_file_size += file.tell()
+                file.seek(0) # Reset file pointer for later use
+        
+        # If payload is over ~10MB, reject it with a 413 error.
+        # This explicitly triggers the beautiful `mailto:` fallback we built in register2.html
+        if total_file_size > 10 * 1024 * 1024:
+            logger.warning(f"Payload too large ({total_file_size} bytes) for {email}. Triggering client fallback.")
+            return jsonify({"success": False, "message": "Payload size exceeded limit."}), 413
+
+        # 2. BUILD USER PROFILE
+        user_profile = {
+            'user_id': user_id, 
+            'full_name': full_name,
+            'email': email, 
+            'role': role,
+            'dob': data.get('dob'),
+            'nationality': data.get('nationality'),
+            'phone': data.get('phone'),
+            'address': data.get('address'),
+            'skills': data.get('skills', 'N/A'),
+            'linkedin': data.get('linkedin', ''),
+            'portfolio': data.get('portfolio', ''),
+            'payment_method': data.get('payment_method'),
+            'status': 'Pending Review', 
+            'timestamp': str(datetime.datetime.now())
+        }
+
+        # Append specific financial node data based on selection
+        if data.get('payment_method') == 'bank':
+            user_profile.update({
+                'bank_name': data.get('bank_name'), 
+                'bank_branch': data.get('bank_branch'), 
+                'bank_acc_name': data.get('bank_acc_name'), 
+                'bank_acc_num': data.get('bank_acc_num')
+            })
+        else:
+            user_profile.update({
+                'mobile_provider': data.get('mobile_provider'), 
+                'mobile_number': data.get('mobile_number')
+            })
+
+        # 3. SAVE TEXT DATA TO FIREBASE REALTIME DB
+        db.reference(f'members/{user_id}').set(user_profile)
+
+        # 4. EMAIL NOTIFICATIONS (Optional but recommended)
+        # Notify the High Council
+        admin_subject = f"New Team Application: {full_name} ({role})"
+        admin_body = f"""
+        <h2>New Application Received</h2>
+        <p><strong>Name:</strong> {full_name}</p>
+        <p><strong>Role:</strong> {role}</p>
+        <p><strong>Email:</strong> {email}</p>
+        <p>Please log in to the admin dashboard or check Firebase to view full details.</p>
+        """
+        send_email_html(SENDER_EMAIL, admin_subject, admin_body)
+
+        # 5. SUCCESS RESPONSE
+        return jsonify({"success": True, "message": "Profile secured and transmitted."})
+
+    except Exception as e:
+        logger.error(f"Registration Route Error: {e}")
+        # A 500 error will securely trigger the frontend fallback mechanism
+        return jsonify({"success": False, "message": "Transmission failed. Fallback required."}), 500
+    
+    
+    
 @app.route('/support')
 def support(): return render_template('support.html')
 
@@ -482,39 +577,6 @@ def custom_solution():
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
-@app.route('/submit-registration', methods=['POST'])
-def submit_registration():
-    try:
-        data = request.form
-        role = data.get('role', 'Client')
-        email = data.get('email')
-        user_id = f"USR-{random.randint(10000, 99999)}"
-        
-        user_profile = {
-            'user_id': user_id, 'full_name': data.get('full_name'),
-            'email': email, 'role': role,
-            'status': 'Pending Review', 'timestamp': str(datetime.datetime.now())
-        }
-
-        if role in ['Partner', 'Developer']:
-            user_profile.update({'dob': data.get('dob'), 'nationality': data.get('nationality'), 'address': data.get('address'), 'phone': data.get('phone'), 'desired_position': data.get('desired_position'), 'skills': data.get('skills'), 'linkedin': data.get('linkedin'), 'github': data.get('github'), 'portfolio': data.get('portfolio')})
-        if role == 'Developer':
-            user_profile.update({'payment_method': data.get('payment_method'), 'bank_info': data.get('bank_info'), 'mpesa_info': data.get('mpesa_info')})
-
-        db.reference(f'members/{user_id}').set(user_profile)
-
-        # File Upload handling
-        uploaded_files = []
-        for file_key in ['doc_id', 'doc_kra', 'doc_photo']:
-            file = request.files.get(file_key)
-            if file and file.filename:
-                filename = secure_filename(file.filename)
-                uploaded_files.append({'name': f"{user_id}_{filename}", 'data': file.read()})
-
-        return jsonify({"success": True, "message": "Profile saved to database."})
-    except Exception as e:
-        print(f"Registration Error: {e}")
-        return jsonify({"success": False, "message": str(e)}), 500
 
 # --- CONTACT FORM ROUTE ---
 @app.route('/contact', methods=['GET', 'POST'])

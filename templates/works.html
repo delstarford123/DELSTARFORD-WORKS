@@ -1,9 +1,39 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<!-- NEW CLIENT PORTFOLIO SECTION -->
+<section class="section-padding text-center" style="background: #f8fafc; color: var(--dark); border-bottom: 1px solid var(--border);">
+    <div class="container">
+        <h2 style="font-size: 2.5rem; margin-bottom: 20px; font-weight: 800;">Featured Client Work</h2>
+        <p style="color: #64748b; max-width: 600px; margin: 0 auto 40px; font-size: 1.1rem;">A selection of high-impact enterprise and web solutions deployed for our partners.</p>
+        
+        <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 40px;">
+            <!-- Client Project 1 -->
+            <div style="background: white; border-radius: 12px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: transform 0.3s; cursor: pointer;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+                <div style="width: 60px; height: 60px; background: #eff6ff; color: #3b82f6; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 20px;">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h3 style="margin-bottom: 15px;">Find Your Match</h3>
+                <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 20px;">An intelligent, AI-driven matchmaking platform designed with semantic search and secure user verification.</p>
+                <a href="https://www.findyourmatch.com" target="_blank" style="font-weight: 700; color: #3b82f6; text-decoration: none;">www.findyourmatch.com <i class="fas fa-external-link-alt" style="font-size: 0.8rem; margin-left: 5px;"></i></a>
+            </div>
+
+            <!-- Client Project 2 -->
+            <div style="background: white; border-radius: 12px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: transform 0.3s; cursor: pointer;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+                <div style="width: 60px; height: 60px; background: #ecfdf5; color: #10b981; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 20px;">
+                    <i class="fas fa-home"></i>
+                </div>
+                <h3 style="margin-bottom: 15px;">House Hunters</h3>
+                <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 20px;">A comprehensive real estate portal featuring predictive property valuation and an automated viewing scheduler.</p>
+                <a href="https://www.househunters.co.ke" target="_blank" style="font-weight: 700; color: #10b981; text-decoration: none;">www.househunters.co.ke <i class="fas fa-external-link-alt" style="font-size: 0.8rem; margin-left: 5px;"></i></a>
+            </div>
+        </div>
+    </div>
+</section>
+
 <section class="section-padding text-center" style="background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%); color: var(--white);">
     <div class="container">
-        <h1 style="font-size: 4.5rem; color: var(--white); margin-bottom: 20px;">Our Portfolio</h1>
+        <h1 style="font-size: 4.5rem; color: var(--white); margin-bottom: 20px;">Internal Architectures</h1>
         <p style="font-size: 1.2rem; color: #cbd5e1; max-width: 700px; margin: 0 auto 30px;">A showcase of <span id="projectCountDisplay" style="color: var(--primary); font-weight: 800;">0</span> high-performance deployments across our five specialized infrastructure silos.</p>
         
         <div class="flex-center">

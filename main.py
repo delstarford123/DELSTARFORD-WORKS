@@ -182,6 +182,9 @@ def location(): return render_template('location.html')
 @app.route('/about')
 def about(): return render_template('about.html')
 
+@app.route('/works')
+def works(): return render_template('works.html')
+
 @app.route('/privacy')
 def privacy(): return render_template('privacy.html')
 

@@ -333,7 +333,48 @@
     <button id="fab-pay" class="fab-pay-btn" onclick="toggleQuickPay()" aria-label="Make a Payment">
         <i class="fas fa-wallet"></i>
         <span class="fab-text">Quick Pay</span>
+        <span class="fab-tooltip">Instant M-Pesa Payment</span>
     </button>
+
+    <!-- MASHA Chatbot Button -->
+    <button id="fab-masha" class="fab-masha-btn" onclick="toggleMasha()" aria-label="Chat with MASHA">
+        <i class="fas fa-robot"></i>
+        <span class="fab-text">MASHA</span>
+        <span class="fab-tooltip">Chat with AI Assistant</span>
+    </button>
+
+    <!-- MASHA Chat Window -->
+    <div id="mashaWindow" class="masha-window">
+        <div class="masha-header">
+            <div class="masha-avatar">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="masha-info">
+                <h3>MASHA</h3>
+                <p><span class="status-dot"></span> Always Online</p>
+            </div>
+            <button class="masha-close" onclick="toggleMasha()">&times;</button>
+        </div>
+        <div class="masha-body" id="mashaBody">
+            <div class="masha-msg bot">
+                <div class="msg-content">
+                    Hello! I'm <strong>MASHA</strong>, your Delstarford Works AI assistant. 
+                    <br><br>
+                    <strong>How to talk to me:</strong>
+                    <ul>
+                        <li>Ask about our <b>Services</b> or <b>Pricing</b>.</li>
+                        <li>Inquire about <b>AI Models</b> in our lab.</li>
+                        <li>Ask for <b>Technical Support</b> or help with the <b>Dashboard</b>.</li>
+                    </ul>
+                    How can I help you today?
+                </div>
+            </div>
+        </div>
+        <div class="masha-footer">
+            <input type="text" id="mashaInput" placeholder="Type a message..." onkeypress="handleMashaKey(event)">
+            <button onclick="sendMashaMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
 
     <div id="quickPayOverlay" class="qp-overlay" onclick="toggleQuickPay(event)">
         <div class="qp-card" onclick="event.stopPropagation()">
@@ -395,11 +436,11 @@
     </div>
 
     <style>
-        /* --- FLOATING BUTTON --- */
+        /* --- FLOATING BUTTONS --- */
         .fab-pay-btn {
             position: fixed;
             bottom: 30px;
-            right: 30px;
+            left: 30px;
             background: #10b981;
             color: white;
             border: none;
@@ -422,6 +463,117 @@
             box-shadow: 0 15px 35px rgba(16, 185, 129, 0.5);
         }
         .fab-pay-btn i { font-size: 1.2rem; }
+
+        .fab-masha-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 25px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+            z-index: 9998;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .fab-masha-btn:hover {
+            transform: translateY(-5px);
+            background: #1d4ed8;
+            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.5);
+        }
+        .fab-masha-btn i { font-size: 1.2rem; }
+
+        /* --- TOOLTIPS --- */
+        .fab-tooltip {
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: #0f172a;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            pointer-events: none;
+        }
+        .fab-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #0f172a;
+        }
+        .fab-pay-btn:hover .fab-tooltip,
+        .fab-masha-btn:hover .fab-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* --- MASHA WINDOW --- */
+        .masha-window {
+            position: fixed; bottom: 100px; right: 30px; width: 350px; height: 500px;
+            background: #fff; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            z-index: 9999; display: flex; flex-direction: column; overflow: hidden;
+            opacity: 0; visibility: hidden; transform: translateY(20px); transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        .masha-window.active { opacity: 1; visibility: visible; transform: translateY(0); }
+
+        .masha-header {
+            background: #3b82f6; color: #fff; padding: 20px; display: flex; align-items: center; gap: 15px;
+        }
+        .masha-avatar {
+            width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+        }
+        .masha-info h3 { margin: 0; font-size: 1.1rem; font-weight: 800; }
+        .masha-info p { margin: 0; font-size: 0.75rem; opacity: 0.9; display: flex; align-items: center; gap: 5px; }
+        .status-dot { width: 8px; height: 8px; background: #10b981; border-radius: 50%; display: inline-block; }
+        .masha-close { background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; margin-left: auto; }
+
+        .masha-body { flex: 1; padding: 20px; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 15px; }
+        .masha-msg { max-width: 85%; padding: 12px 16px; border-radius: 15px; font-size: 0.9rem; line-height: 1.4; }
+        .masha-msg.bot { align-self: flex-start; background: #fff; color: #0f172a; border-bottom-left-radius: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .masha-msg.user { align-self: flex-end; background: #3b82f6; color: #fff; border-bottom-right-radius: 2px; }
+        .msg-content ul { margin: 10px 0 0 15px; padding: 0; }
+        
+        .msg-content a {
+            color: #3b82f6;
+            font-weight: 800;
+            text-decoration: none;
+            border-bottom: 2px solid rgba(59, 130, 246, 0.2);
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+        .msg-content a:hover {
+            color: #1d4ed8;
+            border-bottom-color: #1d4ed8;
+            transform: translateY(-1px);
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+        }
+
+        .masha-footer { padding: 15px; background: #fff; border-top: 1px solid #f1f5f9; display: flex; gap: 10px; }
+        .masha-footer input { flex: 1; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 15px; outline: none; font-family: inherit; }
+        .masha-footer input:focus { border-color: #3b82f6; }
+        .masha-footer button { background: #3b82f6; color: #fff; border: none; width: 40px; height: 40px; border-radius: 10px; cursor: pointer; transition: 0.2s; }
+        .masha-footer button:hover { background: #1d4ed8; }
 
         /* --- MODAL OVERLAY --- */
         .qp-overlay {
@@ -659,6 +811,56 @@
                     document.getElementById('qp-submit').disabled = false;
                 }, 300);
             }
+        }
+
+        // --- MASHA CHATBOT LOGIC ---
+        function toggleMasha() {
+            const window = document.getElementById('mashaWindow');
+            window.classList.toggle('active');
+            if(window.classList.contains('active')) {
+                document.getElementById('mashaInput').focus();
+            }
+        }
+
+        function handleMashaKey(e) {
+            if (e.key === 'Enter') sendMashaMessage();
+        }
+
+        async function sendMashaMessage() {
+            const input = document.getElementById('mashaInput');
+            const body = document.getElementById('mashaBody');
+            const message = input.value.trim();
+            
+            if (!message) return;
+
+            // Add User Message
+            const userMsg = document.createElement('div');
+            userMsg.className = 'masha-msg user';
+            userMsg.innerHTML = `<div class="msg-content">${message}</div>`;
+            body.appendChild(userMsg);
+            
+            input.value = '';
+            body.scrollTop = body.scrollHeight;
+
+            // Add Loading State
+            const botMsg = document.createElement('div');
+            botMsg.className = 'masha-msg bot';
+            botMsg.innerHTML = `<div class="msg-content"><i class="fas fa-ellipsis-h anim-pulse"></i> Thinking...</div>`;
+            body.appendChild(botMsg);
+            body.scrollTop = body.scrollHeight;
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: message })
+                });
+                const result = await response.json();
+                botMsg.innerHTML = `<div class="msg-content">${result.response}</div>`;
+            } catch (err) {
+                botMsg.innerHTML = `<div class="msg-content">I'm having trouble connecting right now. Please try again later.</div>`;
+            }
+            body.scrollTop = body.scrollHeight;
         }
 
         document.getElementById('quickPayForm').onsubmit = async (e) => {

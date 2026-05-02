@@ -18,6 +18,8 @@ from dotenv import load_dotenv
 import firebase_admin
 from firebase_admin import credentials, db, auth as firebase_auth
 
+from chatbot.scripts.predict import ChatbotPredictor
+
 # ==============================================================================
 # 1. CONFIGURATION & SETUP
 # ==============================================================================
@@ -26,6 +28,20 @@ from firebase_admin import credentials, db, auth as firebase_auth
 load_dotenv()
 
 app = Flask(__name__)
+
+# --- CHATBOT INITIALIZATION ---
+MODEL_DIR = os.path.join("chatbot", "model")
+DATA_PATH = os.path.join("chatbot", "data", "knowledge.json")
+try:
+    if os.path.exists(os.path.join(MODEL_DIR, "tfidf_vectorizer.pkl")):
+        masha_predictor = ChatbotPredictor(MODEL_DIR, DATA_PATH)
+        print("✅ MASHA Chatbot Initialized.")
+    else:
+        masha_predictor = None
+        print("⚠️ WARNING: Chatbot model not found. Run train.py to enable MASHA.")
+except Exception as e:
+    masha_predictor = None
+    print(f"❌ Error Initializing MASHA: {e}")
 # [CRITICAL] Set a secret key for session security
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "DELSTARFORD_SECURE_KEY_2026")
 
@@ -844,6 +860,24 @@ def get_announcements():
 def terms():
     """Renders the Terms of Service page."""
     return render_template('terms.html')
+
+@app.route('/chat', methods=['POST'])
+def chat():
+    """Endpoint for MASHA Chatbot"""
+    if not masha_predictor:
+        return jsonify({"response": "I'm currently undergoing maintenance. Please try again later or contact our support team."})
+    
+    try:
+        data = request.json
+        user_query = data.get('message', '')
+        if not user_query:
+            return jsonify({"response": "I didn't quite catch that. Could you please say something?"})
+        
+        response = masha_predictor.get_response(user_query)
+        return jsonify({"response": response})
+    except Exception as e:
+        print(f"Chat Error: {e}")
+        return jsonify({"response": "I'm sorry, I encountered an internal error. Could you try rephrasing your question?"}), 500
 
 @app.route('/post-announcement', methods=['POST'])
 def post_announcement():

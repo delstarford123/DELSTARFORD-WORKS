@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<section class="section-padding text-center" style="background: var(--white); min-height: 80vh; display: flex; align-items: center; justify-content: center;">
+    <div class="container">
+        <h2 style="font-size: 10rem; font-weight: 800; color: var(--light); margin: 0; line-height: 1;">404</h2>
+        <div style="position: relative; z-index: 1; margin-top: -50px;">
+            <h1 style="font-size: 3rem; margin-bottom: 20px;">Protocol Fragmented</h1>
+            <p style="font-size: 1.2rem; color: var(--text-muted); max-width: 500px; margin: 0 auto 40px;">The resource you are attempting to access has been relocated or purged from our active directory.</p>
+            <div class="flex-center" style="gap: 20px;">
+                <a href="/" class="btn btn-primary btn-pill">Return to HQ</a>
+                <a href="/support" class="btn btn-dark btn-pill">Report Issue</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

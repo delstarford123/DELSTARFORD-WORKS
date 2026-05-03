@@ -162,6 +162,10 @@ def serve_manifest():
 def serve_sw():
     return send_from_directory(os.path.join(app.root_path, 'static'), 'sw.js', mimetype='application/javascript')
 
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static', 'images'), 'logo.png', mimetype='image/vnd.microsoft.icon')
+
 @app.route('/')
 def home(): return render_template('home.html')
 

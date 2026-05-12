@@ -576,7 +576,7 @@ def submit_ticket():
         return jsonify({"success": True, "ticket_id": display_ticket_id})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
-
+    
 @app.route('/custom', methods=['GET', 'POST'])
 def custom_solution():
     if request.method == 'GET': return render_template('custom.html')

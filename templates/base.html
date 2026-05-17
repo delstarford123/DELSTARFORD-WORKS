@@ -189,9 +189,9 @@
 
     <div id="pwa-install-banner" class="pwa-banner">
         <div class="pwa-banner-content">
-            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="DSW Logo" class="pwa-logo">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="DELSTARFORD WORKS Logo" class="pwa-logo">
             <div class="pwa-text">
-                <strong>Install DSW App</strong>
+                <strong>Install DELSTARFORD WORKS Application</strong>
                 <span>Faster, secure offline access</span>
             </div>
         </div>
@@ -207,18 +207,19 @@
     <header class="site-header" id="siteHeader">
         <div class="container header-inner">
             <a href="/" class="brand-logo anim-slide-left">
-                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="DW Logo" style="height: 40px;">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="DELSTARFORD WORKS Logo" style="height: 40px;">
                 <div class="brand-text">
                     <span class="brand-name">DELSTARFORD WORKS</span>
                     <span class="brand-suffix">WORKS</span>
                 </div>
-                <span class="contact-pill"><i class="fas fa-phone"></i> 0707605751</span>
+                <span class="contact-pill"><i class="fas fa-phone"></i> 0113271924 </span>
             </a>
 
             <nav class="desktop-nav">
                 <a href="/" class="nav-link">Home</a>
-                <a href="/about" class="nav-link">About</a>
-                <a href="/services" class="nav-link">Services</a>
+                <a href="/about" class="nav-link">About Us</a>
+                <a href="/services" class="nav-link">Solutions</a>
+                <a href="/works" class="nav-link">Our Works</a>
                 <a href="/events" class="nav-link">Events</a>
                 <a href="/ai-lab" class="nav-link">AI Market</a>
                 <a href="/support" class="nav-link">Support</a>
@@ -261,6 +262,7 @@
                 <a href="/about" class="m-link">About Us</a>
                 <a href="/services" class="m-link">Our Solutions</a>
                 <a href="/works" class="m-link">Our Works</a>
+                <a href="/events" class="m-link">Events & Training</a>
                 <a href="/ai-lab" class="m-link">AI Market</a>
                 <a href="/support" class="m-link">Support Center</a>
                 <a href="/contact" class="m-link">Contact Us</a>
@@ -269,7 +271,7 @@
                 <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 15px 0; width: 100%;"></div>
                 <a href="/register2" id="mobile-nav-register" class="m-link">Join Now</a>
                 <a href="/login" id="mobile-nav-login" class="m-link">Client Login</a>
-                <a href="/dashboard" id="mobile-nav-dashboard" class="m-link" style="display:none; color: #3b82f6;">My Dashboard</a>
+                <a href="/dashboard" id="mobile-nav-dashboard" class="m-link" style="display:none; color: #3b82f6;">Client Console</a>
                 <a href="javascript:void(0)" onclick="globalLogout()" id="mobile-nav-logout" class="m-link" style="display:none; color: #ef4444;">Logout</a>
                 
                 <a href="/custom" class="btn-mobile-cta">Start a Project</a>
@@ -299,38 +301,7 @@
 
     <button id="backToTop" aria-label="Scroll to top"><i class="fas fa-arrow-up"></i></button>
 
-    <footer class="site-footer" style="background: var(--dark); color: white; padding: 60px 0 20px; margin-top: 40px; border-top: 4px solid var(--primary);">
-        <div class="container">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; margin-bottom: 40px;">
-                <div>
-                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" style="height: 50px; margin-bottom: 15px;">
-                    <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.6;">Engineering robust AI & Biotech ecosystems from Kakamega to the global stage.</p>
-                </div>
-                <div>
-                    <h4 style="margin-bottom: 20px; font-size: 1.1rem; color: #f8fafc;">Platform</h4>
-                    <div style="display: flex; flex-direction: column; gap: 12px;">
-                        <a href="/ai-lab" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#3b82f6'" onmouseout="this.style.color='#cbd5e1'">AI Models</a>
-                        <a href="/services" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#3b82f6'" onmouseout="this.style.color='#cbd5e1'">Web Systems</a>
-                        <a href="/dashboard" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#3b82f6'" onmouseout="this.style.color='#cbd5e1'">Client Portal</a>
-                        <a href="/privacy" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#3b82f6'" onmouseout="this.style.color='#cbd5e1'">Privacy Policy</a>
-                        <a href="/terms" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#3b82f6'" onmouseout="this.style.color='#cbd5e1'">Terms of Service</a>
-                    </div>
-                </div>
-                <div>
-                    <h4 style="margin-bottom: 20px; font-size: 1.1rem; color: #f8fafc;">Company</h4>
-                    <div style="display: flex; flex-direction: column; gap: 12px;">
-                        <a href="/about" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#3b82f6'" onmouseout="this.style.color='#cbd5e1'">Our Story</a>
-                        <a href="/contact" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#3b82f6'" onmouseout="this.style.color='#cbd5e1'">Contact Us</a>
-                        <a href="/agreement" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#3b82f6'" onmouseout="this.style.color='#cbd5e1'">Pricing</a>
-                        <a href="/admin-login" style="color: #ef4444; text-decoration: none; transition: color 0.3s; font-weight: bold;" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='#ef4444'"><i class="fas fa-lock"></i> Admin Portal</a>
-                    </div>
-                </div>
-            </div>
-            <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; display: flex; justify-content: space-between; align-items: center; color: #64748b; font-size: 0.85rem; flex-wrap: wrap; gap: 10px;">
-                <p style="margin:0;">&copy; 2026 Delstarford Works. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
+    {% include 'footer.html' %}
 
     <button id="fab-pay" class="fab-pay-btn" onclick="toggleQuickPay()" aria-label="Make a Payment">
         <i class="fas fa-wallet"></i>

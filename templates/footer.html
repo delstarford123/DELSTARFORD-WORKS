@@ -4,13 +4,13 @@
         <div class="gsap-footer-col brand-col" style="visibility: hidden;">
             <div class="footer-logo">
                 <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Delstarford Works" width="45" style="margin-right: 12px;">
-                <h4>DELSTARFORD</h4>
+                <h4 style="letter-spacing: 1px; font-weight: 800; color: #fff; margin:0;">DELSTARFORD</h4>
             </div>
-            <p class="footer-desc">Solving the world's biology and technical puzzles from Kakamega, Kenya to the global enterprise stage.</p>
+            <p class="footer-desc">Engineering robust AI & Biotech ecosystems from Kakamega to the global stage. Solving the world's biology and technical puzzles.</p>
             <div class="social-links">
-                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://linkedin.com/company/delstarford-works" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://github.com/delstarford" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://twitter.com/delstarford" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
             </div>
         </div>
 
@@ -18,8 +18,9 @@
             <h5>Platform Solutions</h5>
             <ul class="footer-links"> 
                 <li><a href="/ai-lab">AI Marketplace</a></li>
-                <li><a href="/services">Agri-Biotech Algorithms</a></li>
+                <li><a href="/services">Agri-Biotech Solutions</a></li>
                 <li><a href="/services">Enterprise Web Systems</a></li>
+                <li><a href="/works">Our Project Portfolio</a></li>
                 <li><a href="/custom">Custom Architecture</a></li>
             </ul>
         </div>
@@ -27,31 +28,34 @@
         <div class="gsap-footer-col" style="visibility: hidden;">
             <h5>Company & Resources</h5>
             <ul class="footer-links">
-                <li><a href="/about">Our Story & High Council</a></li>
-                <li><a href="/dashboard">Secure Client Portal</a></li>
+                <li><a href="/about">Our Story & Mission</a></li>
+                <li><a href="/events">Events & Training Hub</a></li>
                 <li><a href="/support">Support Center</a></li>
-                <li><a href="/agreement">Service Pricing & Terms</a></li>
+                <li><a href="/contact">Contact Us</a></li>
+                <li><a href="/agreement">Pricing & Plans</a></li>
                 <li><a href="/admin-login" class="admin-link"><i class="fas fa-lock"></i> Admin Portal</a></li>
             </ul>
         </div>
 
         <div class="gsap-footer-col" style="visibility: hidden;">
-            <h5>Intelligence Newsletter</h5>
-            <p class="footer-sm-text">Get the latest AI and Biotech architectural insights delivered directly to your inbox.</p>
-            <form class="newsletter-form" onsubmit="handleNewsletter(event)">
-                <input type="email" placeholder="Corporate email address" required aria-label="Email address">
-                <button type="submit" class="btn-small-sub" aria-label="Subscribe">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
-            </form>
+            <h5>Legal & Support</h5>
+            <ul class="footer-links">
+                <li><a href="/privacy">Privacy Policy</a></li>
+                <li><a href="/terms">Terms of Service</a></li>
+                <li><a href="/dashboard">Secure Client Portal</a></li>
+                <li><a href="/estimator">Project Estimator</a></li>
+                <li><a href="/location">Find Our Nodes</a></li>
+            </ul>
         </div>
 
     </div>
     
     <div class="footer-bottom gsap-footer-bottom" style="visibility: hidden;">
-        <div class="container">
-            <p>&copy; 2026 Delstarford Works. All rights reserved.</p>
-            <p class="built-with">Engineered with precision in Kenya. <span class="status-dot"></span> All Systems Operational</p>
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <p style="margin: 0; color: #64748b; font-size: 0.85rem;">&copy; 2026 Delstarford Works. All rights reserved.</p>
+            <p class="built-with" style="margin: 0; color: #64748b; font-size: 0.85rem; display: flex; align-items: center; gap: 10px;">
+                Engineered with precision in Kenya. <span class="status-dot"></span> All Systems Operational
+            </p>
         </div>
     </div>
 </footer>
@@ -76,16 +80,14 @@
         color: var(--ft-text);
         padding-top: 80px;
         font-family: 'Plus Jakarta Sans', sans-serif;
-        border-top: 1px solid var(--ft-border);
+        border-top: 4px solid var(--ft-primary);
         overflow: hidden;
         position: relative;
     }
     
-    .container { max-width: 1250px; margin: 0 auto; padding: 0 20px; }
-
     .grid-4 {
         display: grid;
-        grid-template-columns: 1.5fr 1fr 1fr 1.2fr;
+        grid-template-columns: 1.5fr 1fr 1fr 1fr;
         gap: 50px;
         margin-bottom: 60px;
     }
@@ -106,22 +108,9 @@
         margin: 0 0 25px 0;
         font-weight: 500;
     }
-    .footer-sm-text {
-        color: var(--ft-muted);
-        font-size: 0.9rem;
-        margin: 0 0 20px 0;
-        line-height: 1.6;
-    }
 
     /* --- BRANDING --- */
     .footer-logo { display: flex; align-items: center; margin-bottom: 20px; }
-    .footer-logo h4 {
-        margin: 0;
-        font-size: 1.4rem;
-        font-weight: 800;
-        letter-spacing: 1px;
-        color: var(--ft-text);
-    }
     
     /* --- SOCIAL LINKS --- */
     .social-links { display: flex; gap: 15px; }
@@ -155,45 +144,23 @@
     .admin-link i { font-size: 0.8rem; margin-right: 6px; }
     .admin-link:hover { color: var(--ft-danger) !important; }
 
-    /* --- NEWSLETTER FORM --- */
-    .newsletter-form { display: flex; gap: 0; position: relative;}
-    .newsletter-form input {
-        flex: 1; padding: 14px 15px;
-        background: rgba(255,255,255,0.03);
-        border: 1px solid var(--ft-border);
-        color: white; border-radius: 8px 0 0 8px;
-        outline: none; font-family: inherit; font-size: 0.9rem;
-        transition: all 0.3s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .newsletter-form input::placeholder { color: #64748b; }
-    .newsletter-form input:focus {
-        border-color: var(--ft-primary);
-        background: rgba(255,255,255,0.05);
-    }
-    .btn-small-sub {
-        background: var(--ft-primary); color: white;
-        border: none; padding: 0 20px; border-radius: 0 8px 8px 0;
-        cursor: pointer; transition: all 0.3s;
-        display: flex; align-items: center; justify-content: center;
-    }
-    .btn-small-sub:hover { background: var(--ft-primary-hover); }
-
     /* --- FOOTER BOTTOM --- */
     .footer-bottom {
         background: var(--ft-bg-darker);
         padding: 25px 0;
         border-top: 1px solid var(--ft-border);
     }
-    .footer-bottom .container {
-        display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
-    }
-    .footer-bottom p { margin: 0; color: #64748b; font-size: 0.85rem; font-weight: 500;}
     
-    .built-with { display: flex; align-items: center; gap: 10px; }
     .status-dot {
         display: inline-block; width: 8px; height: 8px;
         background: var(--ft-success); border-radius: 50%;
         box-shadow: 0 0 8px var(--ft-success);
+        animation: pulseStatus 2s infinite;
+    }
+    @keyframes pulseStatus {
+        0% { transform: scale(1); opacity: 0.8; }
+        50% { transform: scale(1.2); opacity: 1; }
+        100% { transform: scale(1); opacity: 0.8; }
     }
 
     /* --- MOBILE RESPONSIVE --- */
@@ -205,8 +172,6 @@
         .footer-logo { justify-content: center; }
         .social-links { justify-content: center; }
         .footer-links a:hover { transform: translateX(0) scale(1.05); }
-        .footer-bottom .container { flex-direction: column; text-align: center; }
-        .built-with { justify-content: center; }
     }
 </style>
 
@@ -214,16 +179,12 @@
     // --- GSAP SCROLL ANIMATIONS ---
     document.addEventListener("DOMContentLoaded", () => {
         if(typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
-            // Fallback if GSAP fails to load
             document.querySelectorAll('.gsap-footer-col, .gsap-footer-bottom').forEach(el => el.style.visibility = 'visible');
             return;
         }
 
-        gsap.registerPlugin(ScrollTrigger);
-
-        // Staggered fade up for the footer columns
         gsap.fromTo(".gsap-footer-col", 
-            { y: 40, autoAlpha: 0 },
+            { y: 30, autoAlpha: 0 },
             {
                 scrollTrigger: {
                     trigger: ".main-footer",
@@ -231,13 +192,12 @@
                 },
                 y: 0,
                 autoAlpha: 1,
-                stagger: 0.15,
+                stagger: 0.1,
                 duration: 0.8,
                 ease: "power3.out"
             }
         );
 
-        // Fade up the bottom copyright bar slightly after
         gsap.fromTo(".gsap-footer-bottom", 
             { autoAlpha: 0 },
             {
@@ -247,39 +207,9 @@
                 },
                 autoAlpha: 1,
                 duration: 1,
-                delay: 0.4,
+                delay: 0.3,
                 ease: "power2.inOut"
             }
         );
     });
-
-    // --- INTERACTIVE NEWSLETTER FORM ---
-    function handleNewsletter(e) {
-        e.preventDefault();
-        const form = e.target;
-        const input = form.querySelector('input');
-        const btn = form.querySelector('button');
-        const icon = btn.querySelector('i');
-
-        // Loading State
-        icon.className = 'fas fa-circle-notch fa-spin';
-        btn.disabled = true;
-
-        // Simulate API call delay
-        setTimeout(() => {
-            // Success State
-            icon.className = 'fas fa-check';
-            btn.style.background = 'var(--ft-success)';
-            input.value = '';
-            input.placeholder = 'Successfully Subscribed!';
-            
-            // Reset after 3 seconds
-            setTimeout(() => {
-                icon.className = 'fas fa-paper-plane';
-                btn.style.background = '';
-                btn.disabled = false;
-                input.placeholder = 'Corporate email address';
-            }, 3000);
-        }, 1200);
-    }
 </script>

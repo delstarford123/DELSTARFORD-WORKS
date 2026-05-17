@@ -1,0 +1,69 @@
+{
+  "rules": {
+    "announcements": {
+      ".read": true,
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      ".indexOn": ["type", "date"]
+    },
+    "event_registrations": {
+      ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      ".write": false,
+      "$eventId": {
+        ".indexOn": ["email", "timestamp"]
+      }
+    },
+    "market": {
+      "ai_models": {
+        ".read": true,
+        ".write": false
+      }
+    },
+    "active_projects": {
+      ".read": true,
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'"
+    },
+    "leads": {
+      "service_requests": {
+        ".indexOn": ["email"],
+        ".read": "auth != null", 
+        ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'"
+      },
+      "ai_requests": {
+        ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+        ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'"
+      },
+      "contact_form": {
+         ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+         ".write": false
+      }
+    },
+    "support_tickets": {
+      ".indexOn": ["email", "status"],
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'"
+    },
+    "users": {
+      ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      ".indexOn": ["role", "email"],
+      "$uid": {
+        ".read": "auth != null && $uid === auth.uid",
+        ".write": "auth != null && ($uid === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'admin')",
+        ".validate": "newData.hasChildren(['full_name', 'email'])"
+      }
+    },
+    "members": {
+      ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      ".indexOn": ["email", "role"]
+    },
+    "agreements": {
+      ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      ".indexOn": ["contract_id", "client_name"]
+    },
+    "payments": {
+        ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+        ".write": false
+    }
+  }
+}

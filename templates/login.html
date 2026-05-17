@@ -69,9 +69,11 @@
     /* Password Toggle Eye */
     .toggle-password {
         background: none; border: none; color: #94a3b8; cursor: pointer;
-        padding: 0 5px; font-size: 1rem; transition: 0.2s; outline: none;
+        padding: 0 10px; font-size: 1.1rem; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+        outline: none; display: flex; align-items: center; justify-content: center;
     }
-    .toggle-password:hover { color: var(--log-primary); }
+    .toggle-password:hover { color: var(--log-primary); transform: scale(1.1); }
+    .toggle-password:active { transform: scale(0.9); }
     
     /* --- HIGH VISIBILITY BUTTON --- */
     .btn-primary {

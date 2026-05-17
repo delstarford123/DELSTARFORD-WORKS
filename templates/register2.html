@@ -2,7 +2,7 @@
 {% block content %}
 
 <style>
-    /* --- CSS VARIABLES & RESET --- */
+    /* --- CSS VARIABLES --- */
     :root {
         --reg-primary: #3b82f6;
         --reg-primary-hover: #2563eb;
@@ -10,7 +10,6 @@
         --reg-bg: #f8fafc;
         --reg-card: #ffffff;
         --reg-border: #e2e8f0;
-        --reg-border-heavy: #cbd5e1;
         --reg-text: #334155;
         --reg-muted: #64748b;
         --reg-success: #10b981;
@@ -19,516 +18,307 @@
 
     body { background: var(--reg-bg); font-family: 'Plus Jakarta Sans', sans-serif; }
 
-    /* --- LAYOUT & CONTAINERS --- */
-    .register-wrapper { 
-        padding: 80px 20px; 
+    /* --- LAYOUT --- */
+    .reg-section { 
+        min-height: calc(100vh - 80px); 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
         background-color: var(--reg-bg);
         background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
         background-size: 40px 40px;
-        min-height: 100vh; 
-        display: flex; 
-        justify-content: center; 
+        padding: 60px 20px; 
+        box-sizing: border-box; 
     }
-    .register-container { 
-        max-width: 900px; 
-        width: 100%; 
+    
+    .reg-card { 
         background: var(--reg-card); 
-        padding: 60px 70px; 
+        padding: 50px 45px; 
         border-radius: 24px; 
         box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15), 0 0 0 1px rgba(15, 23, 42, 0.05); 
-        border-top: 6px solid var(--reg-dark); 
+        width: 100%; 
+        max-width: 520px; 
+        box-sizing: border-box; 
+        border-top: 6px solid var(--reg-primary);
     }
     
     /* --- HEADER --- */
-    .reg-header { text-align: center; border-bottom: 1px solid var(--reg-border); padding-bottom: 40px; margin-bottom: 50px; }
-    .reg-logo { width: 140px; margin-bottom: 20px; }
-    .reg-header h1 { color: var(--reg-dark); margin: 0; font-size: 2.4rem; font-weight: 800; letter-spacing: -1px; line-height: 1.1;}
-    .reg-header p { color: var(--reg-primary); font-weight: 800; text-transform: uppercase; font-size: 0.95rem; margin: 10px 0 0 0; letter-spacing: 1px; }
-
-    /* --- SECTIONS --- */
-    .reg-section { margin-bottom: 50px; }
-    .reg-section h3 { 
-        color: var(--reg-dark); 
-        border-left: 4px solid var(--reg-primary); 
-        padding: 12px 20px; 
-        margin-bottom: 25px; 
-        font-size: 1.3rem; 
-        font-weight: 800;
-        background: #f1f5f9; 
-        border-radius: 0 8px 8px 0; 
-        letter-spacing: -0.5px;
-    }
-    .intro-text { color: var(--reg-text); font-size: 1.05rem; line-height: 1.7; font-weight: 500;}
-    .sub-label { font-size: 0.85rem; color: var(--reg-dark); font-weight: 800; margin: 30px 0 20px 0; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid var(--reg-border); padding-bottom: 10px;}
-
-    /* --- FORMS --- */
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-    .form-group { margin-bottom: 20px; }
-    .form-group label { display: block; font-weight: 800; font-size: 0.85rem; color: var(--reg-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;}
+    .reg-header { text-align: center; margin-bottom: 40px; }
+    .reg-logo { height: 50px; margin-bottom: 20px; }
+    .reg-header h2 { font-size: 2.2rem; color: var(--reg-dark); margin: 0 0 10px 0; font-weight: 800; letter-spacing: -1px;}
+    .reg-header p { color: var(--reg-muted); font-size: 1rem; margin: 0; font-weight: 500; line-height: 1.5;}
     
-    .input-wrapper { display: flex; align-items: center; background: #f8fafc; border: 1px solid var(--reg-border-heavy); border-radius: 8px; padding: 0 15px; transition: all 0.3s ease; }
+    /* --- FORM --- */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .form-group { margin-bottom: 22px; width: 100%; }
+    .form-group.full-width { grid-column: span 2; }
+    .form-group label { display: block; font-size: 0.8rem; font-weight: 800; color: var(--reg-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    
+    .input-wrapper { 
+        display: flex; align-items: center; background: #f1f5f9; border: 1px solid var(--reg-border); 
+        border-radius: 10px; padding: 0 16px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; box-sizing: border-box; 
+    }
     .input-wrapper:focus-within { border-color: var(--reg-primary); background: white; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
-    .input-wrapper i { color: #94a3b8; margin-right: 12px; transition: 0.3s;}
-    .input-wrapper:focus-within i { color: var(--reg-primary); }
     
-    .input-wrapper input, .input-wrapper select, .input-wrapper textarea { 
-        width: 100%; border: none; background: transparent; padding: 15px 0; outline: none; color: var(--reg-dark); font-size: 0.95rem; font-family: inherit; font-weight: 500;
-    }
-    .input-wrapper select { cursor: pointer; appearance: none;}
-    .input-wrapper textarea { resize: vertical; min-height: 100px; line-height: 1.6;}
+    .input-icon { color: #94a3b8; margin-right: 12px; font-size: 1rem; transition: 0.3s; width: 18px; text-align: center;}
+    .input-wrapper:focus-within .input-icon { color: var(--reg-primary); }
     
-    input::placeholder, textarea::placeholder { color: #94a3b8; font-weight: 400;}
-
-    /* Custom Select Arrow */
-    .select-container { position: relative; width: 100%; }
-    .select-arrow { position: absolute; right: 0; top: 50%; transform: translateY(-50%); color: var(--reg-primary); pointer-events: none; font-size: 1rem;}
-
-    .req { color: var(--reg-danger); }
-    .small-text { color: var(--reg-muted); font-size: 0.9rem; margin-bottom: 15px; font-weight: 500;}
-
-    /* --- FILE UPLOADS --- */
-    .file-upload-group { 
-        background: #f8fafc; padding: 20px 25px; border-radius: 12px; margin-bottom: 15px; 
-        border: 2px dashed var(--reg-border-heavy); transition: all 0.3s ease; 
+    .input-wrapper input { 
+        width: 100%; border: none; background: transparent; padding: 14px 0; 
+        outline: none; color: var(--reg-dark); font-size: 0.95rem; font-family: inherit; font-weight: 600;
     }
-    .file-upload-group:hover { border-color: var(--reg-primary); background: #eff6ff; }
-    .file-upload-group label { margin-bottom: 12px; color: var(--reg-dark); display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 0.95rem;}
-    .file-upload-group label i { color: var(--reg-primary); font-size: 1.2rem; }
-    input[type="file"] { border: none; background: transparent; padding: 0; font-size: 0.9rem; cursor: pointer; color: var(--reg-text); font-weight: 500;}
-    input[type="file"]::file-selector-button { 
-        background: white; color: var(--reg-dark); border: 1px solid var(--reg-border-heavy); 
-        padding: 8px 18px; border-radius: 6px; font-weight: 700; cursor: pointer; transition: 0.3s; margin-right: 15px; font-family: inherit;
+    .input-wrapper input::placeholder { color: #94a3b8; font-weight: 400;}
+
+    /* Password Toggle */
+    .toggle-pass { 
+        background: none; border: none; color: #94a3b8; cursor: pointer; 
+        padding: 0 10px; font-size: 1.1rem; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+        outline: none; display: flex; align-items: center; justify-content: center;
     }
-    input[type="file"]::file-selector-button:hover { background: #f1f5f9; border-color: var(--reg-muted);}
+    .toggle-pass:hover { color: var(--reg-primary); transform: scale(1.1); }
+    .toggle-pass:active { transform: scale(0.9); }
     
-    /* --- PAYMENT TOGGLE --- */
-    .payment-toggle { display: flex; gap: 20px; margin-bottom: 25px; }
-    .radio-card { flex: 1; cursor: pointer; position: relative; }
-    .radio-card input { display: none; }
-    .radio-card span { 
-        display: flex; align-items: center; justify-content: center; gap: 10px; padding: 18px; 
-        background: white; border: 1px solid var(--reg-border-heavy); border-radius: 10px; 
-        font-weight: 800; color: var(--reg-muted); transition: all 0.3s; font-size: 1rem; 
+    /* --- BUTTON --- */
+    .btn-register {
+        background: var(--reg-primary);
+        color: #ffffff; width: 100%; padding: 16px; border: none; border-radius: 12px;
+        font-weight: 800; font-size: 1rem; letter-spacing: 0.5px; cursor: pointer; text-transform: uppercase;
+        display: flex; justify-content: center; align-items: center; gap: 12px; transition: all 0.3s;
+        margin-top: 25px; box-shadow: 0 10px 20px rgba(59, 130, 246, 0.25);
     }
-    .radio-card span i { font-size: 1.2rem; }
-    .radio-card input:checked + span { background: #eff6ff; color: var(--reg-primary); border-color: var(--reg-primary); box-shadow: 0 4px 15px rgba(59, 130, 246, 0.15); }
+    .btn-register:hover { background: var(--reg-primary-hover); transform: translateY(-2px); box-shadow: 0 15px 30px rgba(59, 130, 246, 0.35); }
+    .btn-register:disabled { background: var(--reg-muted); cursor: not-allowed; transform: none; box-shadow: none; }
 
-    /* --- SIGNATURE & TERMS --- */
-    .signature-section { background: #f8fafc; padding: 40px; border-radius: 16px; border: 1px solid var(--reg-border); }
-    .terms-box ul { list-style: none; padding: 0; margin: 0; }
-    .terms-box li { margin-bottom: 15px; font-size: 0.95rem; color: var(--reg-text); display: flex; align-items: flex-start; gap: 12px; line-height: 1.6; font-weight: 500;}
-    .terms-box li i { color: var(--reg-success); margin-top: 4px; font-size: 1.1rem;}
+    /* --- FEEDBACK --- */
+    .reg-alert { 
+        padding: 14px; border-radius: 10px; font-size: 0.9rem; font-weight: 700; margin-top: 20px; display: none; text-align: center;
+    }
+    .reg-alert.error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    .reg-alert.success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+
+    .reg-footer { text-align: center; margin-top: 35px; font-size: 0.95rem; color: var(--reg-muted); border-top: 1px solid var(--reg-border); padding-top: 25px; font-weight: 500;}
+    .reg-footer a { color: var(--reg-primary); font-weight: 800; text-decoration: none; transition: 0.2s;}
+    .reg-footer a:hover { color: var(--reg-dark); text-decoration: underline;}
     
-    .signature-input-wrapper { background: transparent !important; border: none !important; border-bottom: 2px dashed #94a3b8 !important; border-radius: 0 !important; padding: 0 !important; margin-top: 10px;}
-    .signature-input-wrapper:focus-within { box-shadow: none !important; border-bottom: 2px solid var(--reg-primary) !important; background: transparent !important;}
-    .signature-input { 
-        font-family: 'Caveat', 'Courier New', cursive, monospace !important; 
-        font-size: 2rem !important; color: var(--reg-primary) !important; 
-        padding: 10px 0 !important; font-style: italic; font-weight: 600 !important;
-    }
-    .signature-input::placeholder { color: #cbd5e1 !important; font-style: italic;}
-    
-    /* --- SUBMIT BUTTON --- */
-    .btn-submit { 
-        width: 100%; background: var(--reg-success); color: white; border: none; padding: 20px; 
-        font-size: 1.1rem; font-weight: 800; border-radius: 10px; cursor: pointer; margin-top: 40px; 
-        transition: all 0.3s; display: flex; justify-content: center; align-items: center; gap: 12px; 
-        text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
-    }
-    .btn-submit:hover { background: #059669; transform: translateY(-3px); box-shadow: 0 12px 30px rgba(16, 185, 129, 0.4); }
-    .btn-submit:disabled { background: var(--reg-muted); cursor: not-allowed; transform: none; box-shadow: none; }
+    .spinner { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite; display: none; }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
 
-    .spinner { width: 22px; height: 22px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; display: none; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* --- ALERTS & FALLBACK UI --- */
-    .form-message { margin-top: 20px; font-size: 0.95rem; text-align: center; font-weight: 700; padding: 15px; border-radius: 8px; display: none;}
-    
-    .btn-fallback {
-        background: #0f172a; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 700;
-        cursor: pointer; display: inline-flex; align-items: center; gap: 8px; margin-top: 15px; text-decoration: none;
-        transition: 0.3s; font-size: 0.9rem;
-    }
-    .btn-fallback:hover { background: #1e293b; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2);}
-
-    @media (max-width: 768px) { 
-        .register-container { padding: 40px 30px; }
-        .form-row { grid-template-columns: 1fr; gap: 0; } 
-        .payment-toggle { flex-direction: column; gap: 12px; }
-        .reg-header h1 { font-size: 1.8rem; }
+    @media (max-width: 600px) { 
+        .reg-card { padding: 40px 25px; } 
+        .form-grid { grid-template-columns: 1fr; gap: 0; }
+        .form-group.full-width { grid-column: auto; }
+        .reg-header h2 { font-size: 1.8rem; }
     }
 </style>
 
-<div class="register-wrapper">
-    <div class="register-container gsap-anim" style="visibility: hidden;">
+<section class="reg-section">
+    <div class="reg-card gsap-anim" style="visibility: hidden;">
         
         <div class="reg-header">
-            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Delstarford Works" class="reg-logo">
-            <h1>Official Application Node</h1>
-            <p>Team Onboarding & Shareholder Registration</p>
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="DW Logo" class="reg-logo gsap-stagger">
+            <h2 class="gsap-stagger">Create Account</h2>
+            <p class="gsap-stagger">Join the Delstarford Works network today and start engineering your future.</p>
+            <p class="gsap-stagger" style="margin-top: 15px; font-size: 0.9rem; color: var(--reg-muted);">
+                Applying for an expert or partner role? <a href="/register" style="color: var(--reg-primary); font-weight: 800; text-decoration: none;">Apply here</a>
+            </p>
         </div>
 
-        <form id="registrationForm" enctype="multipart/form-data">
-            
-            <div class="reg-section gsap-section" style="visibility: hidden;">
-                <h3>1. High Council Verification</h3>
-                <p class="intro-text">Welcome to the Delstarford Works network. This cryptographic document formalizes your membership and captures necessary parameters for legal compliance, shareholding distribution, and financial remittances.</p>
+        <form id="generalRegisterForm">
+            <div class="form-group full-width gsap-stagger">
+                <label>Full Legal Name</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" id="reg-name" placeholder="Isaiah Delstarford" required>
+                </div>
             </div>
 
-            <div class="reg-section gsap-section" style="visibility: hidden;">
-                <h3>2. Core Identity Parameters</h3>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Full Legal Name (As per ID)</label>
-                        <div class="input-wrapper">
-                            <i class="fas fa-user"></i>
-                            <input type="text" name="full_name" id="reg-name" required placeholder="JUMA KEVIN OTIENO">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Date of Birth</label>
-                        <div class="input-wrapper">
-                            <i class="fas fa-calendar-alt"></i>
-                            <input type="date" name="dob" id="reg-dob" required>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Nationality</label>
-                        <div class="input-wrapper">
-                            <i class="fas fa-globe-africa"></i>
-                            <input type="text" name="nationality" required placeholder="e.g., Kenyan">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Phone Number</label>
-                        <div class="input-wrapper">
-                            <i class="fas fa-phone"></i>
-                            <input type="tel" name="phone" id="reg-phone" required placeholder="+254 700 000 000">
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
+            <div class="form-grid">
+                <div class="form-group gsap-stagger">
                     <label>Email Address</label>
                     <div class="input-wrapper">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" name="email" id="reg-email" required placeholder="official@domain.com">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="email" id="reg-email" placeholder="name@domain.com" required>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label>Physical Address / Node</label>
+
+                <div class="form-group gsap-stagger">
+                    <label>Phone Number</label>
                     <div class="input-wrapper">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <input type="text" name="address" required placeholder="Town, Estate, House No.">
+                        <i class="fas fa-phone input-icon"></i>
+                        <input type="tel" id="reg-phone" placeholder="07XX XXX XXX" required>
                     </div>
                 </div>
             </div>
 
-            <div class="reg-section gsap-section" style="visibility: hidden;">
-                <h3>3. Architectural Profile</h3>
-                <div class="form-group">
-                    <label>Desired Organizational Role</label>
+            <div class="form-grid">
+                <div class="form-group gsap-stagger">
+                    <label>Password</label>
                     <div class="input-wrapper">
-                        <i class="fas fa-user-tag"></i>
-                        <div class="select-container">
-                            <select name="role" id="reg-role" required>
-                                <option value="" disabled selected>Select assigned designation...</option>
-                                <option value="AI Engineer">AI Engineer</option>
-                                <option value="Software Developer">Software Developer</option>
-                                <option value="Biotechnologist">Biotechnologist</option>
-                                <option value="Agronomist">Agronomist</option>
-                                <option value="Intern">Intern / Academic Attachment</option>
-                                <option value="Partner">Shareholder / Board Partner</option>
-                            </select>
-                            <i class="fas fa-chevron-down select-arrow"></i>
-                        </div>
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="reg-password" placeholder="••••••••" required>
+                        <button type="button" class="toggle-pass" onclick="togglePass('reg-password', this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label>Core Technical Infrastructure (Skills)</label>
-                    <div class="input-wrapper" style="align-items: flex-start; padding-top: 15px;">
-                        <i class="fas fa-laptop-code" style="margin-top: 2px;"></i>
-                        <textarea name="skills" placeholder="List your technical stack (e.g., Python, React Native, PCR Analysis, Genomics)..." required></textarea>
-                    </div>
-                </div>
-                
-                <h4 class="sub-label">Public Digital Footprint (Optional)</h4>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>LinkedIn Profile</label>
-                        <div class="input-wrapper">
-                            <i class="fab fa-linkedin"></i>
-                            <input type="url" name="linkedin" placeholder="https://linkedin.com/in/...">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>GitHub / Portfolio</label>
-                        <div class="input-wrapper">
-                            <i class="fab fa-github"></i>
-                            <input type="url" name="portfolio" placeholder="https://github.com/...">
-                        </div>
+
+                <div class="form-group gsap-stagger">
+                    <label>Confirm Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-shield-alt input-icon"></i>
+                        <input type="password" id="reg-confirm" placeholder="••••••••" required>
+                        <button type="button" class="toggle-pass" onclick="togglePass('reg-confirm', this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <div class="reg-section gsap-section" style="visibility: hidden;">
-                <h3>4. Cryptographic Document Uploads</h3>
-                <p class="small-text">Upload clear, unaltered scans (PDF/JPG/PNG). Maximum payload 5MB per file.</p>
-                
-                <div class="file-upload-group">
-                    <label><i class="fas fa-id-card"></i> National ID / Passport <span class="req">*</span></label>
-                    <input type="file" name="doc_id" accept=".pdf,.jpg,.png" required>
-                </div>
-                <div class="file-upload-group">
-                    <label><i class="fas fa-file-invoice-dollar"></i> KRA PIN Certificate <span class="req">*</span></label>
-                    <input type="file" name="doc_kra" accept=".pdf,.jpg,.png" required>
-                </div>
-                <div class="file-upload-group">
-                    <label><i class="fas fa-user-circle"></i> Passport Sized Photo <span class="req">*</span></label>
-                    <input type="file" name="doc_photo" accept=".jpg,.png" required>
-                </div>
-            </div>
-
-            <div class="reg-section gsap-section" style="visibility: hidden;">
-                <h3>5. Remittance Nodes (Financial)</h3>
-                <p class="small-text">Select your preferred infrastructural node for share remission and allowances.</p>
-
-                <div class="payment-toggle">
-                    <label class="radio-card" onclick="toggleFinance('bank')">
-                        <input type="radio" name="payment_method" value="bank">
-                        <span><i class="fas fa-university"></i> Bank Transfer</span>
-                    </label>
-                    <label class="radio-card" onclick="toggleFinance('mobile')">
-                        <input type="radio" name="payment_method" value="mobile" checked>
-                        <span><i class="fas fa-mobile-alt"></i> Mobile Money</span>
-                    </label>
-                </div>
-
-                <div id="bank-details" class="finance-panel" style="display: none;">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Banking Institution</label>
-                            <div class="input-wrapper"><input type="text" name="bank_name" placeholder="e.g., KCB / Equity"></div>
-                        </div>
-                        <div class="form-group">
-                            <label>Branch Code</label>
-                            <div class="input-wrapper"><input type="text" name="bank_branch" placeholder="Branch Name or Code"></div>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Official Account Name</label>
-                            <div class="input-wrapper"><input type="text" name="bank_acc_name" placeholder="As it appears on account"></div>
-                        </div>
-                        <div class="form-group">
-                            <label>Account Number</label>
-                            <div class="input-wrapper"><input type="text" name="bank_acc_num" placeholder="Account No."></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="mobile-details" class="finance-panel">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Telecom Provider</label>
-                            <div class="input-wrapper">
-                                <div class="select-container">
-                                    <select name="mobile_provider">
-                                        <option value="M-PESA">Safaricom M-PESA</option>
-                                        <option value="Airtel">Airtel Money</option>
-                                    </select>
-                                    <i class="fas fa-chevron-down select-arrow"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Registered Mobile Number</label>
-                            <div class="input-wrapper"><input type="text" name="mobile_number" placeholder="07..."></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="reg-section signature-section gsap-section" style="visibility: hidden;">
-                <h3>6. High Council Declaration</h3>
-                <div class="terms-box">
-                    <ul>
-                        <li><i class="fas fa-lock"></i> <strong>Absolute Confidentiality:</strong> I legally agree to keep all corporate architecture, algorithms, and client datasets strictly confidential.</li>
-                        <li><i class="fas fa-handshake"></i> <strong>Operational Conduct:</strong> I agree to uphold the rigorous professional standards of the Delstarford Works High Council.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Data Authenticity:</strong> I declare under penalty of perjury that the cryptographic documents provided are authentic.</li>
-                    </ul>
-                </div>
-                
-                <div class="form-group" style="margin-top: 35px;">
-                    <label>Official Digital Signature</label>
-                    <div class="input-wrapper signature-input-wrapper">
-                        <input type="text" name="signature" class="signature-input" placeholder="/s/ Type Full Legal Name" required>
-                    </div>
-                </div>
-                
-                <button type="submit" class="btn-submit" id="submitBtn">
-                    <i class="fas fa-file-signature" id="btnIcon"></i>
-                    <span id="btnText">Transmit Application</span>
-                    <div class="spinner" id="btnSpinner"></div>
-                </button>
-                <div id="formMessage" class="form-message"></div>
-            </div>
-
+            <button type="submit" class="btn-register gsap-stagger" id="regBtn">
+                <span id="btn-text">Register Account</span>
+                <i class="fas fa-user-plus" id="btn-icon"></i>
+                <div class="spinner" id="btn-spinner"></div>
+            </button>
+            
+            <div id="reg-alert" class="reg-alert"></div>
         </form>
+
+        <div class="reg-footer gsap-stagger">
+            <p>Already have an account? <a href="/login">Secure Login</a></p>
+        </div>
     </div>
-</div>
+</section>
 
 <script>
-    // --- GSAP BULLETPROOF ANIMATIONS ---
+    // --- GSAP ANIMATIONS ---
     document.addEventListener("DOMContentLoaded", () => {
         if(typeof gsap === 'undefined') {
             document.querySelector('.gsap-anim').style.visibility = 'visible';
-            document.querySelectorAll('.gsap-section').forEach(el => el.style.visibility = 'visible');
             return;
         }
 
         const tl = gsap.timeline();
-        
-        // Unhide container and slide down slightly
         tl.fromTo(".gsap-anim", 
-            { y: 30, autoAlpha: 0 }, 
-            { y: 0, autoAlpha: 1, duration: 0.6, ease: "power3.out" }
+            { y: 30, autoAlpha: 0, scale: 0.98 }, 
+            { y: 0, autoAlpha: 1, scale: 1, duration: 0.7, ease: "power3.out" }
+        )
+        .fromTo(".gsap-stagger", 
+            { y: 15, autoAlpha: 0 }, 
+            { y: 0, autoAlpha: 1, stagger: 0.08, duration: 0.5, ease: "power2.out" }, 
+            "-=0.4"
         );
-
-        if (typeof ScrollTrigger !== 'undefined') {
-            gsap.registerPlugin(ScrollTrigger);
-            
-            // Stagger sections as you scroll
-            gsap.utils.toArray(".gsap-section").forEach((section) => {
-                gsap.fromTo(section, 
-                    { y: 40, autoAlpha: 0 },
-                    {
-                        scrollTrigger: { trigger: section, start: "top 85%" },
-                        y: 0, autoAlpha: 1, duration: 0.7, ease: "power2.out"
-                    }
-                );
-            });
-        } else {
-            gsap.set(".gsap-section", { autoAlpha: 1 });
-        }
     });
 
     // --- FORM LOGIC ---
-    function toggleFinance(method) {
-        const bankPanel = document.getElementById('bank-details');
-        const mobilePanel = document.getElementById('mobile-details');
-
-        if(method === 'bank') {
-            mobilePanel.style.display = 'none';
-            bankPanel.style.display = 'block';
-            if(typeof gsap !== 'undefined') gsap.fromTo(bankPanel, {opacity: 0, y: -10}, {opacity: 1, y: 0, duration: 0.3, ease: "power2.out"});
+    function togglePass(id, btn) {
+        const input = document.getElementById(id);
+        const icon = btn.querySelector('i');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
         } else {
-            bankPanel.style.display = 'none';
-            mobilePanel.style.display = 'block';
-            if(typeof gsap !== 'undefined') gsap.fromTo(mobilePanel, {opacity: 0, y: -10}, {opacity: 1, y: 0, duration: 0.3, ease: "power2.out"});
+            input.type = 'password';
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
         }
     }
 
-    document.getElementById('registrationForm').onsubmit = async (e) => {
+    document.getElementById('generalRegisterForm').onsubmit = async (e) => {
         e.preventDefault();
         
-        const btn = document.getElementById('submitBtn');
-        const btnText = document.getElementById('btnText');
-        const btnIcon = document.getElementById('btnIcon');
-        const spinner = document.getElementById('btnSpinner');
-        const msg = document.getElementById('formMessage');
-        const originalText = btnText.textContent;
+        const name = document.getElementById('reg-name').value;
+        const email = document.getElementById('reg-email').value;
+        const phone = document.getElementById('reg-phone').value;
+        const password = document.getElementById('reg-password').value;
+        const confirm = document.getElementById('reg-confirm').value;
         
-        if(btn.disabled) return; 
+        const alert = document.getElementById('reg-alert');
+        const btn = document.getElementById('regBtn');
+        const btnText = document.getElementById('btn-text');
+        const btnIcon = document.getElementById('btn-icon');
+        const spinner = document.getElementById('btn-spinner');
+
+        // Validation
+        if (password !== confirm) {
+            showAlert("Passwords do not match.", "error");
+            return;
+        }
+        if (password.length < 6) {
+            showAlert("Password must be at least 6 characters.", "error");
+            return;
+        }
 
         // Loading State
-        btnText.textContent = "Transmitting to Server...";
-        btnIcon.style.display = "none";
-        btn.disabled = true;
-        spinner.style.display = 'block';
-        msg.style.display = 'none';
-
-        const formData = new FormData(e.target);
+        setLoading(true);
 
         try {
-            // First attempt to send automatically via backend
-            const response = await fetch('/submit-registration', { method: 'POST', body: formData });
+            // 1. Firebase Authentication Create User
+            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+            const user = userCredential.user;
+
+            // 2. Store Additional Data in Realtime DB (Using JS SDK syntax db.ref, NOT db.reference)
+            await db.ref('users/' + user.uid).set({
+                full_name: name,
+                email: email,
+                phone: phone,
+                role: 'Client', // Default role
+                status: 'Active',
+                created_at: new Date().toISOString()
+            });
+
+            // 3. Optional: Notify Backend (for emails, logs, etc.)
+            await fetch('/submit-general-registration', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, phone, uid: user.uid })
+            });
+
+            showAlert("Account created successfully! Redirecting...", "success");
             
-            if (!response.ok) throw new Error('Server constraints rejected payload.');
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                // Success State
-                msg.innerHTML = '<i class="fas fa-check-circle"></i> Application Transmitted! The High Council will review your documents.';
-                msg.style.background = "#dcfce7";
-                msg.style.color = "#166534";
-                msg.style.border = "1px solid #bbf7d0";
-                msg.style.display = 'block';
-                
-                btnText.textContent = "Application Secured";
-                spinner.style.display = 'none';
-                btnIcon.className = "fas fa-check";
-                btnIcon.style.display = "block";
-                btn.style.background = "var(--reg-dark)";
-                
-                if(typeof gsap !== 'undefined') {
-                    gsap.fromTo(msg, {scale: 0.95, autoAlpha: 0}, {scale: 1, autoAlpha: 1, duration: 0.4, ease: "back.out(2)"});
-                }
-                
-                setTimeout(() => { window.location.href = "/"; }, 3000);
-            } else {
-                throw new Error(result.message || "Submission failed");
-            }
+            setTimeout(() => {
+                window.location.href = "/dashboard";
+            }, 1500);
+
         } catch (error) {
             console.error(error);
-            
-            // --- AUTOMATED FALLBACK PROTOCOL ---
-            // If the server rejects the files (too large, timeout, missing bucket), trigger fallback email.
-            
-            const clientName = document.getElementById('reg-name').value;
-            const clientEmail = document.getElementById('reg-email').value;
-            const clientPhone = document.getElementById('reg-phone').value;
-            const clientRole = document.getElementById('reg-role').value;
-            
-            const subject = encodeURIComponent(`New Team Application: ${clientName} - ${clientRole}`);
-            const body = encodeURIComponent(
-                `Hello Delstarford Works High Council,\n\n` +
-                `I encountered an automated server restriction while uploading my application. Please find my secure details and attached documents below.\n\n` +
-                `-- APPLICATION DATA --\n` +
-                `Full Name: ${clientName}\n` +
-                `Role Applied For: ${clientRole}\n` +
-                `Email: ${clientEmail}\n` +
-                `Phone: ${clientPhone}\n\n` +
-                `[⚠️ ACTION REQUIRED: PLEASE DRAG AND DROP YOUR ID, KRA PIN, AND PASSPORT PHOTO HERE BEFORE SENDING]\n\n` +
-                `Regards,\n${clientName}`
-            );
-            
-            const mailtoLink = `mailto:delstarfordisaiah@gmail.com?subject=${subject}&body=${body}`;
-
-            // Display Fallback Error State
-            msg.innerHTML = `
-                <i class="fas fa-exclamation-triangle"></i> Network Timeout / File Payload Exceeded Limits.
-                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #fecaca; text-align: left;">
-                    <p style="font-size: 0.9rem; margin-bottom: 12px; color: #991b1b; font-weight: 600;">Fallback Protocol Initiated: Please click the button below to open your email client. Attach your files manually.</p>
-                    <a href="${mailtoLink}" class="btn-fallback" target="_blank">
-                        <i class="fas fa-envelope-open-text"></i> Send Manually via Email
-                    </a>
-                    <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 10px; text-align: center;">Or email documents directly to: delstarfordisaiah@gmail.com</p>
-                </div>
-            `;
-            msg.style.background = "#fee2e2";
-            msg.style.color = "#991b1b";
-            msg.style.border = "1px solid #fecaca";
-            msg.style.display = 'block';
-            
-            btn.disabled = false;
-            btnText.textContent = originalText;
-            btnIcon.style.display = "block";
-            spinner.style.display = 'none';
+            // Handle specific Firebase auth errors for better UX
+            let errorMsg = error.message;
+            if (error.code === 'auth/email-already-in-use') {
+                errorMsg = "This email is already registered. Please log in or use a different email.";
+            } else if (error.code === 'auth/weak-password') {
+                errorMsg = "Your password is too weak. Please use at least 6 characters.";
+            }
+            showAlert(errorMsg, "error");
+            setLoading(false);
         }
     };
+
+    function showAlert(msg, type) {
+        const alert = document.getElementById('reg-alert');
+        alert.textContent = msg;
+        alert.className = `reg-alert ${type}`;
+        alert.style.display = 'block';
+        if(typeof gsap !== 'undefined') {
+            gsap.fromTo(alert, {y: 10, autoAlpha: 0}, {y: 0, autoAlpha: 1, duration: 0.3});
+        }
+    }
+
+    function setLoading(isLoading) {
+        const btn = document.getElementById('regBtn');
+        const btnText = document.getElementById('btn-text');
+        const btnIcon = document.getElementById('btn-icon');
+        const spinner = document.getElementById('btn-spinner');
+        
+        btn.disabled = isLoading;
+        if (isLoading) {
+            btnText.textContent = "Creating Account...";
+            btnIcon.style.display = 'none';
+            spinner.style.display = 'block';
+        } else {
+            btnText.textContent = "Register Account";
+            btnIcon.style.display = 'block';
+            spinner.style.display = 'none';
+        }
+    }
 </script>
 
 {% endblock %}

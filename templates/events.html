@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    :root {
+        --evt-primary: #3b82f6;
+        --evt-dark: #0f172a;
+        --evt-bg: #f8fafc;
+        --evt-card: #ffffff;
+        --evt-border: #e2e8f0;
+        --evt-muted: #64748b;
+        --evt-success: #10b981;
+    }
+
+    /* --- HERO SECTION --- */
+    .evt-hero {
+        background: linear-gradient(135deg, var(--evt-dark) 0%, #1e293b 100%);
+        padding: 100px 20px 80px;
+        text-align: center;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+    .evt-hero::before {
+        content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+        background-image: radial-gradient(circle at center, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    .evt-hero h1 { font-size: 3.5rem; font-weight: 800; margin: 0 0 15px; letter-spacing: -1px; position: relative; z-index: 1;}
+    .evt-hero p { font-size: 1.15rem; color: #cbd5e1; max-width: 600px; margin: 0 auto; position: relative; z-index: 1;}
+
+    /* --- EVENT GRID --- */
+    .evt-container { max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
+    .evt-filters { display: flex; justify-content: center; gap: 15px; margin-bottom: 40px; flex-wrap: wrap;}
+    .evt-filter-btn {
+        background: white; border: 1px solid var(--evt-border); padding: 10px 20px;
+        border-radius: 50px; font-weight: 700; color: var(--evt-muted); cursor: pointer;
+        transition: all 0.3s; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 0.5px;
+    }
+    .evt-filter-btn.active, .evt-filter-btn:hover { background: var(--evt-dark); color: white; border-color: var(--evt-dark);}
+
+    .evt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; }
+    
+    .evt-card {
+        background: var(--evt-card); border-radius: 16px; border: 1px solid var(--evt-border);
+        overflow: hidden; transition: all 0.3s; display: flex; flex-direction: column;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.02);
+    }
+    .evt-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08); border-color: var(--evt-primary);}
+    
+    .evt-date-header { background: #eff6ff; padding: 15px 20px; border-bottom: 1px solid #dbeafe; display: flex; align-items: center; gap: 10px; color: var(--evt-primary); font-weight: 800;}
+    .evt-body { padding: 25px; flex-grow: 1; display: flex; flex-direction: column;}
+    .evt-tag { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; width: fit-content;}
+    
+    .tag-training { background: #fef3c7; color: #d97706; }
+    .tag-hiring { background: #dcfce7; color: #166534; }
+    .tag-showcase { background: #f3e8ff; color: #7e22ce; }
+
+    .evt-body h3 { margin: 0 0 10px 0; font-size: 1.3rem; color: var(--evt-dark); font-weight: 800;}
+    .evt-body p { color: var(--evt-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px; flex-grow: 1;}
+    
+    .evt-meta { display: flex; align-items: center; gap: 15px; font-size: 0.85rem; color: var(--evt-muted); font-weight: 600; margin-bottom: 20px;}
+    .evt-meta i { color: var(--evt-primary); }
+
+    .btn-register {
+        width: 100%; background: var(--evt-dark); color: white; border: none; padding: 14px;
+        border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.3s;
+        display: flex; justify-content: center; align-items: center; gap: 10px; font-size: 0.95rem;
+    }
+    .btn-register:hover { background: var(--evt-primary); }
+
+    /* --- MODAL --- */
+    .evt-modal-overlay {
+        position: fixed; inset: 0; background: rgba(15,23,42,0.8); backdrop-filter: blur(5px);
+        z-index: 9999; display: flex; align-items: center; justify-content: center;
+        opacity: 0; visibility: hidden; transition: 0.3s; padding: 20px;
+    }
+    .evt-modal-overlay.active { opacity: 1; visibility: visible; }
+    .evt-modal {
+        background: white; width: 100%; max-width: 450px; border-radius: 20px; padding: 35px;
+        transform: scale(0.95); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+    }
+    .evt-modal-overlay.active .evt-modal { transform: scale(1); }
+    
+    .evt-close { position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 1.5rem; color: var(--evt-muted); cursor: pointer;}
+    .evt-modal h2 { margin: 0 0 5px 0; color: var(--evt-dark); font-size: 1.5rem; font-weight: 800;}
+    .evt-modal p { color: var(--evt-muted); font-size: 0.9rem; margin-bottom: 25px;}
+
+    .evt-input-wrap { display: flex; align-items: center; background: #f8fafc; border: 1px solid var(--evt-border); border-radius: 8px; padding: 0 15px; margin-bottom: 15px; transition: 0.3s;}
+    .evt-input-wrap:focus-within { border-color: var(--evt-primary); background: white; box-shadow: 0 0 0 4px rgba(59,130,246,0.1); }
+    .evt-input-wrap i { color: #94a3b8; margin-right: 12px; }
+    .evt-input-wrap input { width: 100%; border: none; background: transparent; padding: 14px 0; outline: none; font-family: inherit; font-weight: 500;}
+
+    .btn-submit-evt { width: 100%; background: var(--evt-primary); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px;}
+    .btn-submit-evt:hover { background: #2563eb; }
+    .evt-spinner { display: none; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite; }
+</style>
+
+<section class="evt-hero">
+    <div class="gsap-anim" style="visibility: hidden;">
+        <h1>Events & Training Hub</h1>
+        <p>Join the High Council for live technical showcases, software engineering onboarding, and exclusive AI training sessions via Google Meet.</p>
+    </div>
+</section>
+
+<div class="evt-container">
+    <div class="evt-filters gsap-anim" style="visibility: hidden;">
+        <button class="evt-filter-btn active" onclick="filterEvents('all')">All Events</button>
+        <button class="evt-filter-btn" onclick="filterEvents('training')">Technical Training</button>
+        <button class="evt-filter-btn" onclick="filterEvents('hiring')">Onboarding & Hiring</button>
+        <button class="evt-filter-btn" onclick="filterEvents('showcase')">Project Showcases</button>
+    </div>
+
+    <div class="evt-grid" id="eventsGrid">
+        {% if events %}
+            {% for event in events %}
+            <div class="evt-card gsap-card {{ 'training' if 'training' in event.title.lower() else ('hiring' if 'hiring' in event.title.lower() or 'onboarding' in event.title.lower() else 'showcase') }}" style="visibility: hidden;">
+                <div class="evt-date-header">
+                    <i class="fas fa-calendar-day"></i> {{ event.date or 'TBA' }}
+                </div>
+                <div class="evt-body">
+                    <span class="evt-tag {{ 'tag-training' if 'training' in event.title.lower() else ('tag-hiring' if 'hiring' in event.title.lower() or 'onboarding' in event.title.lower() else 'tag-showcase') }}">
+                        {{ event.type }}
+                    </span>
+                    <h3>{{ event.title }}</h3>
+                    <p>{{ event.description }}</p>
+                    <div class="evt-meta">
+                        <span><i class="fas fa-map-marker-alt"></i> {{ event.location }}</span>
+                        {% if event.meet_link %}
+                        <span><i class="fas fa-video"></i> Google Meet</span>
+                        {% endif %}
+                    </div>
+                    <button class="btn-register" onclick="openRegisterModal('{{ event.id }}', '{{ event.title }}')">
+                        <i class="fas fa-ticket-alt"></i> {{ 'Reserve Spot' if event.type == 'EVENT' else 'Learn More' }}
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div style="grid-column: 1 / -1; text-align: center; padding: 60px; background: white; border-radius: 20px; border: 1px solid var(--evt-border);">
+                <i class="fas fa-calendar-times" style="font-size: 3rem; color: var(--evt-muted); margin-bottom: 20px;"></i>
+                <h3 style="color: var(--evt-dark);">No Upcoming Events</h3>
+                <p style="color: var(--evt-muted);">Check back later for new technical workshops and showcases.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="evt-modal-overlay" id="evtModal" onclick="closeRegisterModal(event)">
+    <div class="evt-modal" onclick="event.stopPropagation()">
+        <button class="evt-close" onclick="closeRegisterModal()">&times;</button>
+        <h2>Secure Your Access</h2>
+        <p id="modalEventTitle" style="font-weight: 700; color: var(--evt-primary);">Event Title Here</p>
+        <p>Enter your details to receive the secure Google Meet link.</p>
+
+        <form id="eventRegForm">
+            <input type="hidden" id="regEventId">
+            <input type="hidden" id="regEventName">
+            
+            <div class="evt-input-wrap">
+                <i class="fas fa-user"></i>
+                <input type="text" id="regName" placeholder="Full Legal Name" required>
+            </div>
+            <div class="evt-input-wrap">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="regEmail" placeholder="Official Email Address" required>
+            </div>
+            <div class="evt-input-wrap">
+                <i class="fas fa-briefcase"></i>
+                <input type="text" id="regRole" placeholder="Current Role / Title (e.g. Developer, Student)" required>
+            </div>
+
+            <button type="submit" class="btn-submit-evt" id="regSubmitBtn">
+                <span id="regBtnText">Get Meeting Link</span>
+                <div class="evt-spinner" id="regSpinner"></div>
+            </button>
+            <div id="regStatus" style="margin-top: 15px; text-align: center; font-size: 0.9rem; font-weight: 700; display: none; padding: 10px; border-radius: 8px;"></div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // --- GSAP Animations ---
+    document.addEventListener("DOMContentLoaded", () => {
+        if(typeof gsap !== 'undefined') {
+            gsap.fromTo(".gsap-anim", {y: 30, autoAlpha: 0}, {y: 0, autoAlpha: 1, duration: 0.8, stagger: 0.2});
+            gsap.fromTo(".gsap-card", {y: 40, autoAlpha: 0}, {y: 0, autoAlpha: 1, duration: 0.6, stagger: 0.1, ease: "power2.out", delay: 0.4});
+        } else {
+            document.querySelectorAll('.gsap-anim, .gsap-card').forEach(el => el.style.visibility = 'visible');
+        }
+    });
+
+    // --- Filter Logic ---
+    function filterEvents(category) {
+        document.querySelectorAll('.evt-filter-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+
+        const cards = document.querySelectorAll('.evt-card');
+        cards.forEach(card => {
+            if (category === 'all' || card.classList.contains(category)) {
+                card.style.display = 'flex';
+                if(typeof gsap !== 'undefined') gsap.fromTo(card, {scale: 0.9, opacity: 0}, {scale: 1, opacity: 1, duration: 0.4});
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    // --- Modal Logic ---
+    function openRegisterModal(eventId, eventName) {
+        document.getElementById('regEventId').value = eventId;
+        document.getElementById('regEventName').value = eventName;
+        document.getElementById('modalEventTitle').innerText = eventName;
+        document.getElementById('evtModal').classList.add('active');
+    }
+
+    function closeRegisterModal(e) {
+        if (!e || e.target.id === 'evtModal') {
+            document.getElementById('evtModal').classList.remove('active');
+            document.getElementById('eventRegForm').reset();
+            document.getElementById('regStatus').style.display = 'none';
+        }
+    }
+
+    // --- Form Submission ---
+    document.getElementById('eventRegForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('regSubmitBtn');
+        const btnText = document.getElementById('regBtnText');
+        const spinner = document.getElementById('regSpinner');
+        const status = document.getElementById('regStatus');
+
+        btn.disabled = true;
+        btnText.innerText = "Processing...";
+        spinner.style.display = "block";
+        status.style.display = "none";
+
+        const payload = {
+            eventId: document.getElementById('regEventId').value,
+            eventName: document.getElementById('regEventName').value,
+            name: document.getElementById('regName').value,
+            email: document.getElementById('regEmail').value,
+            role: document.getElementById('regRole').value
+        };
+
+        try {
+            const response = await fetch('/api/register-event', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                status.innerHTML = '<i class="fas fa-check-circle"></i> Success! Google Meet link sent to your email.';
+                status.style.background = "#dcfce7"; status.style.color = "#166534";
+                status.style.display = "block";
+                btn.style.background = "#10b981";
+                btnText.innerText = "Check your Email";
+                spinner.style.display = "none";
+                
+                setTimeout(() => closeRegisterModal(), 3000);
+            } else {
+                throw new Error(result.message || "Failed to register.");
+            }
+        } catch (error) {
+            status.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${error.message}`;
+            status.style.background = "#fee2e2"; status.style.color = "#991b1b";
+            status.style.display = "block";
+            btn.disabled = false;
+            btnText.innerText = "Try Again";
+            spinner.style.display = "none";
+        }
+    };
+</script>
+
+{% endblock %}

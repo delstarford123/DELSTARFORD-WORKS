@@ -296,6 +296,62 @@ def submit_registration():
         logger.error(f"Registration Route Error: {e}")
         # A 500 error will securely trigger the frontend fallback mechanism
         return jsonify({"success": False, "message": "Transmission failed. Fallback required."}), 500
+
+@app.route('/submit-general-registration', methods=['POST'])
+def submit_general_registration():
+    """
+    Handles background tasks for general user registration.
+    """
+    try:
+        data = request.json
+        name = data.get('name')
+        email = data.get('email')
+        phone = data.get('phone')
+        uid = data.get('uid')
+
+        # Notify Admin of New User
+        admin_subject = f"New User Registration: {name}"
+        admin_body = f"""
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; color: #0f172a;">
+            <h2 style="color: #3b82f6;">New Client Account Created</h2>
+            <p>A new user has registered an account on Delstarford Works.</p>
+            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+            <p><strong>Name:</strong> {name}</p>
+            <p><strong>Email:</strong> {email}</p>
+            <p><strong>Phone:</strong> {phone}</p>
+            <p><strong>Firebase UID:</strong> {uid}</p>
+            <p style="margin-top: 20px; font-size: 0.85rem; color: #64748b;">This user has been assigned the 'Client' role by default.</p>
+        </div>
+        """
+        send_email_html(SENDER_EMAIL, admin_subject, admin_body)
+
+        # Send Welcome Email to User
+        user_subject = "Welcome to Delstarford Works!"
+        user_body = f"""
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 30px; background: #f8fafc; color: #0f172a; border-radius: 12px; border: 1px solid #e2e8f0;">
+            <h2 style="color: #3b82f6; margin-top: 0;">Welcome, {name}!</h2>
+            <p>Your account has been successfully created. You now have access to the Delstarford Works Client Console.</p>
+            <p>With your account, you can:</p>
+            <ul style="line-height: 1.6;">
+                <li>Track your project progress in real-time.</li>
+                <li>Access premium AI models in our lab.</li>
+                <li>Manage your payments and invoices.</li>
+                <li>Communicate directly with our engineering team.</li>
+            </ul>
+            <div style="margin-top: 30px;">
+                <a href="https://delstarfordworks.co.ke/dashboard" style="background: #3b82f6; color: white; padding: 12px 25px; text-decoration: none; border-radius: 8px; font-weight: bold;">Access Your Dashboard</a>
+            </div>
+            <p style="margin-top: 40px; font-size: 0.85rem; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+                If you did not create this account, please contact us immediately at support@delstarfordworks.co.ke
+            </p>
+        </div>
+        """
+        send_email_html(email, user_subject, user_body)
+
+        return jsonify({"success": True})
+    except Exception as e:
+        print(f"General Registration Error: {e}")
+        return jsonify({"success": False, "message": str(e)}), 500
     
     
     
@@ -524,6 +580,80 @@ def create_payment_intent():
     except Exception as e:
         print(f"Stripe Error: {e}")
         return jsonify(error=str(e)), 403
+# ==============================================================================
+# EVENTS & TRAINING HUB ROUTES
+# ==============================================================================
+
+@app.route('/events')
+def events_page():
+    try:
+        # Fetch announcements of type 'EVENT' from Firebase
+        all_announcements = db.reference('announcements').get()
+        events = []
+        if all_announcements:
+            for key, val in all_announcements.items():
+                if isinstance(val, dict) and val.get('type') == 'EVENT':
+                    val['id'] = key
+                    events.append(val)
+        
+        # Sort by date
+        events.sort(key=lambda x: x.get('date', ''), reverse=True)
+        
+        return render_template('events.html', events=events)
+    except Exception as e:
+        print(f"Error loading events: {e}")
+        return render_template('events.html', events=[])
+
+@app.route('/api/register-event', methods=['POST'])
+def register_event():
+    try:
+        data = request.json
+        event_id = data.get('eventId')
+        event_name = data.get('eventName')
+        name = data.get('name')
+        email = data.get('email')
+        role = data.get('role')
+
+        # 1. Log Registration to Firebase
+        reg_id = f"REG-{random.randint(1000, 9999)}"
+        db.reference(f'event_registrations/{event_id}/{reg_id}').set({
+            'name': name,
+            'email': email,
+            'role': role,
+            'timestamp': str(datetime.datetime.now())
+        })
+
+        # 2. Fetch Google Meet Link from the specific event in Firebase
+        event_data = db.reference(f'announcements/{event_id}').get()
+        assigned_link = event_data.get('meet_link', "https://meet.google.com/new") if event_data else "https://meet.google.com/new"
+
+        # 3. Dispatch the Email with the Meet Link
+        subject = f"Registration Confirmed: {event_name}"
+        html_content = f"""
+        <html><body style="font-family: 'Helvetica Neue', Helvetica, sans-serif; color: #334155; background: #f8fafc; padding: 20px;">
+            <div style="background: white; padding: 30px; border-radius: 12px; border-top: 4px solid #3b82f6; max-width: 600px; margin: 0 auto; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <h2 style="color: #0f172a; margin-top: 0;">Hello {name},</h2>
+                <p>Your registration for <strong style="color: #2563eb;">{event_name}</strong> is confirmed.</p>
+                
+                <div style="background: #eff6ff; padding: 20px; border-radius: 8px; margin: 25px 0; text-align: center;">
+                    <p style="margin: 0 0 10px 0; font-size: 14px; font-weight: bold; color: #1e40af; text-transform: uppercase;">Your Secure Google Meet Link</p>
+                    <a href="{assigned_link}" style="background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Join the Meeting</a>
+                    <p style="margin: 15px 0 0 0; font-size: 12px; color: #64748b;">Or copy this link: {assigned_link}</p>
+                </div>
+                
+                <p style="font-size: 14px;">Please join 5 minutes early to ensure your microphone and camera are configured correctly.</p>
+                <p style="font-size: 14px;">Regards,<br><strong>Delstarford Works Operations</strong></p>
+            </div>
+        </body></html>
+        """
+        
+        send_email_html(email, subject, html_content)
+
+        return jsonify({"success": True, "message": "Registered successfully."})
+        
+    except Exception as e:
+        print(f"Event Registration Error: {e}")
+        return jsonify({"success": False, "message": "Server error. Please try again."}), 500
 # ==============================================================================
 # 5. FORM SUBMISSION & CLIENT ROUTES
 # ==============================================================================
@@ -893,12 +1023,20 @@ def post_announcement():
         import time
         update_id = f"UPD-{int(time.time())}"
         
-        db.reference(f'announcements/{update_id}').set({
-            "title": data.get('title'), "description": data.get('description'),
-            "type": data.get('type', 'ANNOUNCEMENT'), "date": data.get('date'),
+        announcement_data = {
+            "title": data.get('title'), 
+            "description": data.get('description'),
+            "type": data.get('type', 'ANNOUNCEMENT'), 
+            "date": data.get('date'),
             "location": data.get('location', 'Remote'),
             "priority": "High" if data.get('type') == "EVENT" else "Normal"
-        })
+        }
+
+        # Add Google Meet Link if provided
+        if data.get('meet_link'):
+            announcement_data['meet_link'] = data.get('meet_link')
+        
+        db.reference(f'announcements/{update_id}').set(announcement_data)
         return jsonify({"success": True})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500

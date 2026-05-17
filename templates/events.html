@@ -131,9 +131,17 @@
                         <span><i class="fas fa-video"></i> Google Meet</span>
                         {% endif %}
                     </div>
-                    <button class="btn-register" onclick="openRegisterModal('{{ event.id }}', '{{ event.title }}')">
-                        <i class="fas fa-ticket-alt"></i> {{ 'Reserve Spot' if event.type == 'EVENT' else 'Learn More' }}
-                    </button>
+                    
+                    {% if event.is_expired %}
+                        <button class="btn-register" disabled style="background: var(--evt-muted); cursor: not-allowed; opacity: 0.7;">
+                            <i class="fas fa-calendar-times"></i> Registration Closed
+                        </button>
+                        <p style="font-size: 0.75rem; color: var(--evt-muted); margin-top: 10px; text-align: center; font-weight: 600;">Deadline passed (2 days post-event)</p>
+                    {% else %}
+                        <button class="btn-register" onclick="openRegisterModal('{{ event.id }}', '{{ event.title }}')">
+                            <i class="fas fa-ticket-alt"></i> {{ 'Reserve Spot' if event.type == 'EVENT' else 'Learn More' }}
+                        </button>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}

@@ -590,10 +590,24 @@ def events_page():
         # Fetch announcements of type 'EVENT' from Firebase
         all_announcements = db.reference('announcements').get()
         events = []
+        today = datetime.date.today()
+        
         if all_announcements:
             for key, val in all_announcements.items():
                 if isinstance(val, dict) and val.get('type') == 'EVENT':
                     val['id'] = key
+                    
+                    # Calculate if registration is expired (more than 2 days past)
+                    event_date_str = val.get('date')
+                    is_expired = False
+                    if event_date_str:
+                        try:
+                            event_date = datetime.datetime.strptime(event_date_str, '%Y-%m-%d').date()
+                            if (today - event_date).days > 2:
+                                is_expired = True
+                        except: pass
+                    
+                    val['is_expired'] = is_expired
                     events.append(val)
         
         # Sort by date
@@ -614,7 +628,25 @@ def register_event():
         email = data.get('email')
         role = data.get('role')
 
-        # 1. Log Registration to Firebase
+        # 1. Fetch Event Details and Validate Date
+        event_ref = db.reference(f'announcements/{event_id}')
+        event_data = event_ref.get()
+        
+        if not event_data:
+            return jsonify({"success": False, "message": "Event not found."}), 404
+        
+        event_date_str = event_data.get('date')
+        if event_date_str:
+            try:
+                event_date = datetime.datetime.strptime(event_date_str, '%Y-%m-%d').date()
+                today = datetime.date.today()
+                # If today is more than 2 days past the event date
+                if (today - event_date).days > 2:
+                    return jsonify({"success": False, "message": "Registration for this event is closed (Deadline: 2 days post-event)."}), 400
+            except Exception as date_err:
+                print(f"Date parsing error: {date_err}")
+
+        # 2. Log Registration to Firebase
         reg_id = f"REG-{random.randint(1000, 9999)}"
         db.reference(f'event_registrations/{event_id}/{reg_id}').set({
             'name': name,
@@ -623,11 +655,10 @@ def register_event():
             'timestamp': str(datetime.datetime.now())
         })
 
-        # 2. Fetch Google Meet Link from the specific event in Firebase
-        event_data = db.reference(f'announcements/{event_id}').get()
-        assigned_link = event_data.get('meet_link', "https://meet.google.com/new") if event_data else "https://meet.google.com/new"
+        # 3. Fetch Google Meet Link from the specific event in Firebase
+        assigned_link = event_data.get('meet_link', "https://meet.google.com/new")
 
-        # 3. Dispatch the Email with the Meet Link
+        # 4. Dispatch the Email with the Meet Link
         subject = f"Registration Confirmed: {event_name}"
         html_content = f"""
         <html><body style="font-family: 'Helvetica Neue', Helvetica, sans-serif; color: #334155; background: #f8fafc; padding: 20px;">

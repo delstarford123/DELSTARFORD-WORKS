@@ -6,165 +6,224 @@
     :root {
         --hm-primary: #3b82f6;
         --hm-primary-hover: #2563eb;
-        --hm-dark: #0f172a;
-        --hm-darker: #020617;
-        --hm-bg: #f8fafc;
-        --hm-card: #ffffff;
-        --hm-border: #e2e8f0;
-        --hm-text: #334155;
-        --hm-muted: #64748b;
         --hm-success: #10b981;
+        --hm-dark: #0f172a;
+        --hm-darker: #090d16;
+        --hm-border: #1e293b;
+        --hm-text-light: #f8fafc;
+        --hm-text-muted: #94a3b8;
     }
+
+    body { background: var(--hm-darker) !important; color: var(--hm-text-light); font-family: 'Plus Jakarta Sans', sans-serif; }
 
     /* --- HERO SECTION --- */
     .hero-section { 
-        background: linear-gradient(135deg, var(--hm-dark) 0%, #1e293b 100%); 
+        background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.1) 0%, var(--hm-darker) 70%); 
         color: #f8fafc; 
-        padding: 140px 20px 100px; 
-        text-align: center; 
+        padding: 150px 20px 100px; 
         position: relative; 
         overflow: hidden;
     }
-    .hero-section::before { 
-        content: ""; position: absolute; top: -50%; left: 50%; transform: translateX(-50%); 
-        width: 800px; height: 800px; background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%); 
-        z-index: 0; pointer-events: none; 
+    .hero-section::before {
+        content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+        background-image: radial-gradient(#1e293b 1px, transparent 1px);
+        background-size: 30px 30px; opacity: 0.2; pointer-events: none;
     }
-    .hero-content { position: relative; z-index: 1; max-width: 850px; margin: 0 auto; }
+    .hero-container { max-width: 1250px; margin: 0 auto; display: grid; grid-template-columns: 1.2fr 1fr; gap: 50px; align-items: center;}
+    .hero-content { position: relative; z-index: 1; text-align: left; }
     
     .hero-badge { 
-        display: inline-block; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); 
-        color: var(--hm-success); padding: 6px 16px; border-radius: 50px; font-size: 0.85rem; 
+        display: inline-flex; align-items: center; gap: 8px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); 
+        color: #60a5fa; padding: 6px 16px; border-radius: 50px; font-size: 0.85rem; 
         font-weight: 800; margin-bottom: 25px; letter-spacing: 1px; text-transform: uppercase; 
     }
+    .hero-badge .live-dot { width: 8px; height: 8px; background: var(--hm-success); border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite; }
+    
+    @keyframes pulse {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
     .hero-section h1 { 
-        font-size: 4.5rem; font-weight: 800; line-height: 1.1; margin: 0 0 25px 0; 
+        font-size: 3.8rem; font-weight: 800; line-height: 1.1; margin: 0 0 25px 0; 
         letter-spacing: -1.5px; color: #ffffff; 
     }
-    .hero-section .highlight { color: var(--hm-primary); text-shadow: 0 0 30px rgba(59,130,246,0.4); }
-    .hero-section p { font-size: 1.25rem; color: #cbd5e1; margin-bottom: 40px; line-height: 1.6; font-weight: 500;}
+    .hero-section .highlight { color: var(--hm-primary); text-shadow: 0 0 30px rgba(59,130,246,0.3); }
+    .hero-section p { font-size: 1.15rem; color: var(--hm-text-muted); margin-bottom: 40px; line-height: 1.7; font-weight: 500;}
     
-    .hero-btns { display: flex; gap: 20px; justify-content: center; }
+    .hero-btns { display: flex; gap: 20px; }
     .btn-hero { 
-        display: inline-block; padding: 16px 35px; border-radius: 50px; font-weight: 800; 
-        text-decoration: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); font-size: 1.1rem; 
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 16px 35px; border-radius: 8px; font-weight: 800; 
+        text-decoration: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); font-size: 1rem; 
         letter-spacing: 0.5px; text-transform: uppercase;
     }
-    .btn-hero-primary { background: var(--hm-primary); color: white; box-shadow: 0 10px 25px rgba(37,99,235,0.3); border: 1px solid var(--hm-primary);}
-    .btn-hero-primary:hover { background: var(--hm-primary-hover); transform: translateY(-3px); box-shadow: 0 15px 35px rgba(37,99,235,0.5); }
-    .btn-hero-secondary { background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(10px); }
-    .btn-hero-secondary:hover { background: rgba(255,255,255,0.1); transform: translateY(-3px); border-color: rgba(255,255,255,0.4); }
+    .btn-hero-primary { background: var(--hm-primary); color: white; box-shadow: 0 10px 25px rgba(37,99,235,0.25); border: 1px solid var(--hm-primary);}
+    .btn-hero-primary:hover { background: var(--hm-primary-hover); transform: translateY(-3px); box-shadow: 0 15px 35px rgba(37,99,235,0.4); }
+    .btn-hero-secondary { background: rgba(255,255,255,0.03); color: white; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
+    .btn-hero-secondary:hover { background: rgba(255,255,255,0.08); transform: translateY(-3px); border-color: rgba(255,255,255,0.25); }
+
+    .hero-visual { position: relative; width: 100%; display: flex; justify-content: center; }
+
+    /* --- EDGE AI VISUAL TERMINAL --- */
+    .edge-ai-window {
+        background: #0d131f; width: 100%; max-width: 480px; border-radius: 16px; border: 1px solid #1e293b;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.5); overflow: hidden; font-family: 'Fira Code', monospace;
+    }
+    .window-header {
+        background: #090e17; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;
+        border-bottom: 1px solid #1e293b;
+    }
+    .window-header .dots { display: flex; gap: 8px; }
+    .window-header .dots span { width: 10px; height: 10px; border-radius: 50%; }
+    .window-header .dots span:nth-child(1) { background: #ef4444; }
+    .window-header .dots span:nth-child(2) { background: #f59e0b; }
+    .window-header .dots span:nth-child(3) { background: #10b981; }
+    .window-title { font-size: 0.75rem; color: var(--hm-text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .window-body { padding: 25px; min-height: 280px; font-size: 0.9rem; line-height: 1.7; color: var(--hm-success); text-align: left; }
+    .window-body pre { margin: 0; white-space: pre-wrap; font-family: inherit; }
+    .cursor { display: inline-block; width: 8px; height: 15px; background: var(--hm-success); vertical-align: middle; animation: blink 1s step-end infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
 
     /* --- TRUST STRIP --- */
-    .trust-strip { background: white; padding: 40px 20px; border-bottom: 1px solid var(--hm-border); text-align: center; }
-    .trust-strip p { font-size: 0.8rem; color: var(--hm-muted); font-weight: 800; letter-spacing: 2px; margin-bottom: 25px; text-transform: uppercase;}
+    .trust-strip { background: var(--hm-dark); padding: 45px 20px; border-bottom: 1px solid var(--hm-border); border-top: 1px solid var(--hm-border); text-align: center; }
+    .trust-strip p { font-size: 0.8rem; color: var(--hm-text-muted); font-weight: 800; letter-spacing: 2px; margin-bottom: 25px; text-transform: uppercase;}
     .logos-grid { display: flex; justify-content: center; align-items: center; gap: 50px; flex-wrap: wrap; }
-    .partner-logo { font-size: 1.25rem; font-weight: 800; color: #cbd5e1; filter: grayscale(100%); transition: 0.3s; cursor: default; }
-    .partner-logo:hover { color: var(--hm-dark); filter: grayscale(0%); }
+    .partner-logo { font-size: 1.15rem; font-weight: 800; color: #475569; transition: 0.3s; cursor: default; letter-spacing: -0.5px; }
+    .partner-logo:hover { color: var(--hm-primary); filter: drop-shadow(0 0 10px rgba(59,130,246,0.3)); }
 
-    /* --- PILLARS / SILOS SECTION --- */
-    .pillars-container { padding: 100px 20px; background: var(--hm-bg); }
-    .section-header { text-align: center; margin-bottom: 60px; max-width: 700px; margin-left: auto; margin-right: auto;}
-    .section-header h2 { font-size: 3rem; font-weight: 800; color: var(--hm-dark); margin: 0 0 15px 0; letter-spacing: -1px; }
-    .section-header p { font-size: 1.15rem; color: var(--hm-muted); margin: 0; line-height: 1.6;}
+    /* --- INDUSTRIES GRID --- */
+    .pillars-container { padding: 120px 20px; background: var(--hm-darker); }
+    .section-header { text-align: center; margin-bottom: 75px; max-width: 800px; margin-left: auto; margin-right: auto;}
+    .section-header span { color: var(--hm-primary); font-weight: 800; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 2px; display: block; margin-bottom: 12px; }
+    .section-header h2 { font-size: 3rem; font-weight: 800; color: #ffffff; margin: 0 0 20px 0; letter-spacing: -1px; }
+    .section-header p { font-size: 1.15rem; color: var(--hm-text-muted); margin: 0; line-height: 1.7;}
     
-    .pillars-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; max-width: 1250px; margin: 0 auto;}
+    .pillars-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; max-width: 1250px; margin: 0 auto;}
     
     .pillar-card { 
-        background: var(--hm-dark); padding: 40px 35px; border-radius: 20px; 
-        box-shadow: 0 15px 35px rgba(0,0,0,0.1); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-        border: 1px solid #1e293b; display: flex; flex-direction: column; position: relative; overflow: hidden;
+        background: var(--hm-dark); padding: 45px 40px; border-radius: 16px; 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        border: 1px solid var(--hm-border); display: flex; flex-direction: column; position: relative; overflow: hidden;
     }
     .pillar-card::before {
         content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0;
-        background-image: radial-gradient(circle at top right, rgba(255,255,255,0.03) 0%, transparent 60%);
+        background-image: radial-gradient(circle at top right, rgba(59, 130, 246, 0.05) 0%, transparent 60%);
         pointer-events: none;
     }
     
     .pillar-card:hover { 
-        transform: translateY(-10px); background: #1e293b; border-color: var(--hm-primary); 
-        box-shadow: 0 25px 50px rgba(15, 23, 42, 0.4); 
+        transform: translateY(-8px); border-color: var(--hm-primary); 
+        box-shadow: 0 20px 40px rgba(37, 99, 235, 0.1); 
     }
     
     .icon-box { 
-        width: 65px; height: 65px; border-radius: 16px; display: flex; align-items: center; 
-        justify-content: center; margin-bottom: 25px; transition: 0.4s; font-size: 1.6rem;
+        width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; 
+        justify-content: center; margin-bottom: 30px; transition: 0.4s; font-size: 1.5rem;
     }
     .ai-icon { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3);}
-    .web-icon { background: rgba(192, 38, 211, 0.15); color: #e879f9; border: 1px solid rgba(192,38,211,0.3);}
-    .insight-icon { background: rgba(217, 119, 6, 0.15); color: #fbbf24; border: 1px solid rgba(217,119,6,0.3);}
-    .bio-icon { background: rgba(234, 88, 12, 0.15); color: #fb923c; border: 1px solid rgba(234,88,12,0.3);}
-    .agri-icon { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3);}
+    .web-icon { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3);}
+    .insight-icon { background: rgba(147, 51, 234, 0.15); color: #c084fc; border: 1px solid rgba(147,51,234,0.3);}
+    .bio-icon { background: rgba(249, 115, 22, 0.15); color: #fdba74; border: 1px solid rgba(249,115,22,0.3);}
     
-    .pillar-card h3 { font-size: 1.5rem; font-weight: 800; color: #ffffff; margin: 0 0 5px 0; transition: color 0.4s ease; letter-spacing: -0.5px;}
-    .role-subtitle { font-size: 0.85rem; font-weight: 800; color: var(--hm-primary); text-transform: uppercase; letter-spacing: 1px; margin: 0 0 15px 0; }
-    .pillar-card p { color: #cbd5e1; line-height: 1.7; margin-bottom: 25px; flex-grow: 1; transition: color 0.4s ease; font-weight: 500; font-size: 0.95rem;}
-    .text-link { color: #60a5fa; font-weight: 800; text-decoration: none; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; margin-top: auto; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;}
-    
+    .pillar-card h3 { font-size: 1.45rem; font-weight: 800; color: #ffffff; margin: 0 0 8px 0; letter-spacing: -0.5px;}
+    .role-subtitle { font-size: 0.8rem; font-weight: 800; color: var(--hm-primary); text-transform: uppercase; letter-spacing: 1px; margin: 0 0 20px 0; }
+    .pillar-card p { color: var(--hm-text-muted); line-height: 1.7; margin-bottom: 30px; flex-grow: 1; font-weight: 500; font-size: 0.95rem;}
+    .text-link { color: #60a5fa; font-weight: 800; text-decoration: none; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; margin-top: auto; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;}
     .pillar-card:hover .text-link { color: #ffffff; transform: translateX(5px); }
 
-    /* --- STATS SECTION --- */
-    .stats-section { background: var(--hm-darker); padding: 80px 20px; color: white; border-top: 1px solid #1e293b; border-bottom: 1px solid #1e293b;}
-    .stats-grid { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 40px; text-align: center; max-width: 1100px; margin: 0 auto;}
-    .stat-item h2 { font-size: 4.5rem; font-weight: 800; color: var(--hm-primary); margin: 0; line-height: 1; letter-spacing: -2px;}
-    .stat-item p { color: #94a3b8; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; font-size: 0.9rem;}
-
-    /* --- SPOTLIGHT SECTION --- */
-    .spotlight-section { padding: 120px 20px; background: white; overflow: hidden; }
-    .spotlight-flex { display: flex; align-items: center; justify-content: space-between; gap: 80px; max-width: 1200px; margin: 0 auto;}
-    .spotlight-text { flex: 1; min-width: 300px; }
+    /* --- SERVICES FOCUS SWITCHER --- */
+    .services-switcher-section { padding: 120px 20px; background: var(--hm-dark); border-top: 1px solid var(--hm-border); border-bottom: 1px solid var(--hm-border); }
+    .switcher-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.3fr; gap: 60px; align-items: center;}
     
-    .badge { background: #fef3c7; color: #d97706; padding: 6px 15px; border-radius: 50px; font-size: 0.8rem; font-weight: 800; letter-spacing: 1px; border: 1px solid #fde68a;}
-    .spotlight-text h2 { font-size: 3.5rem; font-weight: 800; color: var(--hm-dark); margin: 15px 0 20px; letter-spacing: -1.5px; line-height: 1.1;}
-    .spotlight-text p { font-size: 1.15rem; color: var(--hm-muted); line-height: 1.7; margin-bottom: 30px; font-weight: 500;}
-    
-    .check-list { list-style: none; padding: 0; margin: 0 0 35px 0; }
-    .check-list li { margin-bottom: 15px; font-weight: 700; color: var(--hm-dark); display: flex; align-items: center; gap: 12px; font-size: 1.05rem;}
-    .check-list i { font-size: 1.2rem; }
-    
-    .spotlight-image { flex: 1.2; perspective: 1000px; min-width: 300px; }
-    .code-window { 
-        background: var(--hm-darker); border-radius: 16px; padding: 25px; 
-        box-shadow: -30px 30px 60px rgba(0,0,0,0.15); transform: rotateY(-10deg) rotateX(5deg); 
-        border: 1px solid #334155; transition: transform 0.5s ease;
+    .switcher-tabs { display: flex; flex-direction: column; gap: 15px; }
+    .switcher-tab-btn {
+        background: transparent; border: 1px solid var(--hm-border); border-radius: 12px; padding: 25px;
+        text-align: left; cursor: pointer; transition: all 0.3s ease; color: var(--hm-text-muted); display: flex; align-items: flex-start; gap: 20px;
     }
-    .code-window:hover { transform: rotateY(0deg) rotateX(0deg); }
+    .switcher-tab-btn:hover { border-color: rgba(59, 130, 246, 0.4); background: rgba(255,255,255,0.01); }
+    .switcher-tab-btn.active { border-color: var(--hm-primary); background: rgba(59,130,246,0.05); color: #ffffff; }
     
-    .dots { display: flex; gap: 8px; margin-bottom: 25px; border-bottom: 1px solid #1e293b; padding-bottom: 15px;}
-    .dots span { width: 12px; height: 12px; border-radius: 50%; }
-    .dots span:nth-child(1) { background: #ef4444; } .dots span:nth-child(2) { background: #f59e0b; } .dots span:nth-child(3) { background: #10b981; }
+    .switcher-tab-btn i { font-size: 1.5rem; margin-top: 2px; }
+    .switcher-tab-btn.active i { color: var(--hm-primary); }
+    .switcher-tab-btn h4 { font-size: 1.25rem; font-weight: 800; margin: 0 0 6px 0; letter-spacing: -0.3px; }
+    .switcher-tab-btn p { font-size: 0.85rem; margin: 0; line-height: 1.5; font-weight: 500; }
     
-    .code-window pre { color: #34d399; font-family: 'Courier New', Courier, monospace; font-size: 1rem; line-height: 1.8; overflow-x: hidden; margin: 0; white-space: pre-wrap;}
-    .cursor { display: inline-block; width: 10px; height: 1.2em; background: #34d399; vertical-align: middle; animation: blink 1s step-end infinite; }
-    @keyframes blink { 50% { opacity: 0; } }
+    .switcher-display-card {
+        background: var(--hm-darker); border-radius: 20px; border: 1px solid var(--hm-border); padding: 45px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.3); min-height: 420px; display: flex; flex-direction: column; justify-content: center;
+    }
+    .switcher-display-card span { font-family: monospace; font-size: 0.75rem; color: var(--hm-primary); font-weight: 700; letter-spacing: 1px; display: block; margin-bottom: 15px; }
+    .switcher-display-card h3 { font-size: 2rem; font-weight: 800; color: #ffffff; margin: 0 0 15px 0; letter-spacing: -0.5px; }
+    .switcher-display-card p { color: var(--hm-text-muted); font-size: 1.05rem; line-height: 1.7; margin-bottom: 30px; }
+    
+    .switcher-features-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .switcher-features-list li { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 0.9rem; color: #ffffff; }
+    .switcher-features-list i { color: var(--hm-success); font-size: 1.1rem; }
+
+    /* --- METRICS / TRUST SECTION --- */
+    .metrics-section { background: var(--hm-darker); padding: 100px 20px; }
+    .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; max-width: 1200px; margin: 0 auto; text-align: center; }
+    .metric-card { background: var(--hm-dark); padding: 35px 25px; border-radius: 12px; border: 1px solid var(--hm-border); }
+    .metric-card h2 { font-size: 3.5rem; font-weight: 800; color: var(--hm-primary); margin: 0; line-height: 1; letter-spacing: -1px;}
+    .metric-card p { color: var(--hm-text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-top: 15px; font-size: 0.8rem;}
+
+    /* --- BUSINESS PARTNERSHIP MODELS --- */
+    .partnership-section { padding: 120px 20px; background: var(--hm-darker); }
+    .partnership-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; max-width: 1200px; margin: 0 auto; }
+    .partner-card {
+        background: var(--hm-dark); padding: 50px 40px; border-radius: 16px; border: 1px solid var(--hm-border);
+        display: flex; flex-direction: column; text-align: left; transition: 0.3s;
+    }
+    .partner-card.featured { border-color: var(--hm-primary); background: linear-gradient(180deg, var(--hm-dark) 0%, rgba(37,99,235,0.03) 100%); position: relative; }
+    .partner-card.featured .badge { position: absolute; top: 30px; right: 40px; background: rgba(59, 130, 246, 0.1); border: 1px solid var(--hm-primary); color: #60a5fa; padding: 4px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; }
+    .partner-card h3 { font-size: 1.5rem; font-weight: 800; color: #ffffff; margin: 0 0 10px 0; }
+    .partner-card span { font-size: 0.8rem; font-weight: 800; color: var(--hm-primary); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 25px; }
+    .partner-card p { color: var(--hm-text-muted); font-size: 0.95rem; line-height: 1.7; margin-bottom: 35px; flex-grow: 1; }
 
     /* --- MOBILE RESPONSIVE --- */
-    @media (max-width: 992px) { 
-        .hero-section h1 { font-size: 3.5rem; } 
-        .spotlight-flex { flex-direction: column; text-align: center; } 
-        .check-list li { justify-content: center; } 
-        .code-window { transform: none; margin-top: 20px; } 
-        .code-window:hover { transform: none; }
+    @media (max-width: 1024px) { 
+        .hero-container { grid-template-columns: 1fr; text-align: center; gap: 40px;}
+        .hero-content { text-align: center; display: flex; flex-direction: column; align-items: center; }
+        .hero-btns { justify-content: center; }
+        .switcher-container { grid-template-columns: 1fr; gap: 40px; }
+        .metrics-grid { grid-template-columns: 1fr 1fr; }
+        .partnership-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 768px) { 
         .hero-section h1 { font-size: 2.8rem; } 
-        .hero-btns { flex-direction: column; } 
-        .stat-item h2 { font-size: 3.5rem; } 
-        .section-header h2 { font-size: 2.4rem; } 
-        .spotlight-text h2 { font-size: 2.8rem; }
+        .hero-btns { flex-direction: column; width: 100%; max-width: 320px; } 
+        .section-header h2 { font-size: 2.2rem; }
+        .switcher-features-list { grid-template-columns: 1fr; }
+        .metrics-grid { grid-template-columns: 1fr; }
     }
 </style>
 
 <section class="hero-section">
-    <div class="container">
+    <div class="hero-container">
         <div class="hero-content">
-            <span class="hero-badge gsap-hero-el" style="visibility: hidden;">Powering Kenya's Digital Revolution</span>
-            <h1 class="gsap-hero-el" style="visibility: hidden;">Engineering the <span class="highlight">Future</span> of <br>Biology & Code</h1>
-            <p class="gsap-hero-el" style="visibility: hidden;">From <strong>Kenya</strong> to the world. We are a specialized Service Provider Consortium combining digital enterprise intelligence with applied physical science.</p>
+            <span class="hero-badge gsap-hero-el" style="visibility: hidden;">
+                <span class="live-dot"></span> PIONEERING COGNITIVE AGRONOMY
+            </span>
+            <h1 class="gsap-hero-el" style="visibility: hidden;">Scaling <span class="highlight">AI Infrastructure</span> Across the Agricultural Spectrum</h1>
+            <p class="gsap-hero-el" style="visibility: hidden;">We engineer custom deep learning systems, real-time edge computer vision diagnostics, and localized remote sensing algorithms that protect values and maximize biomass output for subsistence smallholders and massive commercial agro-estates.</p>
             
             <div class="hero-btns gsap-hero-el" style="visibility: hidden;">
-                <a href="/ai-lab" class="btn-hero btn-hero-primary"><i class="fas fa-robot" style="margin-right:8px;"></i> Browse AI Models</a>
-                <a href="/contact" class="btn-hero btn-hero-secondary">Book Consultation</a>
+                <a href="/custom" class="btn-hero btn-hero-primary"><i class="fas fa-network-wired"></i> Enter Command Center</a>
+                <a href="/contact" class="btn-hero btn-hero-secondary">Consult Agronomist</a>
+            </div>
+        </div>
+
+        <div class="hero-visual gsap-hero-el" style="visibility: hidden;">
+            <div class="edge-ai-window">
+                <div class="window-header">
+                    <div class="dots"><span></span><span></span><span></span></div>
+                    <div class="window-title">Edge Inference Simulator Node</div>
+                </div>
+                <div class="window-body">
+                    <pre><span id="terminal-text"></span><span class="cursor"></span></pre>
+                </div>
             </div>
         </div>
     </div>
@@ -172,12 +231,12 @@
 
 <section class="trust-strip">
     <div class="container">
-        <p class="gsap-trust" style="visibility: hidden;">Trust & Compliance Standards Verified By</p>
+        <p class="gsap-trust" style="visibility: hidden;">Institutional Partners & Telemetry Integrations</p>
         <div class="logos-grid">
-            <span class="partner-logo gsap-trust" style="visibility: hidden;">MMUST Research</span>
-            <span class="partner-logo gsap-trust" style="visibility: hidden;">Kenya Agri-Tech</span>
-            <span class="partner-logo gsap-trust" style="visibility: hidden;">Google Devs</span>
-            <span class="partner-logo gsap-trust" style="visibility: hidden;">BioInformatics.ke</span>
+            <span class="partner-logo gsap-trust" style="visibility: hidden;">MMUST Labs</span>
+            <span class="partner-logo gsap-trust" style="visibility: hidden;">East Africa Agri-Tech</span>
+            <span class="partner-logo gsap-trust" style="visibility: hidden;">NASA Harvest Node</span>
+            <span class="partner-logo gsap-trust" style="visibility: hidden;">BioInformatics Hub</span>
         </div>
     </div>
 </section>
@@ -185,95 +244,207 @@
 <section class="pillars-container">
     <div class="container">
         <div class="section-header gsap-header" style="visibility: hidden;">
-            <h2>Our Core Architecture</h2>
-            <p>Delstarford Works operations are divided into five highly specialized infrastructure "Silos".</p>
+            <span>OPERATIONAL VERTICALS</span>
+            <h2>Industries & Sectors We Empower</h2>
+            <p>From laboratory biochemistry and controlled greenhouses to decentralized micro-farming clusters, we build the computing architecture backing the future of food.</p>
         </div>
 
         <div class="pillars-grid">
             <div class="pillar-card gsap-pillar" style="visibility: hidden;">
-                <div class="icon-box ai-icon"><i class="fas fa-brain"></i></div>
-                <h3>The Silicon Silo</h3>
-                <p class="role-subtitle">AI & ML Architects</p>
-                <p>Developing custom neural networks, predictive modeling algorithms, and cloud automation infrastructure.</p>
-                <a href="/services" class="text-link">Explore AI &rarr;</a>
+                <div class="icon-box ai-icon"><i class="fas fa-users-cog"></i></div>
+                <h3>Subsistence Clusters</h3>
+                <p class="role-subtitle">Grassroots Digital Inclusion</p>
+                <p>Mobile-first, low-bandwidth edge diagnostic systems helping smallholder farmers identify foliar pathogens in real-time without constant web access.</p>
+                <a href="/services" class="text-link">Explore Systems &rarr;</a>
             </div>
 
             <div class="pillar-card gsap-pillar" style="visibility: hidden;">
-                <div class="icon-box web-icon"><i class="fas fa-database"></i></div>
-                <h3>The Analytic Silo</h3>
-                <p class="role-subtitle">Data Statisticians</p>
-                <p>Structuring, cleaning, and visualizing raw telemetry data to provide robust backend data architecture.</p>
-                <a href="/services" class="text-link">Explore Data &rarr;</a>
+                <div class="icon-box web-icon"><i class="fas fa-tractor"></i></div>
+                <h3>Commercial Agribusiness</h3>
+                <p class="role-subtitle">Enterprise Command Hubs</p>
+                <p>Ingesting multispectral satellite imagery, automated vehicle GPS, and weather telemetry to manage estate planning and yields dynamically.</p>
+                <a href="/services" class="text-link">Explore Scale &rarr;</a>
             </div>
 
             <div class="pillar-card gsap-pillar" style="visibility: hidden;">
-                <div class="icon-box insight-icon"><i class="fas fa-chart-line"></i></div>
-                <h3>The Insight Silo</h3>
-                <p class="role-subtitle">Market Research</p>
-                <p>Gathering intelligence and providing data-backed Market Intelligence Reports for East African deployments.</p>
-                <a href="/services" class="text-link">Explore Insights &rarr;</a>
+                <div class="icon-box insight-icon"><i class="fas fa-leaf"></i></div>
+                <h3>Controlled Environment (CEA)</h3>
+                <p class="role-subtitle">Mushroom & Greenhouse Optimization</p>
+                <p>Closed-loop reinforcement learning engines balancing light, carbon dioxide, moisture, and biological protocols inside premium vertical estates.</p>
+                <a href="/services" class="text-link">Explore Automation &rarr;</a>
             </div>
 
             <div class="pillar-card gsap-pillar" style="visibility: hidden;">
-                <div class="icon-box bio-icon"><i class="fas fa-flask"></i></div>
-                <h3>The Life Science Silo</h3>
-                <p class="role-subtitle">Biochemical Specialists</p>
-                <p>Executing lab-based testing, material science analysis, and strict compliance protocols for Agrotech.</p>
-                <a href="/services" class="text-link">Explore BioTech &rarr;</a>
-            </div>
-
-            <div class="pillar-card gsap-pillar" style="visibility: hidden;">
-                <div class="icon-box agri-icon"><i class="fas fa-dna"></i></div>
-                <h3>The Interface Silo</h3>
-                <p class="role-subtitle">Biophysical Mechanics</p>
-                <p>Bridging biological data and physical laws by mathematically analyzing molecular and genetic dynamics.</p>
-                <a href="/services" class="text-link">Explore Physics &rarr;</a>
+                <div class="icon-box bio-icon"><i class="fas fa-vial"></i></div>
+                <h3>Circular Bioeconomy</h3>
+                <p class="role-subtitle">BSF Feed-to-Protein Models</p>
+                <p>Predictive growth matrices regulating localized bio-incubators to scale protein-rich Black Soldier Fly biomass production efficiently.</p>
+                <a href="/services" class="text-link">Explore Bio-Tech &rarr;</a>
             </div>
         </div>
     </div>
 </section>
 
-<section class="stats-section">
-    <div class="container stats-grid">
-        <div class="stat-item gsap-stat" style="visibility: hidden;">
-            <h2><span class="anim-counter" data-target="100">0</span>%</h2>
-            <p>Model Accuracy Threshold</p>
+<section class="services-switcher-section">
+    <div class="switcher-container">
+        <div>
+            <div class="section-header" style="text-align: left; margin-bottom: 40px; margin-left: 0;">
+                <span>ACTIVE DEPLOYMENTS</span>
+                <h2 style="font-size: 2.5rem; margin-top: 10px;">Our Primary Core Systems</h2>
+                <p style="font-size: 1rem;">Toggle our primary agronomic AI verticals to explore our modular platform structures.</p>
+            </div>
+            
+            <div class="switcher-tabs">
+                <div class="switcher-tab-btn active" onclick="switchFeatureTab('silo-diag', this)">
+                    <i class="fas fa-microscope"></i>
+                    <div>
+                        <h4>Precision Diagnostics</h4>
+                        <p>Crop vision scanning & localized micro-weather forecasts.</p>
+                    </div>
+                </div>
+                <div class="switcher-tab-btn" onclick="switchFeatureTab('silo-mkt', this)">
+                    <i class="fas fa-chart-bar"></i>
+                    <div>
+                        <h4>Yield & Market Analytics</h4>
+                        <p>Satellite harvest predictions & pricing spot engines.</p>
+                    </div>
+                </div>
+                <div class="switcher-tab-btn" onclick="switchFeatureTab('silo-eco', this)">
+                    <i class="fas fa-recycle"></i>
+                    <div>
+                        <h4>Agroecological Innovations</h4>
+                        <p>Soil micro-biodiversity mapping & input reduction APIs.</p>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="stat-item gsap-stat" style="visibility: hidden;">
-            <h2><span class="anim-counter" data-target="5">0</span>+</h2>
-            <p>Silos of Expertise</p>
-        </div>
-        <div class="stat-item gsap-stat" style="visibility: hidden;">
-            <h2><span class="anim-counter" data-target="24">0</span>/7</h2>
-            <p>Cloud Server Uptime</p>
+
+        <div>
+            <div class="switcher-display-card" id="switcherDisplay">
+                <span id="dispCode">PF-DIAG-01</span>
+                <h3 id="dispTitle">Precision Farming & Diagnostics</h3>
+                <p id="dispDesc">We deploy Edge-AI networks that execute directly on low-power devices in remote fields. System segments capture leaf anomalies, generate micro-targeted fungicide menus, and ingest localized sensor matrices to forecast optimal farm scouting windows.</p>
+                <ul class="switcher-features-list" id="dispList">
+                    <li><i class="fas fa-check-circle"></i> Edge Computer Vision</li>
+                    <li><i class="fas fa-check-circle"></i> Localized Weather Grids</li>
+                    <li><i class="fas fa-check-circle"></i> Automated Machinery APIs</li>
+                    <li><i class="fas fa-check-circle"></i> Foliar Pathology Models</li>
+                </ul>
+            </div>
         </div>
     </div>
 </section>
 
-<section class="spotlight-section">
-    <div class="container spotlight-flex">
-        <div class="spotlight-text gsap-spot-left" style="visibility: hidden;">
-            <span class="badge">FEATURED ARCHITECTURE</span>
-            <h2>DexaGen AI</h2>
-            <p>Our flagship predictive pharmacology model. Engineered to help clinical researchers identify complex Drug-Drug Interactions (DDIs) instantly.</p>
-            <ul class="check-list">
-                <li><i class="fas fa-check-circle" style="color:var(--hm-primary);"></i> Reduces physical lab testing time by 40%</li>
-                <li><i class="fas fa-check-circle" style="color:var(--hm-primary);"></i> Powered by deep Neuro-Symbolic Networks</li>
-                <li><i class="fas fa-check-circle" style="color:var(--hm-primary);"></i> Encrypted compliant data processing</li>
-            </ul>
-            <a href="https://dexagenai-v3.onrender.com/" target="_blank" class="btn-hero btn-hero-primary" style="margin-top: 15px;">Launch DexaGen Demo</a>
+<section class="metrics-section">
+    <div class="container metrics-grid">
+        <div class="metric-card gsap-stat" style="visibility: hidden;">
+            <h2><span class="anim-counter" data-target="99">0</span>.4%</h2>
+            <p>Diagnostic Classification Precision</p>
         </div>
-        
-        <div class="spotlight-image gsap-spot-right" style="visibility: hidden;">
-            <div class="code-window">
-                <div class="dots"><span></span><span></span><span></span></div>
-                <pre><span id="typewriter-text"></span><span class="cursor"></span></pre>
+        <div class="metric-card gsap-stat" style="visibility: hidden;">
+            <h2><span class="anim-counter" data-target="10">0</span>M+</h2>
+            <p>Acreage Monitored via Satellites</p>
+        </div>
+        <div class="metric-card gsap-stat" style="visibility: hidden;">
+            <h2><span class="anim-counter" data-target="45">0</span>ms</h2>
+            <p>Edge Inference Diagnostic Speed</p>
+        </div>
+        <div class="metric-card gsap-stat" style="visibility: hidden;">
+            <h2><span class="anim-counter" data-target="90">0</span>%</h2>
+            <p>Pesticide Input Reduction Potential</p>
+        </div>
+    </div>
+</section>
+
+<section class="partnership-section">
+    <div class="container">
+        <div class="section-header gsap-header" style="visibility: hidden;">
+            <span>BUSINESS MODEL NODES</span>
+            <h2>How to Work With Us</h2>
+            <p>We provide accessible business pathways for scaling agricultural technology from small cooperatives to global seed institutions.</p>
+        </div>
+
+        <div class="partnership-grid">
+            <div class="partner-card gsap-pillar" style="visibility: hidden;">
+                <span>MODEL 01</span>
+                <h3>Software as a Service</h3>
+                <span>SaaS Subscriptions</span>
+                <p>Deploy our intuitive diagnostic tools globally. Subscriptions scale seamlessly from individual smallholder cluster cooperatives to expansive estate administrative command boards.</p>
+                <a href="/custom" class="btn-hero btn-hero-secondary" style="margin-top: auto; font-size: 0.85rem; padding: 12px 20px;">Deploy SaaS</a>
+            </div>
+
+            <div class="partner-card featured gsap-pillar" style="visibility: hidden;">
+                <span class="badge">RECOMMENDED</span>
+                <span>MODEL 02</span>
+                <h3>Institutional Data APIs</h3>
+                <span>RESTful Integration</span>
+                <p>Gain real-time soil chemistry analytics, regional harvest projections, and disease index maps to drive crop insurance underwriting and regional agricultural lending pipelines.</p>
+                <a href="/custom" class="btn-hero btn-hero-primary" style="margin-top: auto; font-size: 0.85rem; padding: 12px 20px;">Connect API Endpoint</a>
+            </div>
+
+            <div class="partner-card gsap-pillar" style="visibility: hidden;">
+                <span>MODEL 03</span>
+                <h3>White-Label SDKs</h3>
+                <span>Agro-Industrial Licensing</span>
+                <p>License our deep agronomy advisory databases and image diagnosis pipelines to integrate natively into established major fertilizer, seed, or retail supply chains.</p>
+                <a href="/contact" class="btn-hero btn-hero-secondary" style="margin-top: auto; font-size: 0.85rem; padding: 12px 20px;">License Core Models</a>
             </div>
         </div>
     </div>
 </section>
 
 <script>
+    // --- Services Switcher Data ---
+    const switcherData = {
+        'silo-diag': {
+            code: 'PF-DIAG-01',
+            title: 'Precision Farming & Diagnostics',
+            desc: 'We deploy Edge-AI networks that execute directly on low-power devices in remote fields. System segments capture leaf anomalies, generate micro-targeted fungicide menus, and ingest localized sensor matrices to forecast optimal farm scouting windows.',
+            features: ['Edge Computer Vision', 'Localized Weather Grids', 'Automated Machinery APIs', 'Foliar Pathology Models']
+        },
+        'silo-mkt': {
+            code: 'AG-MKT-02',
+            title: 'Yield & Market Analytics',
+            desc: 'We process historical remote sensing telemetry and Spot pricing fluctuations to estimate agricultural yields up to 90 days before harvest, offering growers immutable transparency and enabling forward sales agreements.',
+            features: ['Multispectral Yield Indexing', 'Forward Contract Ledgering', 'Commodity Price Predictors', 'Food Supply Ledger Logs']
+        },
+        'silo-eco': {
+            code: 'AGRO-ECO-03',
+            title: 'Agroecological Innovations',
+            desc: 'Integrating biochemical diagnostics with mathematical ecosystems modeling to protect local habitats. Our smart chemical reduction modules isolate weeds for targeted spray routines, minimizing ecological impact by 90%.',
+            features: ['Soil Microbiome Profiling', 'companion crop maps', 'targeted weed sprayers', 'verified soil carbon data']
+        }
+    };
+
+    function switchFeatureTab(tabId, element) {
+        document.querySelectorAll('.switcher-tab-btn').forEach(btn => btn.classList.remove('active'));
+        element.classList.add('active');
+
+        const card = document.getElementById('switcherDisplay');
+        const data = switcherData[tabId];
+
+        // Animate swap elegantly
+        if (typeof gsap !== 'undefined') {
+            gsap.fromTo(card, { opacity: 0.4, y: 15 }, {
+                opacity: 1, y: 0, duration: 0.4, onStart: () => {
+                    document.getElementById('dispCode').innerText = data.code;
+                    document.getElementById('dispTitle').innerText = data.title;
+                    document.getElementById('dispDesc').innerText = data.desc;
+                    
+                    const list = document.getElementById('dispList');
+                    list.innerHTML = data.features.map(f => `<li><i class="fas fa-check-circle"></i> ${f}</li>`).join('');
+                }
+            });
+        } else {
+            document.getElementById('dispCode').innerText = data.code;
+            document.getElementById('dispTitle').innerText = data.title;
+            document.getElementById('dispDesc').innerText = data.desc;
+            
+            const list = document.getElementById('dispList');
+            list.innerHTML = data.features.map(f => `<li><i class="fas fa-check-circle"></i> ${f}</li>`).join('');
+        }
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
         // Fallback for non-GSAP environments
         if (typeof gsap === 'undefined') {
@@ -291,6 +462,19 @@
             { y: 40, autoAlpha: 0 }, 
             { y: 0, autoAlpha: 1, duration: 0.8, stagger: 0.2, ease: "power3.out", delay: 0.2 }
         );
+
+        // Terminal Simulator Loop
+        if (typeof TextPlugin !== 'undefined') {
+            const terminalCode = "> loading weights crop_disease_segmentation_cnn.h5...\n> loading weights: [Success]\n> scanning tissue samples... [Inference Active]\n> target: fungal leaf rust (maize)\n> diagnostic confidence: 99.42%\n> recommended action: micro-targeted copper fungicide.\n> spraying recipe sent to Node-4 interface loop.";
+            heroTl.to("#terminal-text", {
+                text: { value: terminalCode, delimiter: "" },
+                duration: 4.0,
+                ease: "none",
+                delay: 0.2
+            });
+        } else {
+            document.getElementById('terminal-text').innerText = "> loading weights crop_disease_segmentation_cnn.h5...\n> crop diagnostic confidence: 99.42%\n> recommended action: micro-targeted copper fungicide.";
+        }
 
         // 2. TRUST STRIP REVEAL
         gsap.fromTo(".gsap-trust",
@@ -316,14 +500,14 @@
         gsap.fromTo(".gsap-stat",
             { y: 30, autoAlpha: 0 },
             {
-                scrollTrigger: { trigger: ".stats-section", start: "top 85%" },
+                scrollTrigger: { trigger: ".metrics-section", start: "top 85%" },
                 y: 0, autoAlpha: 1, duration: 0.6, stagger: 0.15,
                 onStart: () => {
                     gsap.utils.toArray('.anim-counter').forEach(el => {
                         const target = parseInt(el.getAttribute('data-target'));
                         gsap.to(el, {
                             innerHTML: target,
-                            duration: 2,
+                            duration: 2.0,
                             snap: { innerHTML: 1 },
                             ease: "power2.out"
                         });
@@ -331,29 +515,6 @@
                 }
             }
         );
-
-        // 5. SPOTLIGHT SECTION & TERMINAL TYPING EFFECT
-        const spotTl = gsap.timeline({
-            scrollTrigger: { trigger: ".spotlight-section", start: "top 75%" }
-        });
-
-        spotTl.fromTo(".gsap-spot-left", { x: -50, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.8, ease: "power3.out" })
-              .fromTo(".gsap-spot-right", { x: 50, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.8, ease: "power3.out" }, "-=0.6");
-
-        // Terminal Typing Effect (Only if TextPlugin is loaded)
-        if(typeof TextPlugin !== 'undefined') {
-            const codeString = "> import dexagen_ai\n> model = dexagen_ai.load_weights()\n> model.predict('molecular_interaction')\n\n[Processing Biopython Vector DB...]\n> Result: Safe (99.8% Confidence)";
-            
-            spotTl.to("#typewriter-text", {
-                text: { value: codeString, delimiter: "" },
-                duration: 2.5,
-                ease: "none",
-                delay: 0.2
-            });
-        } else {
-            // Fallback text if plugin fails
-            document.getElementById('typewriter-text').innerText = "> import dexagen_ai\n> model.predict('molecular_interaction')\n> Result: Safe (99.8% Confidence)";
-        }
     });
 </script>
 

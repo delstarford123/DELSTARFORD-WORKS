@@ -7,41 +7,39 @@
         --srv-primary: #3b82f6;
         --srv-primary-hover: #2563eb;
         --srv-dark: #0f172a;
-        --srv-bg: #ffffff;
-        --srv-bg-alt: #f8fafc;
-        --srv-border: #e2e8f0;
-        --srv-text: #334155;
-        --srv-muted: #64748b;
+        --srv-darker: #090d16;
+        --srv-border: #1e293b;
+        --srv-text: #f8fafc;
+        --srv-muted: #94a3b8;
         --srv-success: #10b981;
     }
 
-    body { background: var(--srv-bg); font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background: var(--srv-darker) !important; color: var(--srv-text); font-family: 'Plus Jakarta Sans', sans-serif; }
 
     /* --- HERO SECTION --- */
     .services-hero { 
-        padding: 120px 20px 80px; 
-        background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+        padding: 140px 20px 80px; 
+        background: radial-gradient(circle at center, rgba(59, 130, 246, 0.08) 0%, var(--srv-darker) 70%);
         text-align: center; 
         overflow: hidden; 
         position: relative;
     }
-    /* Subtle geometric overlay */
     .services-hero::after {
         content: ''; position: absolute; top: 0; left: 0; right: 0; height: 100%;
-        background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-        background-size: 40px 40px; opacity: 0.3; pointer-events: none; z-index: 0;
+        background-image: radial-gradient(#1e293b 1px, transparent 1px);
+        background-size: 30px 30px; opacity: 0.2; pointer-events: none; z-index: 0;
     }
     
     .hero-content { position: relative; z-index: 1; max-width: 900px; margin: 0 auto;}
     
     .hero-badge { 
-        display: inline-block; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); 
-        color: var(--srv-primary); padding: 6px 16px; border-radius: 50px; font-size: 0.85rem; font-weight: 800; 
+        display: inline-block; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); 
+        color: #60a5fa; padding: 6px 16px; border-radius: 50px; font-size: 0.85rem; font-weight: 800; 
         margin-bottom: 20px; letter-spacing: 1px; text-transform: uppercase; 
     }
-    .services-hero h1 { font-size: 4rem; margin: 0 0 20px 0; color: var(--srv-dark); font-weight: 800; letter-spacing: -1.5px; line-height: 1.1;}
+    .services-hero h1 { font-size: 3.8rem; margin: 0 0 20px 0; color: #ffffff; font-weight: 800; letter-spacing: -1.5px; line-height: 1.1;}
     .services-hero .highlight { color: var(--srv-primary); }
-    .services-hero p { font-size: 1.25rem; color: var(--srv-muted); max-width: 700px; margin: 0 auto; line-height: 1.7; font-weight: 500;}
+    .services-hero p { font-size: 1.2rem; color: var(--srv-muted); max-width: 700px; margin: 0 auto; line-height: 1.7; font-weight: 500;}
 
     /* --- SERVICE ROWS --- */
     .services-container { max-width: 1250px; margin: 0 auto; padding: 40px 20px; }
@@ -55,15 +53,15 @@
     
     .service-text { flex: 1; }
     .service-icon-box { 
-        font-size: 0.9rem; font-weight: 800; color: var(--srv-primary); margin-bottom: 20px; 
-        font-family: 'Courier New', Courier, monospace; background: #eff6ff; 
-        display: inline-block; padding: 6px 15px; border-radius: 8px; border: 1px solid #bfdbfe;
+        font-size: 0.8rem; font-weight: 800; color: var(--srv-primary); margin-bottom: 20px; 
+        font-family: 'Fira Code', monospace; background: rgba(59, 130, 246, 0.1); 
+        display: inline-block; padding: 6px 15px; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.2);
     }
-    .service-text h2 { font-size: 2.5rem; margin: 0 0 20px 0; color: var(--srv-dark); font-weight: 800; letter-spacing: -1px; line-height: 1.2;}
-    .service-text p { font-size: 1.1rem; color: var(--srv-text); line-height: 1.7; margin: 0 0 30px 0; font-weight: 500;}
+    .service-text h2 { font-size: 2.5rem; margin: 0 0 20px 0; color: #ffffff; font-weight: 800; letter-spacing: -1px; line-height: 1.2;}
+    .service-text p { font-size: 1.05rem; color: var(--srv-muted); line-height: 1.8; margin: 0 0 30px 0; font-weight: 500;}
     
     .service-list { list-style: none; padding: 0; margin: 0 0 40px 0; }
-    .service-list li { margin-bottom: 15px; color: var(--srv-dark); padding-left: 35px; position: relative; font-weight: 600; font-size: 1.05rem;}
+    .service-list li { margin-bottom: 15px; color: #ffffff; padding-left: 35px; position: relative; font-weight: 600; font-size: 1.02rem;}
     .service-list li::before { 
         content: "\f058"; font-family: "Font Awesome 5 Free"; font-weight: 900; 
         position: absolute; left: 0; top: 2px; color: var(--srv-success); font-size: 1.1rem;
@@ -72,69 +70,70 @@
     /* Buttons */
     .btn-premium { 
         display: inline-flex; align-items: center; gap: 10px; padding: 16px 35px; 
-        background: var(--srv-dark); border-radius: 8px; font-weight: 800; text-decoration: none; 
+        background: var(--srv-primary); border-radius: 8px; font-weight: 800; text-decoration: none; 
         color: white; transition: all 0.3s ease; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.5px;
-        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.2); border: none;
+        box-shadow: 0 10px 25px rgba(37, 99, 235, 0.2); border: none;
     }
-    .btn-premium:hover { transform: translateY(-3px); background: var(--srv-primary); box-shadow: 0 15px 35px rgba(59, 130, 246, 0.3); }
+    .btn-premium:hover { transform: translateY(-3px); background: var(--srv-primary-hover); box-shadow: 0 15px 35px rgba(37, 99, 235, 0.4); }
 
     .btn-outline {
-        background: white; color: var(--srv-dark); border: 2px solid var(--srv-border); box-shadow: none;
+        background: rgba(255,255,255,0.02); color: white; border: 1px solid var(--srv-border); box-shadow: none;
     }
-    .btn-outline:hover { background: var(--srv-bg-alt); border-color: var(--srv-muted); color: var(--srv-dark); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);}
+    .btn-outline:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.25); color: white; }
 
     /* Image Boxes */
     .service-image-box { 
         flex: 1; 
-        background: radial-gradient(circle at top right, #f1f5f9 0%, #ffffff 100%); 
+        background: radial-gradient(circle at top right, var(--srv-dark) 0%, var(--srv-darker) 100%); 
         border-radius: 24px; 
         height: 450px; 
         display: flex; align-items: center; justify-content: center; 
         position: relative;
         border: 1px solid var(--srv-border); 
-        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.08);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.3);
         overflow: hidden;
     }
     .service-image-box::before {
         content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
         background-image: linear-gradient(var(--srv-border) 1px, transparent 1px), linear-gradient(90deg, var(--srv-border) 1px, transparent 1px);
-        background-size: 40px 40px; opacity: 0.4;
+        background-size: 40px 40px; opacity: 0.3;
     }
     
     .floating-icon { font-size: 6rem; color: var(--srv-primary); opacity: 0.9; position: relative; z-index: 2; filter: drop-shadow(0 10px 20px rgba(59,130,246,0.3));}
     .tech-stack-badge { 
         position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); 
-        background: white; padding: 10px 20px; border-radius: 30px; font-size: 0.85rem; 
-        font-weight: 800; color: var(--srv-dark); box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+        background: var(--srv-dark); padding: 10px 20px; border-radius: 30px; font-size: 0.8rem; 
+        font-weight: 800; color: #ffffff; box-shadow: 0 10px 25px rgba(0,0,0,0.2); 
         z-index: 2; white-space: nowrap; border: 1px solid var(--srv-border); font-family: monospace; letter-spacing: 0.5px;
     }
 
     /* --- PROCESS SECTION --- */
     .process-section { 
         background: var(--srv-dark); color: white; padding: 120px 20px; 
-        margin-top: 60px; border-radius: 60px 60px 0 0; position: relative; overflow: hidden;
+        margin-top: 60px; border-top: 1px solid var(--srv-border); position: relative; overflow: hidden;
     }
     .process-section::before {
         content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0;
-        background-image: radial-gradient(circle at center, rgba(59, 130, 246, 0.1) 0%, transparent 60%);
+        background-image: radial-gradient(circle at center, rgba(59, 130, 246, 0.05) 0%, transparent 60%);
         pointer-events: none;
     }
     
     .process-header { text-align: center; margin-bottom: 80px; position: relative; z-index: 1;}
+    .process-header span { color: var(--srv-primary); font-weight: 800; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 2px; display: block; margin-bottom: 12px; }
     .process-header h2 { font-size: 3rem; font-weight: 800; margin: 0; letter-spacing: -1px;}
     
     .process-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; max-width: 1100px; margin: 0 auto; position: relative; z-index: 1;}
     
-    .step { text-align: left; background: rgba(255,255,255,0.03); padding: 40px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); position: relative;}
+    .step { text-align: left; background: var(--srv-darker); padding: 40px; border-radius: 16px; border: 1px solid var(--srv-border); position: relative;}
     
     .step-num { 
-        width: 60px; height: 60px; border: 2px solid var(--srv-primary); border-radius: 16px; 
+        width: 60px; height: 60px; border: 2px solid var(--srv-primary); border-radius: 12px; 
         display: flex; align-items: center; justify-content: center; margin-bottom: 25px; 
-        font-weight: 800; color: white; font-size: 1.5rem; background: rgba(59, 130, 246, 0.2); 
-        box-shadow: 0 0 20px rgba(59, 130, 246, 0.2); font-family: 'Courier New', monospace;
+        font-weight: 800; color: white; font-size: 1.4rem; background: rgba(59, 130, 246, 0.1); 
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.1); font-family: 'Fira Code', monospace;
     }
-    .step h4 { font-size: 1.6rem; margin: 0 0 15px 0; font-weight: 800; letter-spacing: -0.5px;}
-    .step p { color: #94a3b8; font-size: 1rem; line-height: 1.7; margin: 0; font-weight: 500;}
+    .step h4 { font-size: 1.5rem; margin: 0 0 15px 0; font-weight: 800; letter-spacing: -0.5px;}
+    .step p { color: var(--srv-muted); font-size: 1rem; line-height: 1.7; margin: 0; font-weight: 500;}
 
     /* --- MOBILE RESPONSIVE --- */
     @media (max-width: 1024px) {
@@ -145,94 +144,76 @@
         .services-hero h1 { font-size: 2.8rem; }
         .services-hero p { font-size: 1.1rem; }
         .service-row, .service-row.reverse { flex-direction: column; gap: 40px; padding: 60px 0; text-align: center; }
-        .service-list li { text-align: left; display: inline-block;} /* Centers the list block but keeps text left-aligned */
+        .service-list li { text-align: left; display: inline-block;}
         .service-list { display: flex; flex-direction: column; align-items: center; }
         .service-image-box { width: 100%; height: 350px; }
         .process-grid { grid-template-columns: 1fr; }
-        .process-section { border-radius: 40px 40px 0 0; padding: 80px 20px;}
+        .process-section { padding: 80px 20px;}
         .process-header h2 { font-size: 2.5rem; margin-bottom: 50px;}
     }
 </style>
 
 <section class="services-hero">
     <div class="hero-content">
-        <span class="hero-badge gsap-hero" style="visibility: hidden;">Delstarford Works Operations</span>
-        <h1 class="gsap-hero" style="visibility: hidden;">Global Solutions,<br><span class="highlight">Kenyan Roots.</span></h1>
-        <p class="gsap-hero" style="visibility: hidden;">Enterprise expertise in Artificial Intelligence, Fullstack Engineering, and Advanced Agricultural Biotechnology.</p>
+        <span class="hero-badge gsap-hero" style="visibility: hidden;">SYSTEM ARCHITECTURE MODULES</span>
+        <h1 class="gsap-hero" style="visibility: hidden;">Next-Gen <span class="highlight">Agronomy Intelligence</span> Engines</h1>
+        <p class="gsap-hero" style="visibility: hidden;">Deploy customized machine learning models, micro-weather sensor matrices, and secure value chain ledger platforms engineered in Kakamega, Kenya.</p>
     </div>
 </section>
 
 <section class="services-container">
     
-    <div class="service-row" id="ai-engineering">
+    <div class="service-row" id="precision-diagnostics">
         <div class="service-text gsap-slide-left" style="visibility: hidden;">
-            <div class="service-icon-box">SYS.01</div>
-            <h2>AI & Machine Learning</h2>
-            <p>We architect and deploy specialized models for complex environments. From predictive pharmacological algorithms (DexaGen AI) to real-time disease detection in agricultural sectors.</p>
+            <div class="service-icon-box">PF-DIAG-01</div>
+            <h2>Precision Farming & Diagnostics</h2>
+            <p>Edge crop diagnostics executing directly on affordable farm hardware. We deploy real-time CNN algorithms capable of isolating leaf pathologies, combined with localized micro-climate indices to predict scouting schedules.</p>
             <ul class="service-list">
-                <li>Custom Neural Network Architecture</li>
-                <li>Predictive Analytics for Healthcare</li>
-                <li>Computer Vision for Biological Surveillance</li>
+                <li>Edge Crop Pathogen Classification</li>
+                <li>Localized Soil Moisture & Dew Grids</li>
+                <li>Autonomous Tractor & Drone Navigation APIs</li>
             </ul>
-            <a href="/custom" class="btn-premium">Request Custom AI</a>
+            <a href="/custom" class="btn-premium">Request Module Integration</a>
         </div>
         <div class="service-image-box gsap-slide-right" style="visibility: hidden;">
-            <i class="fas fa-brain floating-icon"></i>
-            <div class="tech-stack-badge">PYTHON • PYTORCH • TENSORFLOW</div>
+            <i class="fas fa-microscope floating-icon"></i>
+            <div class="tech-stack-badge">PYTORCH • CNN • EDGE-AI • IOT</div>
         </div>
     </div>
 
-    <div class="service-row reverse" id="web-dev">
+    <div class="service-row reverse" id="yield-analytics">
         <div class="service-text gsap-slide-right" style="visibility: hidden;">
-            <div class="service-icon-box">SYS.02</div>
-            <h2>Fullstack Web Ecosystems</h2>
-            <p>We engineer scalable, secure, and professional web platforms. We don't just build websites; we build operational business engines with integrated banking, databases, and analytical tools.</p>
+            <div class="service-icon-box">AG-MKT-02</div>
+            <h2>Agribusiness & Yield Analytics</h2>
+            <p>Scale yield visibility and lock forward contracts confidently. Our deep learning systems index remote sensing satellite telemetry to forecast estate volumes 90 days before harvest, backed by immutably ledgered transport checkpoints.</p>
             <ul class="service-list">
-                <li>Enterprise SaaS Platform Development</li>
-                <li>Financial Management Systems</li>
-                <li>Secure API Architecture & Integration</li>
+                <li>Multispectral Biomass Yield Predictors</li>
+                <li>Farm-to-Shelf Cryptographic Food Tracing</li>
+                <li>Spot Pricing Commodity Market Algorithms</li>
             </ul>
-            <a href="/custom" class="btn-premium">Build My Platform</a>
+            <a href="/custom" class="btn-premium">Deploy Yield Engine</a>
         </div>
         <div class="service-image-box gsap-slide-left" style="visibility: hidden;">
-            <i class="fas fa-server floating-icon"></i>
-            <div class="tech-stack-badge">NODE.JS • REACT • FLASK • SQL</div>
+            <i class="fas fa-chart-area floating-icon"></i>
+            <div class="tech-stack-badge">SAR IMAGERY • PYTHON • REST-API</div>
         </div>
     </div>
 
-    <div class="service-row" id="agri-biotech">
+    <div class="service-row" id="agroecology">
         <div class="service-text gsap-slide-left" style="visibility: hidden;">
-            <div class="service-icon-box">SYS.03</div>
-            <h2>Agricultural Biotechnology</h2>
-            <p>Advancing food security and yield optimization through hard science. We provide technical expertise in genetic optimization, crop management, and precision livestock operations.</p>
+            <div class="service-icon-box">AGRO-ECO-03</div>
+            <h2>Agroecology & Sustainable Soil</h2>
+            <p>Align biological biodiversity with commercial yield goals. We map soil microbial ecosystems via hyperspectral camera arrays and provide target-spraying weed models that scale down chemical input volumes by 90%.</p>
             <ul class="service-list">
-                <li>Professional Artificial Insemination (AI)</li>
-                <li>Genetic Sequence Analysis & Profiling</li>
-                <li>Precision Farming Technical Consultation</li>
+                <li>Microbial Diversity Rotation Indexes</li>
+                <li>Targeted Spray Herbicide-reduction AI</li>
+                <li>Radar Soil Carbon Verification Nodes</li>
             </ul>
-            <a href="/contact" class="btn-premium btn-outline">Consult an Expert</a>
+            <a href="/contact" class="btn-premium btn-outline">Consult Agroecologist</a>
         </div>
         <div class="service-image-box gsap-slide-right" style="visibility: hidden;">
-            <i class="fas fa-seedling floating-icon" style="color: var(--srv-success);"></i>
-            <div class="tech-stack-badge">GENETICS • CRISPR • AGRONOMY</div>
-        </div>
-    </div>
-
-    <div class="service-row reverse" id="bioinformatics">
-        <div class="service-text gsap-slide-right" style="visibility: hidden;">
-            <div class="service-icon-box">SYS.04</div>
-            <h2>Applied Bioinformatics</h2>
-            <p>Bridging the gap between biology and big data. We automate genetic structure analysis and molecular visualization using Python-based integrations with global databases like NCBI.</p>
-            <ul class="service-list">
-                <li>Genetic Structure Mapping & Rendering</li>
-                <li>Automated Sequence Parsing (FASTA)</li>
-                <li>Drug-Drug Interaction Prediction</li>
-            </ul>
-            <a href="/ai-lab" class="btn-premium">Explore Biotech Models</a>
-        </div>
-        <div class="service-image-box gsap-slide-left" style="visibility: hidden;">
-            <i class="fas fa-dna floating-icon" style="color: #9333ea;"></i>
-            <div class="tech-stack-badge">BIOPYTHON • NCBI • BLAST • RDKIT</div>
+            <i class="fas fa-recycle floating-icon" style="color: var(--srv-success);"></i>
+            <div class="tech-stack-badge">COMPANION GRID • MICROBIOME • GIS</div>
         </div>
     </div>
 
@@ -240,23 +221,24 @@
 
 <section class="process-section">
     <div class="process-header">
-        <h2 class="gsap-process-title" style="visibility: hidden;">The Deployment Workflow</h2>
+        <span>WORKFLOW LOOP</span>
+        <h2 class="gsap-process-title" style="visibility: hidden;">Our Agronomy Deployment Loop</h2>
     </div>
     <div class="process-grid">
         <div class="step gsap-step" style="visibility: hidden;">
             <div class="step-num">01</div>
-            <h4>Analyze</h4>
-            <p>We rigorously study your specific biological, operational, or technical challenge utilizing precision data collection.</p>
+            <h4>Ingest</h4>
+            <p>We install field telemetry grids, pull local soil profiles, and calibrate remote sensing satellite coordinate clusters.</p>
         </div>
         <div class="step gsap-step" style="visibility: hidden;">
             <div class="step-num">02</div>
-            <h4>Engineer</h4>
-            <p>Our innovation hub in Kakamega develops the custom codebase or advanced genetic strategies required for the solution.</p>
+            <h4>Model</h4>
+            <p>Our cognitive team models custom parameters and optimizes weights inside our biological development silos in Kakamega.</p>
         </div>
         <div class="step gsap-step" style="visibility: hidden;">
             <div class="step-num">03</div>
-            <h4>Deploy</h4>
-            <p>We implement the final solution on-site via physical hardware or globally via the secure Delstarford Cloud architecture.</p>
+            <h4>Calibrate</h4>
+            <p>We deploy standard API targets on-site, providing continuous updates to match micro-ecological changes and seasonal volatility.</p>
         </div>
     </div>
 </section>
@@ -294,7 +276,6 @@
             if (leftEl) rowTl.fromTo(leftEl, { x: -60, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.8, ease: "power3.out" }, 0);
             if (rightEl) rowTl.fromTo(rightEl, { x: 60, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.8, ease: "power3.out" }, 0);
 
-            // Floating icon continuous animation
             if(icon) {
                 gsap.to(icon, {
                     y: -20,

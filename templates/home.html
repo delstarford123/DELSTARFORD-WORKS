@@ -198,7 +198,143 @@
         .switcher-features-list { grid-template-columns: 1fr; }
         .metrics-grid { grid-template-columns: 1fr; }
     }
+
+    /* --- KAKAMEGA REALTIME MARKET INTELLIGENCE BANNER --- */
+    .market-intel-banner {
+        background: linear-gradient(90deg, #022c16 0%, #064e29 100%);
+        border-bottom: 2px solid #10b981;
+        padding: 18px 20px;
+        text-align: center;
+        position: relative;
+        z-index: 100;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+    
+    .market-intel-text {
+        color: #e2e8f0;
+        font-size: 1.05rem;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .market-intel-text strong {
+        color: #10b981;
+        font-weight: 800;
+    }
+    
+    .market-intel-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(16, 185, 129, 0.15);
+        border: 1px solid rgba(16, 185, 129, 0.4);
+        color: #34d399;
+        padding: 4px 10px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .live-dot-green {
+        width: 8px;
+        height: 8px;
+        background: #10b981;
+        border-radius: 50%;
+        display: inline-block;
+        animation: pulse-green 1.5s infinite;
+    }
+    
+    @keyframes pulse-green {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+    
+    .btn-market-intel {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        color: white !important;
+        text-decoration: none;
+        padding: 12px 28px;
+        border-radius: 50px;
+        font-weight: 800;
+        font-size: 0.95rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        border: 1px solid rgba(52, 211, 153, 0.3);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        animation: premium-shake 4s infinite ease-in-out, pulse-shadow-green 2s infinite ease-in-out;
+    }
+    
+    .btn-market-intel:hover {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        transform: translateY(-2px) scale(1.03);
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
+        border-color: rgba(52, 211, 153, 0.6);
+    }
+    
+    @keyframes premium-shake {
+        0%, 75%, 100% { transform: rotate(0deg) scale(1); }
+        80% { transform: rotate(-5deg) scale(1.05); }
+        83% { transform: rotate(5deg) scale(1.05); }
+        86% { transform: rotate(-5deg) scale(1.05); }
+        89% { transform: rotate(5deg) scale(1.05); }
+        92% { transform: rotate(-3deg) scale(1.02); }
+        95% { transform: rotate(3deg) scale(1.02); }
+    }
+    
+    @keyframes pulse-shadow-green {
+        0% { box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
+        50% { box-shadow: 0 4px 25px rgba(16, 185, 129, 0.6); }
+        100% { box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
+    }
+    
+    @media (max-width: 768px) {
+        .market-intel-banner {
+            flex-direction: column;
+            padding: 15px;
+            gap: 12px;
+        }
+        .market-intel-text {
+            font-size: 0.95rem;
+            text-align: center;
+        }
+        .btn-market-intel {
+            width: 100%;
+            max-width: 320px;
+            justify-content: center;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        }
+    }
 </style>
+
+<!-- Kakamega Realtime Market Intelligence Marketing Banner -->
+<div class="market-intel-banner">
+    <span class="market-intel-badge">
+        <span class="live-dot-green"></span> Realtime Data
+    </span>
+    <span class="market-intel-text">
+        Want to know the <strong>Kakamega Realtime Market Intelligence</strong>?
+    </span>
+    <a href="https://farmermansystems.co.ke/market-intelligence" target="_blank" rel="noopener noreferrer" class="btn-market-intel">
+        <i class="fas fa-chart-line"></i> Market Data
+    </a>
+</div>
 
 <section class="hero-section">
     <div class="hero-container">

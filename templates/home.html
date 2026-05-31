@@ -18,38 +18,32 @@
 
     /* --- HERO SECTION --- */
     .hero-section { 
-        background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.1) 0%, var(--hm-darker) 70%); 
+        background: radial-gradient(circle at top right, rgba(16, 185, 129, 0.08) 0%, var(--hm-darker) 75%); 
         color: #f8fafc; 
-        padding: 150px 20px 100px; 
+        padding: 160px 20px 110px; 
         position: relative; 
         overflow: hidden;
     }
     .hero-section::before {
         content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-        background-image: radial-gradient(#1e293b 1px, transparent 1px);
+        background-image: radial-gradient(rgba(30, 41, 59, 0.4) 1px, transparent 1px);
         background-size: 30px 30px; opacity: 0.2; pointer-events: none;
     }
-    .hero-container { max-width: 1250px; margin: 0 auto; display: grid; grid-template-columns: 1.2fr 1fr; gap: 50px; align-items: center;}
+    .hero-container { max-width: 1250px; margin: 0 auto; display: grid; grid-template-columns: 1.1fr 1fr; gap: 60px; align-items: center;}
     .hero-content { position: relative; z-index: 1; text-align: left; }
     
     .hero-badge { 
-        display: inline-flex; align-items: center; gap: 8px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); 
-        color: #60a5fa; padding: 6px 16px; border-radius: 50px; font-size: 0.85rem; 
+        display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); 
+        color: #34d399; padding: 6px 16px; border-radius: 50px; font-size: 0.85rem; 
         font-weight: 800; margin-bottom: 25px; letter-spacing: 1px; text-transform: uppercase; 
     }
-    .hero-badge .live-dot { width: 8px; height: 8px; background: var(--hm-success); border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite; }
-    
-    @keyframes pulse {
-        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-        70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
-        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-    }
+    .hero-badge .live-dot-green { width: 8px; height: 8px; background: #10b981; border-radius: 50%; display: inline-block; animation: pulse-green 1.5s infinite; }
 
     .hero-section h1 { 
-        font-size: 3.8rem; font-weight: 800; line-height: 1.1; margin: 0 0 25px 0; 
+        font-size: 3.5rem; font-weight: 800; line-height: 1.15; margin: 0 0 25px 0; 
         letter-spacing: -1.5px; color: #ffffff; 
     }
-    .hero-section .highlight { color: var(--hm-primary); text-shadow: 0 0 30px rgba(59,130,246,0.3); }
+    .hero-section .highlight { color: #10b981; text-shadow: 0 0 35px rgba(16,185,129,0.3); }
     .hero-section p { font-size: 1.15rem; color: var(--hm-text-muted); margin-bottom: 40px; line-height: 1.7; font-weight: 500;}
     
     .hero-btns { display: flex; gap: 20px; }
@@ -58,144 +52,201 @@
         text-decoration: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); font-size: 1rem; 
         letter-spacing: 0.5px; text-transform: uppercase;
     }
-    .btn-hero-primary { background: var(--hm-primary); color: white; box-shadow: 0 10px 25px rgba(37,99,235,0.25); border: 1px solid var(--hm-primary);}
-    .btn-hero-primary:hover { background: var(--hm-primary-hover); transform: translateY(-3px); box-shadow: 0 15px 35px rgba(37,99,235,0.4); }
+    .btn-hero-primary { background: #10b981; color: white; box-shadow: 0 10px 25px rgba(16,185,129,0.25); border: 1px solid #10b981;}
+    .btn-hero-primary:hover { background: #059669; transform: translateY(-3px); box-shadow: 0 15px 35px rgba(16,185,129,0.4); border-color: #059669; }
     .btn-hero-secondary { background: rgba(255,255,255,0.03); color: white; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
     .btn-hero-secondary:hover { background: rgba(255,255,255,0.08); transform: translateY(-3px); border-color: rgba(255,255,255,0.25); }
 
-    .hero-visual { position: relative; width: 100%; display: flex; justify-content: center; }
-
-    /* --- EDGE AI VISUAL TERMINAL --- */
-    .edge-ai-window {
-        background: #0d131f; width: 100%; max-width: 480px; border-radius: 16px; border: 1px solid #1e293b;
-        box-shadow: 0 25px 60px rgba(0,0,0,0.5); overflow: hidden; font-family: 'Fira Code', monospace;
+    /* --- HERO VISUAL / CUSTOM IMAGE --- */
+    .hero-visual-frame {
+        position: relative; width: 100%; display: flex; justify-content: center;
+        perspective: 1000px;
     }
-    .window-header {
-        background: #090e17; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;
-        border-bottom: 1px solid #1e293b;
+    .hero-visual-inner {
+        position: relative;
+        width: 100%;
+        max-width: 520px;
+        aspect-ratio: 16 / 11;
+        border-radius: 20px;
+        overflow: hidden;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        background: #0f172a;
+        transform: rotateY(-5deg) rotateX(5deg);
+        transition: transform 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
     }
-    .window-header .dots { display: flex; gap: 8px; }
-    .window-header .dots span { width: 10px; height: 10px; border-radius: 50%; }
-    .window-header .dots span:nth-child(1) { background: #ef4444; }
-    .window-header .dots span:nth-child(2) { background: #f59e0b; }
-    .window-header .dots span:nth-child(3) { background: #10b981; }
-    .window-title { font-size: 0.75rem; color: var(--hm-text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-
-    .window-body { padding: 25px; min-height: 280px; font-size: 0.9rem; line-height: 1.7; color: var(--hm-success); text-align: left; }
-    .window-body pre { margin: 0; white-space: pre-wrap; font-family: inherit; }
-    .cursor { display: inline-block; width: 8px; height: 15px; background: var(--hm-success); vertical-align: middle; animation: blink 1s step-end infinite; }
-    @keyframes blink { 50% { opacity: 0; } }
+    .hero-visual-inner:hover {
+        transform: rotateY(0deg) rotateX(0deg) scale(1.02);
+        border-color: #10b981;
+        box-shadow: 0 30px 60px -10px rgba(16, 185, 129, 0.25);
+    }
+    .hero-visual-inner img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.8s ease;
+    }
+    .hero-visual-inner:hover img {
+        transform: scale(1.05);
+    }
+    .hero-overlay-tag {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+        background: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .hero-overlay-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        background: rgba(16, 185, 129, 0.2);
+        color: #34d399;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+    .hero-overlay-text {
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+    }
+    .hero-overlay-text strong {
+        color: #fff;
+        font-size: 0.85rem;
+        font-weight: 800;
+    }
+    .hero-overlay-text span {
+        color: var(--hm-text-muted);
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
 
     /* --- TRUST STRIP --- */
     .trust-strip { background: var(--hm-dark); padding: 45px 20px; border-bottom: 1px solid var(--hm-border); border-top: 1px solid var(--hm-border); text-align: center; }
     .trust-strip p { font-size: 0.8rem; color: var(--hm-text-muted); font-weight: 800; letter-spacing: 2px; margin-bottom: 25px; text-transform: uppercase;}
     .logos-grid { display: flex; justify-content: center; align-items: center; gap: 50px; flex-wrap: wrap; }
     .partner-logo { font-size: 1.15rem; font-weight: 800; color: #475569; transition: 0.3s; cursor: default; letter-spacing: -0.5px; }
-    .partner-logo:hover { color: var(--hm-primary); filter: drop-shadow(0 0 10px rgba(59,130,246,0.3)); }
+    .partner-logo:hover { color: #10b981; filter: drop-shadow(0 0 10px rgba(16,185,129,0.3)); }
 
-    /* --- INDUSTRIES GRID --- */
-    .pillars-container { padding: 120px 20px; background: var(--hm-darker); }
+    /* --- GENERAL SECTION HEADER --- */
     .section-header { text-align: center; margin-bottom: 75px; max-width: 800px; margin-left: auto; margin-right: auto;}
-    .section-header span { color: var(--hm-primary); font-weight: 800; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 2px; display: block; margin-bottom: 12px; }
+    .section-header span { color: #10b981; font-weight: 800; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 2px; display: block; margin-bottom: 12px; }
     .section-header h2 { font-size: 3rem; font-weight: 800; color: #ffffff; margin: 0 0 20px 0; letter-spacing: -1px; }
     .section-header p { font-size: 1.15rem; color: var(--hm-text-muted); margin: 0; line-height: 1.7;}
-    
-    .pillars-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; max-width: 1250px; margin: 0 auto;}
-    
-    .pillar-card { 
-        background: var(--hm-dark); padding: 45px 40px; border-radius: 16px; 
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-        border: 1px solid var(--hm-border); display: flex; flex-direction: column; position: relative; overflow: hidden;
+
+    /* --- THE CHALLENGE SECTION --- */
+    .challenge-section { padding: 120px 20px; background: var(--hm-darker); position: relative; }
+    .challenge-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; max-width: 1250px; margin: 0 auto 50px; }
+    .challenge-card {
+        background: var(--hm-dark); padding: 45px 35px; border-radius: 18px; border: 1px solid var(--hm-border);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; overflow: hidden;
     }
-    .pillar-card::before {
+    .challenge-card::before {
         content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0;
-        background-image: radial-gradient(circle at top right, rgba(59, 130, 246, 0.05) 0%, transparent 60%);
+        background-image: radial-gradient(circle at top right, rgba(239, 68, 68, 0.05) 0%, transparent 60%);
         pointer-events: none;
     }
-    
-    .pillar-card:hover { 
-        transform: translateY(-8px); border-color: var(--hm-primary); 
-        box-shadow: 0 20px 40px rgba(37, 99, 235, 0.1); 
+    .challenge-card:hover {
+        transform: translateY(-8px); border-color: #ef4444; box-shadow: 0 20px 40px rgba(239, 68, 68, 0.12);
     }
-    
-    .icon-box { 
-        width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; 
-        justify-content: center; margin-bottom: 30px; transition: 0.4s; font-size: 1.5rem;
+    .challenge-icon-box {
+        width: 55px; height: 55px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+        background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2);
+        color: #f87171; font-size: 1.4rem; margin-bottom: 25px; transition: 0.3s;
     }
-    .ai-icon { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3);}
-    .web-icon { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3);}
-    .insight-icon { background: rgba(147, 51, 234, 0.15); color: #c084fc; border: 1px solid rgba(147,51,234,0.3);}
-    .bio-icon { background: rgba(249, 115, 22, 0.15); color: #fdba74; border: 1px solid rgba(249,115,22,0.3);}
+    .challenge-card:hover .challenge-icon-box {
+        background: #ef4444; color: #ffffff; box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+    }
+    .challenge-card h3 { font-size: 1.4rem; font-weight: 800; color: #ffffff; margin: 0 0 12px 0; letter-spacing: -0.3px; }
+    .challenge-card p { color: var(--hm-text-muted); font-size: 0.95rem; line-height: 1.7; margin: 0; font-weight: 500; }
     
-    .pillar-card h3 { font-size: 1.45rem; font-weight: 800; color: #ffffff; margin: 0 0 8px 0; letter-spacing: -0.5px;}
-    .role-subtitle { font-size: 0.8rem; font-weight: 800; color: var(--hm-primary); text-transform: uppercase; letter-spacing: 1px; margin: 0 0 20px 0; }
-    .pillar-card p { color: var(--hm-text-muted); line-height: 1.7; margin-bottom: 30px; flex-grow: 1; font-weight: 500; font-size: 0.95rem;}
-    .text-link { color: #60a5fa; font-weight: 800; text-decoration: none; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; margin-top: auto; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;}
-    .pillar-card:hover .text-link { color: #ffffff; transform: translateX(5px); }
+    .exists-banner {
+        max-width: 1250px; margin: 80px auto 0; background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.02) 100%);
+        border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 20px; padding: 45px; text-align: center;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); position: relative; overflow: hidden;
+    }
+    .exists-banner h3 {
+        font-size: 1.9rem; font-weight: 800; color: #ffffff; margin: 0; line-height: 1.4; letter-spacing: -0.5px;
+    }
+    .exists-banner h3 span { color: #10b981; }
 
-    /* --- SERVICES FOCUS SWITCHER --- */
-    .services-switcher-section { padding: 120px 20px; background: var(--hm-dark); border-top: 1px solid var(--hm-border); border-bottom: 1px solid var(--hm-border); }
-    .switcher-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.3fr; gap: 60px; align-items: center;}
-    
-    .switcher-tabs { display: flex; flex-direction: column; gap: 15px; }
-    .switcher-tab-btn {
-        background: transparent; border: 1px solid var(--hm-border); border-radius: 12px; padding: 25px;
-        text-align: left; cursor: pointer; transition: all 0.3s ease; color: var(--hm-text-muted); display: flex; align-items: flex-start; gap: 20px;
+    /* --- OUR SOLUTIONS SECTION --- */
+    .solutions-section { padding: 120px 20px; background: var(--hm-dark); border-top: 1px solid var(--hm-border); border-bottom: 1px solid var(--hm-border); }
+    .solutions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 30px; max-width: 1250px; margin: 0 auto; }
+    .solution-card {
+        background: var(--hm-darker); padding: 45px 40px; border-radius: 18px; border: 1px solid var(--hm-border);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; position: relative; overflow: hidden;
     }
-    .switcher-tab-btn:hover { border-color: rgba(59, 130, 246, 0.4); background: rgba(255,255,255,0.01); }
-    .switcher-tab-btn.active { border-color: var(--hm-primary); background: rgba(59,130,246,0.05); color: #ffffff; }
-    
-    .switcher-tab-btn i { font-size: 1.5rem; margin-top: 2px; }
-    .switcher-tab-btn.active i { color: var(--hm-primary); }
-    .switcher-tab-btn h4 { font-size: 1.25rem; font-weight: 800; margin: 0 0 6px 0; letter-spacing: -0.3px; }
-    .switcher-tab-btn p { font-size: 0.85rem; margin: 0; line-height: 1.5; font-weight: 500; }
-    
-    .switcher-display-card {
-        background: var(--hm-darker); border-radius: 20px; border: 1px solid var(--hm-border); padding: 45px;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.3); min-height: 420px; display: flex; flex-direction: column; justify-content: center;
+    .solution-card::before {
+        content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0;
+        background-image: radial-gradient(circle at top right, rgba(16, 185, 129, 0.06) 0%, transparent 60%);
+        pointer-events: none;
     }
-    .switcher-display-card span { font-family: monospace; font-size: 0.75rem; color: var(--hm-primary); font-weight: 700; letter-spacing: 1px; display: block; margin-bottom: 15px; }
-    .switcher-display-card h3 { font-size: 2rem; font-weight: 800; color: #ffffff; margin: 0 0 15px 0; letter-spacing: -0.5px; }
-    .switcher-display-card p { color: var(--hm-text-muted); font-size: 1.05rem; line-height: 1.7; margin-bottom: 30px; }
-    
-    .switcher-features-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    .switcher-features-list li { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 0.9rem; color: #ffffff; }
-    .switcher-features-list i { color: var(--hm-success); font-size: 1.1rem; }
+    .solution-card:hover {
+        transform: translateY(-10px); border-color: #10b981; box-shadow: 0 25px 50px rgba(16, 185, 129, 0.12);
+    }
+    .solution-icon-box {
+        width: 60px; height: 60px; border-radius: 14px; display: flex; align-items: center; justify-content: center;
+        background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2);
+        color: #34d399; font-size: 1.6rem; margin-bottom: 30px; transition: 0.3s;
+    }
+    .solution-card:hover .solution-icon-box {
+        background: #10b981; color: #ffffff; box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+    }
+    .solution-card h3 { font-size: 1.5rem; font-weight: 800; color: #ffffff; margin: 0 0 15px 0; letter-spacing: -0.5px; }
+    .solution-card p { color: var(--hm-text-muted); font-size: 0.98rem; line-height: 1.7; margin: 0; font-weight: 500; }
 
-    /* --- METRICS / TRUST SECTION --- */
-    .metrics-section { background: var(--hm-darker); padding: 100px 20px; }
+    /* --- METRICS / IMPACT SECTION --- */
+    .metrics-section { background: var(--hm-darker); padding: 100px 20px; border-bottom: 1px solid var(--hm-border); }
     .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; max-width: 1200px; margin: 0 auto; text-align: center; }
     .metric-card { background: var(--hm-dark); padding: 35px 25px; border-radius: 12px; border: 1px solid var(--hm-border); }
-    .metric-card h2 { font-size: 3.5rem; font-weight: 800; color: var(--hm-primary); margin: 0; line-height: 1; letter-spacing: -1px;}
+    .metric-card h2 { font-size: 3.5rem; font-weight: 800; color: #10b981; margin: 0; line-height: 1; letter-spacing: -1px;}
     .metric-card p { color: var(--hm-text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-top: 15px; font-size: 0.8rem;}
 
-    /* --- BUSINESS PARTNERSHIP MODELS --- */
-    .partnership-section { padding: 120px 20px; background: var(--hm-darker); }
-    .partnership-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; max-width: 1200px; margin: 0 auto; }
-    .partner-card {
-        background: var(--hm-dark); padding: 50px 40px; border-radius: 16px; border: 1px solid var(--hm-border);
-        display: flex; flex-direction: column; text-align: left; transition: 0.3s;
+    /* --- WHO WE SERVE SECTION --- */
+    .serve-section { padding: 120px 20px; background: var(--hm-darker); }
+    .serve-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; max-width: 1250px; margin: 0 auto; }
+    .serve-card {
+        background: var(--hm-dark); padding: 45px 35px; border-radius: 20px; border: 1px solid var(--hm-border);
+        text-align: center; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; overflow: hidden;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
     }
-    .partner-card.featured { border-color: var(--hm-primary); background: linear-gradient(180deg, var(--hm-dark) 0%, rgba(37,99,235,0.03) 100%); position: relative; }
-    .partner-card.featured .badge { position: absolute; top: 30px; right: 40px; background: rgba(59, 130, 246, 0.1); border: 1px solid var(--hm-primary); color: #60a5fa; padding: 4px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; }
-    .partner-card h3 { font-size: 1.5rem; font-weight: 800; color: #ffffff; margin: 0 0 10px 0; }
-    .partner-card span { font-size: 0.8rem; font-weight: 800; color: var(--hm-primary); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 25px; }
-    .partner-card p { color: var(--hm-text-muted); font-size: 0.95rem; line-height: 1.7; margin-bottom: 35px; flex-grow: 1; }
+    .serve-card:hover {
+        transform: translateY(-8px); border-color: var(--hm-primary); box-shadow: 0 20px 40px rgba(59, 130, 246, 0.12);
+    }
+    .serve-icon-box {
+        width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2);
+        color: #60a5fa; font-size: 1.8rem; margin-bottom: 25px; transition: 0.4s;
+    }
+    .serve-card:hover .serve-icon-box {
+        background: var(--hm-primary); color: white; transform: rotateY(180deg); box-shadow: 0 0 25px rgba(59, 130, 246, 0.4);
+    }
+    .serve-card h3 { font-size: 1.4rem; font-weight: 800; color: #ffffff; margin: 0 0 10px 0; letter-spacing: -0.3px; }
+    .serve-card p { color: var(--hm-text-muted); font-size: 0.92rem; line-height: 1.6; margin: 0; font-weight: 500; }
 
     /* --- MOBILE RESPONSIVE --- */
     @media (max-width: 1024px) { 
         .hero-container { grid-template-columns: 1fr; text-align: center; gap: 40px;}
         .hero-content { text-align: center; display: flex; flex-direction: column; align-items: center; }
         .hero-btns { justify-content: center; }
-        .switcher-container { grid-template-columns: 1fr; gap: 40px; }
         .metrics-grid { grid-template-columns: 1fr 1fr; }
-        .partnership-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 768px) { 
         .hero-section h1 { font-size: 2.8rem; } 
         .hero-btns { flex-direction: column; width: 100%; max-width: 320px; } 
         .section-header h2 { font-size: 2.2rem; }
-        .switcher-features-list { grid-template-columns: 1fr; }
         .metrics-grid { grid-template-columns: 1fr; }
     }
 
@@ -336,35 +387,40 @@
     </a>
 </div>
 
+<!-- HERO SECTION -->
 <section class="hero-section">
     <div class="hero-container">
         <div class="hero-content">
             <span class="hero-badge gsap-hero-el" style="visibility: hidden;">
-                <span class="live-dot"></span> PIONEERING COGNITIVE AGRONOMY
+                <span class="live-dot-green"></span> Pioneering Cognitive Agronomy
             </span>
-            <h1 class="gsap-hero-el" style="visibility: hidden;">Scaling <span class="highlight">AI Infrastructure</span> Across the Agricultural Spectrum</h1>
-            <p class="gsap-hero-el" style="visibility: hidden;">We engineer custom deep learning systems, real-time edge computer vision diagnostics, and localized remote sensing algorithms that protect values and maximize biomass output for subsistence smallholders and massive commercial agro-estates.</p>
+            <h1 class="gsap-hero-el" style="visibility: hidden;">AI & <span class="highlight">Digital Innovation</span> for African Agriculture</h1>
+            <p class="gsap-hero-el" style="visibility: hidden;">We build AI-powered, data-driven, and digital solutions that help farmers, agribusinesses, cooperatives, NGOs, and governments improve productivity, market access, and decisionmaking.</p>
             
             <div class="hero-btns gsap-hero-el" style="visibility: hidden;">
-                <a href="/custom" class="btn-hero btn-hero-primary"><i class="fas fa-network-wired"></i> Enter Command Center</a>
-                <a href="/contact" class="btn-hero btn-hero-secondary">Consult Agronomist</a>
+                <a href="/contact" class="btn-hero btn-hero-primary"><i class="fas fa-calendar-check"></i> Book a Consultation</a>
+                <a href="/services" class="btn-hero btn-hero-secondary"><i class="fas fa-network-wired"></i> Explore Solutions</a>
             </div>
         </div>
 
-        <div class="hero-visual gsap-hero-el" style="visibility: hidden;">
-            <div class="edge-ai-window">
-                <div class="window-header">
-                    <div class="dots"><span></span><span></span><span></span></div>
-                    <div class="window-title">Edge Inference Simulator Node</div>
-                </div>
-                <div class="window-body">
-                    <pre><span id="terminal-text"></span><span class="cursor"></span></pre>
+        <div class="hero-visual-frame gsap-hero-el" style="visibility: hidden;">
+            <div class="hero-visual-inner">
+                <img src="{{ url_for('static', filename='images/african_agritech_hero.png') }}" alt="DELSTARFORD WORKS - AI & Digital Innovation in African Agriculture">
+                <div class="hero-overlay-tag">
+                    <div class="hero-overlay-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="hero-overlay-text">
+                        <strong>Delstarford Agronomic AI</strong>
+                        <span>Empowering smart farming clusters</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
+<!-- TRUST STRIP -->
 <section class="trust-strip">
     <div class="container">
         <p class="gsap-trust" style="visibility: hidden;">Institutional Partners & Telemetry Integrations</p>
@@ -377,100 +433,121 @@
     </div>
 </section>
 
-<section class="pillars-container">
+<!-- SECTION 2: THE CHALLENGE -->
+<section class="challenge-section">
     <div class="container">
-        <div class="section-header gsap-header" style="visibility: hidden;">
-            <span>OPERATIONAL VERTICALS</span>
-            <h2>Industries & Sectors We Empower</h2>
-            <p>From laboratory biochemistry and controlled greenhouses to decentralized micro-farming clusters, we build the computing architecture backing the future of food.</p>
+        <div class="section-header gsap-challenge" style="visibility: hidden;">
+            <span>THE CHALLENGE</span>
+            <h2>Africa's Agriculture Faces Major Challenges</h2>
+            <p>From low productivity to digital exclusion, local farmers and agribusinesses navigate heavy systemic bottlenecks every single season.</p>
         </div>
 
-        <div class="pillars-grid">
-            <div class="pillar-card gsap-pillar" style="visibility: hidden;">
-                <div class="icon-box ai-icon"><i class="fas fa-users-cog"></i></div>
-                <h3>Subsistence Clusters</h3>
-                <p class="role-subtitle">Grassroots Digital Inclusion</p>
-                <p>Mobile-first, low-bandwidth edge diagnostic systems helping smallholder farmers identify foliar pathogens in real-time without constant web access.</p>
-                <a href="/services" class="text-link">Explore Systems &rarr;</a>
+        <div class="challenge-grid">
+            <!-- 1. Low Productivity -->
+            <div class="challenge-card gsap-challenge" style="visibility: hidden;">
+                <div class="challenge-icon-box"><i class="fas fa-chart-line-down"></i></div>
+                <h3>Low Productivity</h3>
+                <p>Limited access to early-stage foliar pathology detection, precise soil chemistry matrices, and modern, yield-maximizing agronomic practices.</p>
             </div>
 
-            <div class="pillar-card gsap-pillar" style="visibility: hidden;">
-                <div class="icon-box web-icon"><i class="fas fa-tractor"></i></div>
-                <h3>Commercial Agribusiness</h3>
-                <p class="role-subtitle">Enterprise Command Hubs</p>
-                <p>Ingesting multispectral satellite imagery, automated vehicle GPS, and weather telemetry to manage estate planning and yields dynamically.</p>
-                <a href="/services" class="text-link">Explore Scale &rarr;</a>
+            <!-- 2. Limited Market Access -->
+            <div class="challenge-card gsap-challenge" style="visibility: hidden;">
+                <div class="challenge-icon-box"><i class="fas fa-store-alt-slash"></i></div>
+                <h3>Limited Market Access</h3>
+                <p>Fragmented intermediate supply networks, extreme price volatility, and lack of direct interfaces connecting growers to fair-rate commodity buyers.</p>
             </div>
 
-            <div class="pillar-card gsap-pillar" style="visibility: hidden;">
-                <div class="icon-box insight-icon"><i class="fas fa-leaf"></i></div>
-                <h3>Controlled Environment (CEA)</h3>
-                <p class="role-subtitle">Mushroom & Greenhouse Optimization</p>
-                <p>Closed-loop reinforcement learning engines balancing light, carbon dioxide, moisture, and biological protocols inside premium vertical estates.</p>
-                <a href="/services" class="text-link">Explore Automation &rarr;</a>
+            <!-- 3. Poor Data Systems -->
+            <div class="challenge-card gsap-challenge" style="visibility: hidden;">
+                <div class="challenge-icon-box"><i class="fas fa-database"></i></div>
+                <h3>Poor Data Systems</h3>
+                <p>Absence of real-time farm profiles, localized telemetry ledgers, and descriptive database tracking to support data-driven decisionmaking.</p>
             </div>
 
-            <div class="pillar-card gsap-pillar" style="visibility: hidden;">
-                <div class="icon-box bio-icon"><i class="fas fa-vial"></i></div>
-                <h3>Circular Bioeconomy</h3>
-                <p class="role-subtitle">BSF Feed-to-Protein Models</p>
-                <p>Predictive growth matrices regulating localized bio-incubators to scale protein-rich Black Soldier Fly biomass production efficiently.</p>
-                <a href="/services" class="text-link">Explore Bio-Tech &rarr;</a>
+            <!-- 4. Climate Risks -->
+            <div class="challenge-card gsap-challenge" style="visibility: hidden;">
+                <div class="challenge-icon-box"><i class="fas fa-cloud-sun-rain"></i></div>
+                <h3>Climate Risks</h3>
+                <p>Erratic meteorological disruptions, shifting rainfall distributions, and minimal early warning mechanisms for defensive mitigation.</p>
+            </div>
+
+            <!-- 5. Low Profitability -->
+            <div class="challenge-card gsap-challenge" style="visibility: hidden;">
+                <div class="challenge-icon-box"><i class="fas fa-hand-holding-usd"></i></div>
+                <h3>Low Profitability</h3>
+                <p>Disproportionate input costs, heavy operational inefficiencies, and micro-transaction margins that restrict overall agricultural wealth generation.</p>
+            </div>
+
+            <!-- 6. Low Digital Adoption -->
+            <div class="challenge-card gsap-challenge" style="visibility: hidden;">
+                <div class="challenge-icon-box"><i class="fas fa-mobile-android-alt"></i></div>
+                <h3>Low Digital Adoption</h3>
+                <p>Barriers to lightweight, offline-first digital solutions built intentionally to function under low-bandwidth, rural regional conditions.</p>
+            </div>
+        </div>
+
+        <div class="exists-banner gsap-challenge" style="visibility: hidden;">
+            <h3>Delstarford Works exists to solve these challenges through <span>innovation</span>, <span>AI</span>, and <span>digital transformation</span>.</h3>
+        </div>
+    </div>
+</section>
+
+<!-- SECTION 3: OUR SOLUTIONS -->
+<section class="solutions-section">
+    <div class="container">
+        <div class="section-header gsap-solution" style="visibility: hidden;">
+            <span>OUR SOLUTIONS</span>
+            <h2>Architecting the Future of Food Systems</h2>
+            <p>We build highly specialized, customized, and localized technology segments targeting the core layers of African agriculture.</p>
+        </div>
+
+        <div class="solutions-grid">
+            <!-- AI Advisory Systems -->
+            <div class="solution-card gsap-solution" style="visibility: hidden;">
+                <div class="solution-icon-box"><i class="fas fa-brain"></i></div>
+                <h3>AI Advisory Systems</h3>
+                <p>Custom AI-powered diagnostic and recommendation systems helping farmers and agribusinesses identify pathogens and manage yields proactively.</p>
+            </div>
+
+            <!-- Data & Intelligence Platforms -->
+            <div class="solution-card gsap-solution" style="visibility: hidden;">
+                <div class="solution-icon-box"><i class="fas fa-server"></i></div>
+                <h3>Data & Intelligence Platforms</h3>
+                <p>Comprehensive farmer databases, interactive diagnostic dashboards, and unified regional analytics mapping key agronomic markers.</p>
+            </div>
+
+            <!-- Digital Market Linkages -->
+            <div class="solution-card gsap-solution" style="visibility: hidden;">
+                <div class="solution-icon-box"><i class="fas fa-link"></i></div>
+                <h3>Digital Market Linkages</h3>
+                <p>Direct supply matching engines and digital transaction nodes seamlessly connecting independent producers to high-value buyers.</p>
+            </div>
+
+            <!-- Software & Mobile Applications -->
+            <div class="solution-card gsap-solution" style="visibility: hidden;">
+                <div class="solution-icon-box"><i class="fas fa-mobile-alt"></i></div>
+                <h3>Software & Mobile Applications</h3>
+                <p>Robust, tailored mobile applications and cross-platform software systems engineered specifically for cooperatives, NGOs, and enterprises.</p>
+            </div>
+
+            <!-- Digital Training -->
+            <div class="solution-card gsap-solution" style="visibility: hidden;">
+                <div class="solution-icon-box"><i class="fas fa-graduation-cap"></i></div>
+                <h3>Digital Training</h3>
+                <p>Professional onboarding curricula and agritech training programs scaling digital literacy, AI adoption, and smart farming operations.</p>
+            </div>
+
+            <!-- Automation & Productivity -->
+            <div class="solution-card gsap-solution" style="visibility: hidden;">
+                <div class="solution-icon-box"><i class="fas fa-cogs"></i></div>
+                <h3>Automation & Productivity</h3>
+                <p>Tailored workflow orchestrations and business intelligence automation APIs that optimize resource usage and reduce administrative overhead.</p>
             </div>
         </div>
     </div>
 </section>
 
-<section class="services-switcher-section">
-    <div class="switcher-container">
-        <div>
-            <div class="section-header" style="text-align: left; margin-bottom: 40px; margin-left: 0;">
-                <span>ACTIVE DEPLOYMENTS</span>
-                <h2 style="font-size: 2.5rem; margin-top: 10px;">Our Primary Core Systems</h2>
-                <p style="font-size: 1rem;">Toggle our primary agronomic AI verticals to explore our modular platform structures.</p>
-            </div>
-            
-            <div class="switcher-tabs">
-                <div class="switcher-tab-btn active" onclick="switchFeatureTab('silo-diag', this)">
-                    <i class="fas fa-microscope"></i>
-                    <div>
-                        <h4>Precision Diagnostics</h4>
-                        <p>Crop vision scanning & localized micro-weather forecasts.</p>
-                    </div>
-                </div>
-                <div class="switcher-tab-btn" onclick="switchFeatureTab('silo-mkt', this)">
-                    <i class="fas fa-chart-bar"></i>
-                    <div>
-                        <h4>Yield & Market Analytics</h4>
-                        <p>Satellite harvest predictions & pricing spot engines.</p>
-                    </div>
-                </div>
-                <div class="switcher-tab-btn" onclick="switchFeatureTab('silo-eco', this)">
-                    <i class="fas fa-recycle"></i>
-                    <div>
-                        <h4>Agroecological Innovations</h4>
-                        <p>Soil micro-biodiversity mapping & input reduction APIs.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div>
-            <div class="switcher-display-card" id="switcherDisplay">
-                <span id="dispCode">PF-DIAG-01</span>
-                <h3 id="dispTitle">Precision Farming & Diagnostics</h3>
-                <p id="dispDesc">We deploy Edge-AI networks that execute directly on low-power devices in remote fields. System segments capture leaf anomalies, generate micro-targeted fungicide menus, and ingest localized sensor matrices to forecast optimal farm scouting windows.</p>
-                <ul class="switcher-features-list" id="dispList">
-                    <li><i class="fas fa-check-circle"></i> Edge Computer Vision</li>
-                    <li><i class="fas fa-check-circle"></i> Localized Weather Grids</li>
-                    <li><i class="fas fa-check-circle"></i> Automated Machinery APIs</li>
-                    <li><i class="fas fa-check-circle"></i> Foliar Pathology Models</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</section>
-
+<!-- IMPACT / METRICS STRIP -->
 <section class="metrics-section">
     <div class="container metrics-grid">
         <div class="metric-card gsap-stat" style="visibility: hidden;">
@@ -492,95 +569,62 @@
     </div>
 </section>
 
-<section class="partnership-section">
+<!-- SECTION 4: WHO WE SERVE -->
+<section class="serve-section">
     <div class="container">
-        <div class="section-header gsap-header" style="visibility: hidden;">
-            <span>BUSINESS MODEL NODES</span>
-            <h2>How to Work With Us</h2>
-            <p>We provide accessible business pathways for scaling agricultural technology from small cooperatives to global seed institutions.</p>
+        <div class="section-header gsap-serve" style="visibility: hidden;">
+            <span>WHO WE SERVE</span>
+            <h2>Empowering Stakeholders Across the Ecosystem</h2>
+            <p>From individual micro-farmers to development agencies, we engineer digital pipelines that adapt perfectly to each vertical.</p>
         </div>
 
-        <div class="partnership-grid">
-            <div class="partner-card gsap-pillar" style="visibility: hidden;">
-                <span>MODEL 01</span>
-                <h3>Software as a Service</h3>
-                <span>SaaS Subscriptions</span>
-                <p>Deploy our intuitive diagnostic tools globally. Subscriptions scale seamlessly from individual smallholder cluster cooperatives to expansive estate administrative command boards.</p>
-                <a href="/custom" class="btn-hero btn-hero-secondary" style="margin-top: auto; font-size: 0.85rem; padding: 12px 20px;">Deploy SaaS</a>
+        <div class="serve-grid">
+            <!-- Farmers -->
+            <div class="serve-card gsap-serve" style="visibility: hidden;">
+                <div class="serve-icon-box"><i class="fas fa-seedling"></i></div>
+                <h3>Farmers</h3>
+                <p>Delivering mobile diagnostics, precision inputs, and weather intelligence to smallholder and estate growers.</p>
             </div>
 
-            <div class="partner-card featured gsap-pillar" style="visibility: hidden;">
-                <span class="badge">RECOMMENDED</span>
-                <span>MODEL 02</span>
-                <h3>Institutional Data APIs</h3>
-                <span>RESTful Integration</span>
-                <p>Gain real-time soil chemistry analytics, regional harvest projections, and disease index maps to drive crop insurance underwriting and regional agricultural lending pipelines.</p>
-                <a href="/custom" class="btn-hero btn-hero-primary" style="margin-top: auto; font-size: 0.85rem; padding: 12px 20px;">Connect API Endpoint</a>
+            <!-- Cooperatives -->
+            <div class="serve-card gsap-serve" style="visibility: hidden;">
+                <div class="serve-icon-box"><i class="fas fa-users"></i></div>
+                <h3>Cooperatives</h3>
+                <p>Providing unified tracking software, crop pricing ledgers, and centralized digital logistics management hubs.</p>
             </div>
 
-            <div class="partner-card gsap-pillar" style="visibility: hidden;">
-                <span>MODEL 03</span>
-                <h3>White-Label SDKs</h3>
-                <span>Agro-Industrial Licensing</span>
-                <p>License our deep agronomy advisory databases and image diagnosis pipelines to integrate natively into established major fertilizer, seed, or retail supply chains.</p>
-                <a href="/contact" class="btn-hero btn-hero-secondary" style="margin-top: auto; font-size: 0.85rem; padding: 12px 20px;">License Core Models</a>
+            <!-- Agribusinesses -->
+            <div class="serve-card gsap-serve" style="visibility: hidden;">
+                <div class="serve-icon-box"><i class="fas fa-store-alt"></i></div>
+                <h3>Agribusinesses</h3>
+                <p>Supplying inventory automation, predictive supply analytics, and digital business-to-business transaction layers.</p>
+            </div>
+
+            <!-- NGOs -->
+            <div class="serve-card gsap-serve" style="visibility: hidden;">
+                <div class="serve-icon-box"><i class="fas fa-hand-holding-heart"></i></div>
+                <h3>NGOs</h3>
+                <p>Building remote monitoring tools, impact metric aggregations, and digital distribution architectures.</p>
+            </div>
+
+            <!-- Governments -->
+            <div class="serve-card gsap-serve" style="visibility: hidden;">
+                <div class="serve-icon-box"><i class="fas fa-landmark"></i></div>
+                <h3>Governments</h3>
+                <p>Providing regional diagnostic dashboards, resource mapping, and national agricultural telemetry intelligence.</p>
+            </div>
+
+            <!-- Development Agencies -->
+            <div class="serve-card gsap-serve" style="visibility: hidden;">
+                <div class="serve-icon-box"><i class="fas fa-globe"></i></div>
+                <h3>Development Agencies</h3>
+                <p>Engineering large-scale capacity programs, data-driven food security indicators, and custom cross-border frameworks.</p>
             </div>
         </div>
     </div>
 </section>
 
 <script>
-    // --- Services Switcher Data ---
-    const switcherData = {
-        'silo-diag': {
-            code: 'PF-DIAG-01',
-            title: 'Precision Farming & Diagnostics',
-            desc: 'We deploy Edge-AI networks that execute directly on low-power devices in remote fields. System segments capture leaf anomalies, generate micro-targeted fungicide menus, and ingest localized sensor matrices to forecast optimal farm scouting windows.',
-            features: ['Edge Computer Vision', 'Localized Weather Grids', 'Automated Machinery APIs', 'Foliar Pathology Models']
-        },
-        'silo-mkt': {
-            code: 'AG-MKT-02',
-            title: 'Yield & Market Analytics',
-            desc: 'We process historical remote sensing telemetry and Spot pricing fluctuations to estimate agricultural yields up to 90 days before harvest, offering growers immutable transparency and enabling forward sales agreements.',
-            features: ['Multispectral Yield Indexing', 'Forward Contract Ledgering', 'Commodity Price Predictors', 'Food Supply Ledger Logs']
-        },
-        'silo-eco': {
-            code: 'AGRO-ECO-03',
-            title: 'Agroecological Innovations',
-            desc: 'Integrating biochemical diagnostics with mathematical ecosystems modeling to protect local habitats. Our smart chemical reduction modules isolate weeds for targeted spray routines, minimizing ecological impact by 90%.',
-            features: ['Soil Microbiome Profiling', 'companion crop maps', 'targeted weed sprayers', 'verified soil carbon data']
-        }
-    };
-
-    function switchFeatureTab(tabId, element) {
-        document.querySelectorAll('.switcher-tab-btn').forEach(btn => btn.classList.remove('active'));
-        element.classList.add('active');
-
-        const card = document.getElementById('switcherDisplay');
-        const data = switcherData[tabId];
-
-        // Animate swap elegantly
-        if (typeof gsap !== 'undefined') {
-            gsap.fromTo(card, { opacity: 0.4, y: 15 }, {
-                opacity: 1, y: 0, duration: 0.4, onStart: () => {
-                    document.getElementById('dispCode').innerText = data.code;
-                    document.getElementById('dispTitle').innerText = data.title;
-                    document.getElementById('dispDesc').innerText = data.desc;
-                    
-                    const list = document.getElementById('dispList');
-                    list.innerHTML = data.features.map(f => `<li><i class="fas fa-check-circle"></i> ${f}</li>`).join('');
-                }
-            });
-        } else {
-            document.getElementById('dispCode').innerText = data.code;
-            document.getElementById('dispTitle').innerText = data.title;
-            document.getElementById('dispDesc').innerText = data.desc;
-            
-            const list = document.getElementById('dispList');
-            list.innerHTML = data.features.map(f => `<li><i class="fas fa-check-circle"></i> ${f}</li>`).join('');
-        }
-    }
-
     document.addEventListener("DOMContentLoaded", () => {
         // Fallback for non-GSAP environments
         if (typeof gsap === 'undefined') {
@@ -590,7 +634,6 @@
 
         // Register Plugins
         if(typeof ScrollTrigger !== 'undefined') gsap.registerPlugin(ScrollTrigger);
-        if(typeof TextPlugin !== 'undefined') gsap.registerPlugin(TextPlugin);
 
         // 1. HERO ANIMATION (Plays instantly on load)
         const heroTl = gsap.timeline();
@@ -598,19 +641,6 @@
             { y: 40, autoAlpha: 0 }, 
             { y: 0, autoAlpha: 1, duration: 0.8, stagger: 0.2, ease: "power3.out", delay: 0.2 }
         );
-
-        // Terminal Simulator Loop
-        if (typeof TextPlugin !== 'undefined') {
-            const terminalCode = "> loading weights crop_disease_segmentation_cnn.h5...\n> loading weights: [Success]\n> scanning tissue samples... [Inference Active]\n> target: fungal leaf rust (maize)\n> diagnostic confidence: 99.42%\n> recommended action: micro-targeted copper fungicide.\n> spraying recipe sent to Node-4 interface loop.";
-            heroTl.to("#terminal-text", {
-                text: { value: terminalCode, delimiter: "" },
-                duration: 4.0,
-                ease: "none",
-                delay: 0.2
-            });
-        } else {
-            document.getElementById('terminal-text').innerText = "> loading weights crop_disease_segmentation_cnn.h5...\n> crop diagnostic confidence: 99.42%\n> recommended action: micro-targeted copper fungicide.";
-        }
 
         // 2. TRUST STRIP REVEAL
         gsap.fromTo(".gsap-trust",
@@ -621,18 +651,25 @@
             }
         );
 
-        // 3. PILLARS (SILOS) STAGGER
-        gsap.fromTo(".gsap-header", { y: 30, autoAlpha: 0 }, { scrollTrigger: { trigger: ".pillars-container", start: "top 85%" }, y: 0, autoAlpha: 1, duration: 0.6 });
-        
-        gsap.fromTo(".gsap-pillar",
-            { y: 50, autoAlpha: 0 },
+        // 3. CHALLENGE SECTION REVEAL
+        gsap.fromTo(".gsap-challenge",
+            { y: 40, autoAlpha: 0 },
             {
-                scrollTrigger: { trigger: ".pillars-grid", start: "top 80%" },
-                y: 0, autoAlpha: 1, duration: 0.8, stagger: 0.15, ease: "back.out(1.2)"
+                scrollTrigger: { trigger: ".challenge-section", start: "top 80%" },
+                y: 0, autoAlpha: 1, duration: 0.7, stagger: 0.15, ease: "power2.out"
             }
         );
 
-        // 4. STATS COUNTER
+        // 4. SOLUTIONS SECTION REVEAL
+        gsap.fromTo(".gsap-solution",
+            { y: 40, autoAlpha: 0 },
+            {
+                scrollTrigger: { trigger: ".solutions-section", start: "top 80%" },
+                y: 0, autoAlpha: 1, duration: 0.8, stagger: 0.15, ease: "power2.out"
+            }
+        );
+
+        // 5. STATS COUNTER
         gsap.fromTo(".gsap-stat",
             { y: 30, autoAlpha: 0 },
             {
@@ -649,6 +686,15 @@
                         });
                     });
                 }
+            }
+        );
+
+        // 6. WHO WE SERVE SECTION REVEAL
+        gsap.fromTo(".gsap-serve",
+            { y: 40, autoAlpha: 0 },
+            {
+                scrollTrigger: { trigger: ".serve-section", start: "top 80%" },
+                y: 0, autoAlpha: 1, duration: 0.8, stagger: 0.15, ease: "power2.out"
             }
         );
     });

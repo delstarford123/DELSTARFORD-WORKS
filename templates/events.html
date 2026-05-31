@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<!-- Leaflet.js Mapping Engine CDN -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
 <style>
     :root {
         --evt-primary: #3b82f6;
@@ -95,8 +99,150 @@
     .btn-submit-evt { width: 100%; background: var(--evt-primary); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px;}
     .btn-submit-evt:hover { background: #2563eb; }
     .evt-spinner { display: none; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite; }
+
+    /* --- SINGLE EVENT SHARED VIEW STYLES --- */
+    .single-evt-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; align-items: start; margin-top: 40px; }
+    .single-evt-card { background: white; border-radius: 20px; border: 1px solid var(--evt-border); padding: 40px; box-shadow: 0 10px 35px rgba(0,0,0,0.02); }
+    .single-evt-card h2 { font-size: 2.2rem; font-weight: 800; color: var(--evt-dark); margin: 0 0 10px 0; letter-spacing: -0.5px; line-height: 1.2; }
+    .single-evt-description { color: var(--evt-muted); font-size: 1.05rem; line-height: 1.8; margin-bottom: 30px; }
+    .single-evt-meta-box { background: #eff6ff; padding: 25px; border-radius: 12px; border: 1px solid #dbeafe; margin-bottom: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .single-evt-meta-item { display: flex; align-items: center; gap: 12px; font-weight: 700; color: var(--evt-dark); font-size: 0.95rem; }
+    .single-evt-meta-item i { color: var(--evt-primary); font-size: 1.2rem; }
+    .single-evt-map-label { display: block; font-size: 0.8rem; font-weight: 800; color: var(--evt-muted); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; }
+    .single-evt-map { width: 100%; height: 300px; border-radius: 12px; border: 1px solid var(--evt-border); overflow: hidden; }
+    
+    .single-evt-form-card { background: white; border-radius: 20px; border: 1px solid var(--evt-border); padding: 40px; box-shadow: 0 15px 40px rgba(15, 23, 42, 0.05); position: relative; }
+    .single-evt-form-card h3 { font-size: 1.5rem; font-weight: 800; color: var(--evt-dark); margin: 0 0 10px 0; }
+    .single-evt-form-card p { color: var(--evt-muted); font-size: 0.95rem; margin-bottom: 25px; line-height: 1.5; }
+    
+    .single-evt-success-card { text-align: center; padding: 50px 30px; display: none; }
+    .success-checkmark-circle { width: 80px; height: 80px; background: #dcfce7; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; color: #166534; font-size: 2.5rem; animation: scaleUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    
+    @keyframes scaleUp {
+        0% { transform: scale(0.5); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+    
+    @media (max-width: 992px) {
+        .single-evt-grid { grid-template-columns: 1fr; gap: 30px; }
+    }
 </style>
 
+{% if single_event %}
+<section class="evt-hero" style="background: linear-gradient(135deg, var(--evt-dark) 0%, #1e3a8a 100%);">
+    <div class="gsap-anim" style="visibility: hidden;">
+        <span class="evt-tag tag-training" style="margin: 0 auto 15px auto; font-size: 0.8rem; padding: 6px 15px; border-radius: 50px;">Exclusive Invitation</span>
+        <h1 style="font-size: 2.8rem; font-weight: 800;">{{ single_event.title }}</h1>
+        <p>You have been invited to apply and secure your spot for this live event hosted on Google Meet.</p>
+    </div>
+</section>
+
+<div class="evt-container">
+    <!-- Back Link -->
+    <a href="/events" style="display: inline-flex; align-items: center; gap: 8px; color: var(--evt-primary); font-weight: 800; text-decoration: none; margin-bottom: 30px; font-size: 0.95rem; transition: 0.3s;" onmouseover="this.style.transform='translateX(-5px)'" onmouseout="this.style.transform='none'">
+        <i class="fas fa-arrow-left"></i> View All Public Events
+    </a>
+
+    <div class="single-evt-grid">
+        <!-- Left Panel: Event Info -->
+        <div class="single-evt-card gsap-card" style="visibility: hidden;">
+            <span class="evt-tag {{ 'tag-training' if 'training' in single_event.title.lower() else ('tag-hiring' if 'hiring' in single_event.title.lower() or 'onboarding' in single_event.title.lower() else 'tag-showcase') }}">
+                {{ single_event.type }}
+            </span>
+            <h2>Event Activities & Description</h2>
+            <p class="single-evt-description">{{ single_event.description }}</p>
+
+            <div class="single-evt-meta-box">
+                <div class="single-evt-meta-item">
+                    <i class="fas fa-calendar-day"></i>
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--evt-muted); text-transform: uppercase;">Scheduled Date</div>
+                        <div>{{ single_event.date or 'TBA' }}</div>
+                    </div>
+                </div>
+                <div class="single-evt-meta-item">
+                    <i class="fas fa-video"></i>
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--evt-muted); text-transform: uppercase;">Broadcasting Node</div>
+                        <div>Google Meet Access</div>
+                    </div>
+                </div>
+                <div class="single-evt-meta-item" style="grid-column: span 2;">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--evt-muted); text-transform: uppercase;">Pinned Venue Location</div>
+                        <div>{{ single_event.location or 'Remote Broadcast' }}</div>
+                    </div>
+                </div>
+            </div>
+
+            {% if single_event.latitude and single_event.longitude %}
+            <span class="single-evt-map-label"><i class="fas fa-map-marked-alt"></i> Pinned Geographic Coordinates</span>
+            <div id="single-event-map" class="single-evt-map"></div>
+            {% else %}
+            <div style="padding: 30px; background: #f8fafc; border-radius: 12px; text-align: center; border: 1px dashed var(--evt-border);">
+                <i class="fas fa-laptop" style="font-size: 2.5rem; color: var(--evt-muted); margin-bottom: 12px;"></i>
+                <h4 style="margin: 0 0 5px 0; color: var(--evt-dark);">Remote Teleconference</h4>
+                <p style="margin: 0; font-size: 0.85rem; color: var(--evt-muted);">This session will be conducted completely online via Google Meet. Check your email for secure credentials upon registration.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Right Panel: Application Form -->
+        <div class="single-evt-form-card gsap-card" style="visibility: hidden;" id="sharedFormCard">
+            <div id="sharedFormInputs">
+                <h3>Submit Application</h3>
+                <p>Provide your information below. Once submitted, your registration credentials and coordinates will be immediately dispatched to your inbox.</p>
+                
+                <form id="sharedSingleRegForm">
+                    <input type="hidden" id="sharedEventId" value="{{ single_event.id }}">
+                    <input type="hidden" id="sharedEventName" value="{{ single_event.title }}">
+                    
+                    <div class="evt-input-wrap">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="sharedName" placeholder="Full Legal Name" required style="width: 100%;">
+                    </div>
+                    <div class="evt-input-wrap">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="sharedEmail" placeholder="Official Email Address" required style="width: 100%;">
+                    </div>
+                    <div class="evt-input-wrap">
+                        <i class="fas fa-briefcase"></i>
+                        <input type="text" id="sharedRole" placeholder="Current Role / Title (e.g. Engineer, Student)" required style="width: 100%;">
+                    </div>
+
+                    {% if single_event.is_expired %}
+                        <button type="button" class="btn-submit-evt" disabled style="background: var(--evt-muted); cursor: not-allowed; opacity: 0.7;">
+                            <i class="fas fa-calendar-times"></i> Registration Closed
+                        </button>
+                        <p style="font-size: 0.75rem; color: var(--evt-muted); margin-top: 10px; text-align: center; font-weight: 600;">Deadline passed (2 days post-event)</p>
+                    {% else %}
+                        <button type="submit" class="btn-submit-evt" id="sharedSubmitBtn">
+                            <span id="sharedBtnText">Apply for Invitation &rarr;</span>
+                            <div class="evt-spinner" id="sharedSpinner"></div>
+                        </button>
+                    {% endif %}
+                    <div id="sharedStatus" style="margin-top: 15px; text-align: center; font-size: 0.9rem; font-weight: 700; display: none; padding: 10px; border-radius: 8px;"></div>
+                </form>
+            </div>
+
+            <!-- Success Card (Inside Form Card to preserve layout) -->
+            <div class="single-evt-success-card" id="sharedSuccessCard">
+                <div class="success-checkmark-circle">
+                    <i class="fas fa-check"></i>
+                </div>
+                <h3 style="color: var(--evt-dark); margin: 0 0 10px 0; font-size: 1.6rem; font-weight: 800;">Application Successful!</h3>
+                <p style="color: var(--evt-muted); font-size: 1rem; line-height: 1.6; margin-bottom: 25px;">
+                    Congratulations! Your spot is secured. We have dispatched a secure invitation email containing the activity agenda, pinned location instructions, and Google Meet credentials to <strong id="successUserEmail" style="color: var(--evt-primary);"></strong>.
+                </p>
+                <a href="/events" class="btn-submit-evt" style="text-decoration: none; display: inline-flex; width: auto; padding: 12px 25px; margin: 0 auto;">
+                    Return to Hub
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
 <section class="evt-hero">
     <div class="gsap-anim" style="visibility: hidden;">
         <h1>Events & Training Hub</h1>
@@ -132,16 +278,20 @@
                         {% endif %}
                     </div>
                     
-                    {% if event.is_expired %}
-                        <button class="btn-register" disabled style="background: var(--evt-muted); cursor: not-allowed; opacity: 0.7;">
-                            <i class="fas fa-calendar-times"></i> Registration Closed
-                        </button>
-                        <p style="font-size: 0.75rem; color: var(--evt-muted); margin-top: 10px; text-align: center; font-weight: 600;">Deadline passed (2 days post-event)</p>
-                    {% else %}
-                        <button class="btn-register" onclick="openRegisterModal('{{ event.id }}', '{{ event.title }}')">
-                            <i class="fas fa-ticket-alt"></i> {{ 'Reserve Spot' if event.type == 'EVENT' else 'Learn More' }}
-                        </button>
-                    {% endif %}
+                    <div style="display: flex; gap: 10px; margin-top: auto; width: 100%;">
+                        {% if event.is_expired %}
+                            <button class="btn-register" disabled style="flex-grow: 1; background: var(--evt-muted); cursor: not-allowed; opacity: 0.7; padding: 14px 10px;">
+                                <i class="fas fa-calendar-times"></i> Closed
+                            </button>
+                        {% else %}
+                            <button class="btn-register" onclick="openRegisterModal('{{ event.id }}', '{{ event.title }}')" style="flex-grow: 1; padding: 14px 10px;">
+                                <i class="fas fa-ticket-alt"></i> {{ 'Reserve Spot' if event.type == 'EVENT' else 'Learn More' }}
+                            </button>
+                            <button class="btn-share" onclick="shareEvent('{{ event.id }}', '{{ event.title }}')" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: var(--evt-primary); padding: 14px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; width: 50px; flex-shrink: 0;" title="Share Registration Link">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
             {% endfor %}
@@ -154,6 +304,7 @@
         {% endif %}
     </div>
 </div>
+{% endif %}
 
 <div class="evt-modal-overlay" id="evtModal" onclick="closeRegisterModal(event)">
     <div class="evt-modal" onclick="event.stopPropagation()">
@@ -188,6 +339,12 @@
     </div>
 </div>
 
+<!-- Beautiful Toast Notification Container -->
+<div id="evtToast" style="position: fixed; bottom: 30px; right: 30px; background: var(--evt-dark); color: white; padding: 16px 25px; border-radius: 12px; border-left: 4px solid var(--evt-primary); box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 12px; transform: translateY(100px); opacity: 0; visibility: hidden; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 99999;">
+    <i class="fas fa-check-circle" style="color: var(--evt-primary); font-size: 1.2rem;"></i>
+    <span style="font-weight: 700; font-size: 0.95rem;" id="evtToastMsg">Link copied to clipboard!</span>
+</div>
+
 <script>
     // --- GSAP Animations ---
     document.addEventListener("DOMContentLoaded", () => {
@@ -198,6 +355,106 @@
             document.querySelectorAll('.gsap-anim, .gsap-card').forEach(el => el.style.visibility = 'visible');
         }
     });
+
+    // --- Share Invitation Logic ---
+    function shareEvent(eventId, eventTitle) {
+        const shareUrl = window.location.origin + '/events?event_id=' + eventId;
+        
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            const toast = document.getElementById('evtToast');
+            const toastMsg = document.getElementById('evtToastMsg');
+            toastMsg.innerText = `Invitation link copied for: ${eventTitle}`;
+            
+            toast.style.visibility = 'visible';
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateY(0)';
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(100px)';
+                setTimeout(() => {
+                    toast.style.visibility = 'hidden';
+                }, 400);
+            }, 3000);
+        }).catch(err => {
+            alert("Could not copy link: " + err);
+        });
+    }
+
+    // --- Render Leaflet map for single event ---
+    {% if single_event and single_event.latitude and single_event.longitude %}
+    document.addEventListener("DOMContentLoaded", () => {
+        try {
+            const lat = parseFloat("{{ single_event.latitude }}");
+            const lng = parseFloat("{{ single_event.longitude }}");
+            const locationName = "{{ single_event.location }}";
+
+            const singleMap = L.map('single-event-map').setView([lat, lng], 15);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(singleMap);
+
+            L.marker([lat, lng]).addTo(singleMap)
+                .bindPopup(`<strong>Venue Venue</strong><br>${locationName}`)
+                .openPopup();
+        } catch (e) {
+            console.error("Leaflet single map error:", e);
+        }
+    });
+    {% endif %}
+
+    // --- Submit Shared Form Logic ---
+    {% if single_event %}
+    const sharedForm = document.getElementById('sharedSingleRegForm');
+    if (sharedForm) {
+        sharedForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('sharedSubmitBtn');
+            const btnText = document.getElementById('sharedBtnText');
+            const spinner = document.getElementById('sharedSpinner');
+            const status = document.getElementById('sharedStatus');
+
+            btn.disabled = true;
+            btnText.innerText = "Applying...";
+            spinner.style.display = "block";
+            status.style.display = "none";
+
+            const payload = {
+                eventId: document.getElementById('sharedEventId').value,
+                eventName: document.getElementById('sharedEventName').value,
+                name: document.getElementById('sharedName').value,
+                email: document.getElementById('sharedEmail').value,
+                role: document.getElementById('sharedRole').value
+            };
+
+            try {
+                const response = await fetch('/api/register-event', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('successUserEmail').innerText = payload.email;
+                    document.getElementById('sharedFormInputs').style.display = "none";
+                    document.getElementById('sharedSuccessCard').style.display = "block";
+                } else {
+                    throw new Error(result.message || "Failed to register.");
+                }
+            } catch (error) {
+                status.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${error.message}`;
+                status.style.background = "#fee2e2"; status.style.color = "#991b1b";
+                status.style.display = "block";
+                btn.disabled = false;
+                btnText.innerText = "Try Again";
+                spinner.style.display = "none";
+            }
+        };
+    }
+    {% endif %}
 
     // --- Filter Logic ---
     function filterEvents(category) {

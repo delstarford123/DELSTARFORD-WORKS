@@ -612,11 +612,29 @@ def events_page():
         
         # Sort by date
         events.sort(key=lambda x: x.get('date', ''), reverse=True)
+
+        # Check if specific event registration is requested (for sharing)
+        event_id = request.args.get('event_id')
+        single_event = None
+        if event_id:
+            val = db.reference(f'announcements/{event_id}').get()
+            if isinstance(val, dict) and val.get('type') == 'EVENT':
+                val['id'] = event_id
+                event_date_str = val.get('date')
+                is_expired = False
+                if event_date_str:
+                    try:
+                        event_date = datetime.datetime.strptime(event_date_str, '%Y-%m-%d').date()
+                        if (today - event_date).days > 2:
+                            is_expired = True
+                    except: pass
+                val['is_expired'] = is_expired
+                single_event = val
         
-        return render_template('events.html', events=events)
+        return render_template('events.html', events=events, single_event=single_event)
     except Exception as e:
         print(f"Error loading events: {e}")
-        return render_template('events.html', events=[])
+        return render_template('events.html', events=[], single_event=None)
 
 @app.route('/api/register-event', methods=['POST'])
 def register_event():
@@ -660,22 +678,80 @@ def register_event():
 
         # 4. Dispatch the Email with the Meet Link
         subject = f"Registration Confirmed: {event_name}"
+        
+        location_str = event_data.get('location', 'Remote')
+        lat = event_data.get('latitude')
+        lng = event_data.get('longitude')
+        description = event_data.get('description', 'No description provided.')
+        event_date_formatted = event_data.get('date', 'TBA')
+        
+        map_link_html = ""
+        if lat and lng:
+            map_url = f"https://www.google.com/maps/search/?api=1&query={lat},{lng}"
+            map_link_html = f"""
+            <div style="margin-top: 15px; padding: 12px; background-color: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <p style="margin: 0; font-size: 13.5px; color: #475569;">
+                    📍 <strong>Pinned Event Coordinates</strong>:
+                </p>
+                <a href="{map_url}" target="_blank" style="color: #2563eb; font-weight: 700; text-decoration: none; font-size: 13.5px; display: inline-block; margin-top: 6px;">
+                    View on Google Maps & Get Directions &rarr;
+                </a>
+            </div>
+            """
+        
         html_content = f"""
-        <html><body style="font-family: 'Helvetica Neue', Helvetica, sans-serif; color: #334155; background: #f8fafc; padding: 20px;">
-            <div style="background: white; padding: 30px; border-radius: 12px; border-top: 4px solid #3b82f6; max-width: 600px; margin: 0 auto; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-                <h2 style="color: #0f172a; margin-top: 0;">Hello {name},</h2>
-                <p>Your registration for <strong style="color: #2563eb;">{event_name}</strong> is confirmed.</p>
-                
-                <div style="background: #eff6ff; padding: 20px; border-radius: 8px; margin: 25px 0; text-align: center;">
-                    <p style="margin: 0 0 10px 0; font-size: 14px; font-weight: bold; color: #1e40af; text-transform: uppercase;">Your Secure Google Meet Link</p>
-                    <a href="{assigned_link}" style="background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Join the Meeting</a>
-                    <p style="margin: 15px 0 0 0; font-size: 12px; color: #64748b;">Or copy this link: {assigned_link}</p>
+        <html>
+        <body style="font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #334155; background-color: #f8fafc; padding: 40px 20px; margin: 0;">
+            <div style="background-color: white; padding: 40px; border-radius: 16px; border-top: 6px solid #3b82f6; max-width: 600px; margin: 0 auto; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05); border: 1px solid #e2e8f0;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h2 style="color: #0f172a; font-size: 24px; font-weight: 800; margin: 0 0 10px 0; letter-spacing: -0.5px;">Registration Confirmed!</h2>
+                    <p style="color: #64748b; font-size: 15px; margin: 0;">You have successfully secured a spot for our upcoming event.</p>
                 </div>
                 
-                <p style="font-size: 14px;">Please join 5 minutes early to ensure your microphone and camera are configured correctly.</p>
-                <p style="font-size: 14px;">Regards,<br><strong>Delstarford Works Operations</strong></p>
+                <hr style="border: none; border-top: 1px solid #f1f5f9; margin-bottom: 30px;">
+                
+                <h3 style="color: #0f172a; font-size: 18px; font-weight: 700; margin: 0 0 15px 0;">Hello {name},</h3>
+                <p style="font-size: 15px; line-height: 1.6; color: #475569; margin: 0 0 25px 0;">
+                    Your application for <strong style="color: #2563eb;">{event_name}</strong> is confirmed. Below are the key event activities and details:
+                </p>
+                
+                <div style="background-color: #f8fafc; padding: 25px; border-radius: 12px; margin-bottom: 30px; border: 1px solid #f1f5f9;">
+                    <h4 style="margin: 0 0 10px 0; font-size: 12px; font-weight: 800; color: #3b82f6; text-transform: uppercase; letter-spacing: 0.5px;">Event Agenda & Details</h4>
+                    <p style="margin: 0 0 20px 0; font-size: 14.5px; line-height: 1.6; color: #334155; font-style: italic;">"{description}"</p>
+                    
+                    <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                        <tr>
+                            <td style="padding: 8px 0; color: #64748b; font-weight: 600; width: 100px; vertical-align: top;">Date:</td>
+                            <td style="padding: 8px 0; color: #0f172a; font-weight: 700;">{event_date_formatted}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; color: #64748b; font-weight: 600; vertical-align: top;">Location:</td>
+                            <td style="padding: 8px 0; color: #0f172a; font-weight: 700;">{location_str}</td>
+                        </tr>
+                    </table>
+                    {map_link_html}
+                </div>
+                
+                <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); padding: 30px; border-radius: 12px; margin-bottom: 30px; text-align: center; border: 1px solid #bfdbfe;">
+                    <p style="margin: 0 0 15px 0; font-size: 13px; font-weight: 800; color: #1e40af; text-transform: uppercase; letter-spacing: 1px;">Google Meet Conference Node</p>
+                    <a href="{assigned_link}" target="_blank" style="background-color: #2563eb; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 800; display: inline-block; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25); font-size: 15px;">Join Live Broadcast</a>
+                    <p style="margin: 15px 0 0 0; font-size: 11.5px; color: #64748b;">Or copy this secure link: <span style="font-family: monospace; font-weight: 600; color: #475569;">{assigned_link}</span></p>
+                </div>
+                
+                <p style="font-size: 14px; line-height: 1.5; color: #64748b; margin-bottom: 30px;">
+                    Please join the call 5 minutes early to test your speaker and microphone configuration. If you have any inquiries, feel free to open a support ticket on your dashboard.
+                </p>
+                
+                <hr style="border: none; border-top: 1px solid #f1f5f9; margin-bottom: 25px;">
+                
+                <p style="font-size: 14px; color: #64748b; margin: 0; line-height: 1.5;">
+                    Best regards,<br>
+                    <strong style="color: #0f172a;">Delstarford Works Operations</strong><br>
+                    <span style="font-size: 12px;">Security & Systems Command</span>
+                </p>
             </div>
-        </body></html>
+        </body>
+        </html>
         """
         
         send_email_html(email, subject, html_content)
@@ -1066,6 +1142,12 @@ def post_announcement():
         # Add Google Meet Link if provided
         if data.get('meet_link'):
             announcement_data['meet_link'] = data.get('meet_link')
+
+        # Add Coordinates for Map Pinning if provided
+        if data.get('latitude'):
+            announcement_data['latitude'] = data.get('latitude')
+        if data.get('longitude'):
+            announcement_data['longitude'] = data.get('longitude')
         
         db.reference(f'announcements/{update_id}').set(announcement_data)
         return jsonify({"success": True})

@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<!-- Leaflet.js Mapping Library -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
 <style>
     /* Hide public UI elements for the dashboard */
     .site-header, .site-footer { display: none !important; }
@@ -426,6 +430,27 @@
                         <div id="meet-link-group" style="display:none; grid-column: span 2;">
                             <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--text-muted); margin-bottom:8px; text-transform:uppercase;">Google Meet Link</label>
                             <input type="url" id="ann-meet" placeholder="https://meet.google.com/xxx-yyyy-zzz" style="width:100%; padding:12px; border:1px solid var(--border-light); border-radius:8px; outline:none; box-sizing:border-box;">
+                        </div>
+                        <div id="location-group" style="grid-column: span 2; display: none; margin-bottom: 10px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <div style="grid-column: span 2;">
+                                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--text-muted); margin-bottom:8px; text-transform:uppercase;">Venue / Physical Address</label>
+                                    <input type="text" id="ann-location" placeholder="e.g. Kakamega Innovation Hub, Adjacent to MMUST" style="width:100%; padding:12px; border:1px solid var(--border-light); border-radius:8px; outline:none; box-sizing:border-box;">
+                                </div>
+                                <div>
+                                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--text-muted); margin-bottom:8px; text-transform:uppercase;">Latitude</label>
+                                    <input type="text" id="ann-lat" placeholder="0.2869" readonly style="width:100%; padding:12px; border:1px solid var(--border-light); border-radius:8px; outline:none; box-sizing:border-box; background-color: #f8fafc; color: var(--text-muted); cursor: not-allowed;">
+                                </div>
+                                <div>
+                                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--text-muted); margin-bottom:8px; text-transform:uppercase;">Longitude</label>
+                                    <input type="text" id="ann-lng" placeholder="34.7554" readonly style="width:100%; padding:12px; border:1px solid var(--border-light); border-radius:8px; outline:none; box-sizing:border-box; background-color: #f8fafc; color: var(--text-muted); cursor: not-allowed;">
+                                </div>
+                                <div style="grid-column: span 2;">
+                                    <label style="display:block; font-size:0.8rem; font-weight:800; color:var(--text-muted); margin-bottom:8px; text-transform:uppercase;">Pin Event Location (Click Map to Drop Marker)</label>
+                                    <div id="admin-map" style="width: 100%; height: 260px; border-radius: 12px; border: 1px solid var(--border-light); overflow: hidden; margin-top: 5px; z-index: 1;"></div>
+                                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; font-weight: 600;"><i class="fas fa-info-circle" style="color: var(--primary);"></i> Defaults to MMUST Innovation Hub. Click on the map to pin a new location for this event.</p>
+                                </div>
+                            </div>
                         </div>
                         <div style="grid-column: span 2; margin-top: 10px;">
                             <button type="submit" class="btn-reply" id="ann-btn">Broadcast Update</button>
@@ -903,12 +928,73 @@
     }
 
     // --- EVENTS & ANNOUNCEMENTS LOGIC ---
+    let adminMap = null;
+    let adminMarker = null;
+
+    function initAdminMap() {
+        if (adminMap) {
+            adminMap.invalidateSize();
+            return;
+        }
+
+        const defaultLat = 0.2869;
+        const defaultLng = 34.7554;
+
+        try {
+            adminMap = L.map('admin-map').setView([defaultLat, defaultLng], 14);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(adminMap);
+
+            adminMarker = L.marker([defaultLat, defaultLng], {
+                draggable: true
+            }).addTo(adminMap);
+
+            document.getElementById('ann-lat').value = defaultLat.toFixed(6);
+            document.getElementById('ann-lng').value = defaultLng.toFixed(6);
+
+            function updateCoords(lat, lng) {
+                document.getElementById('ann-lat').value = lat.toFixed(6);
+                document.getElementById('ann-lng').value = lng.toFixed(6);
+            }
+
+            adminMarker.on('dragend', function(e) {
+                const position = adminMarker.getLatLng();
+                updateCoords(position.lat, position.lng);
+            });
+
+            adminMap.on('click', function(e) {
+                adminMarker.setLatLng(e.latlng);
+                updateCoords(e.latlng.lat, e.latlng.lng);
+            });
+        } catch (err) {
+            console.error("Map initialization failed:", err);
+        }
+    }
+
     function toggleMeetField() {
         const type = document.getElementById('ann-type').value;
         const group = document.getElementById('meet-link-group');
-        group.style.display = (type === 'EVENT') ? 'block' : 'none';
-        if(type === 'EVENT') document.getElementById('ann-meet').required = true;
-        else document.getElementById('ann-meet').required = false;
+        const locGroup = document.getElementById('location-group');
+        
+        if (type === 'EVENT') {
+            group.style.display = 'block';
+            locGroup.style.display = 'block';
+            document.getElementById('ann-meet').required = true;
+            document.getElementById('ann-location').required = true;
+            
+            // Allow DOM to render map container before init
+            setTimeout(() => {
+                initAdminMap();
+            }, 200);
+        } else {
+            group.style.display = 'none';
+            locGroup.style.display = 'none';
+            document.getElementById('ann-meet').required = false;
+            document.getElementById('ann-location').required = false;
+        }
     }
 
     async function postAnnouncement(e) {
@@ -921,7 +1007,10 @@
             description: document.getElementById('ann-desc').value,
             type: document.getElementById('ann-type').value,
             date: document.getElementById('ann-date').value,
-            meet_link: document.getElementById('ann-meet').value
+            meet_link: document.getElementById('ann-meet').value,
+            location: document.getElementById('ann-location').value || 'Remote',
+            latitude: document.getElementById('ann-lat').value ? parseFloat(document.getElementById('ann-lat').value) : null,
+            longitude: document.getElementById('ann-lng').value ? parseFloat(document.getElementById('ann-lng').value) : null
         };
 
         btn.innerText = "Broadcasting...";
@@ -937,6 +1026,11 @@
             if(result.success) {
                 alert("Broadcast successful!");
                 document.getElementById('announcementForm').reset();
+                if (adminMarker) {
+                    adminMarker.setLatLng([0.2869, 34.7554]);
+                    document.getElementById('ann-lat').value = "0.286900";
+                    document.getElementById('ann-lng').value = "34.755400";
+                }
                 toggleMeetField();
                 loadEvents();
             } else {

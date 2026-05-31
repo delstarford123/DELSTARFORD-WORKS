@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    :root {
+        --bsf-primary: #3b82f6;
+        --bsf-primary-hover: #2563eb;
+        --bsf-success: #10b981;
+        --bsf-danger: #ef4444;
+        --bsf-warning: #f59e0b;
+        --bsf-dark: #0f172a;
+        --bsf-darker: #090d16;
+        --bsf-border: #1e293b;
+        --bsf-text: #f8fafc;
+        --bsf-muted: #94a3b8;
+    }
+
+    body { background: var(--bsf-darker) !important; color: var(--bsf-text); font-family: 'Plus Jakarta Sans', sans-serif; }
+
+    .bsf-hero {
+        padding: 130px 20px 60px;
+        background: radial-gradient(circle at center, rgba(59, 130, 246, 0.05) 0%, var(--bsf-darker) 70%);
+        text-align: center;
+        border-bottom: 1px solid var(--bsf-border);
+    }
+    .bsf-hero h1 { font-size: 3.5rem; font-weight: 800; color: #ffffff; letter-spacing: -1.5px; margin: 0 0 15px 0; }
+    .bsf-hero p { font-size: 1.15rem; color: var(--bsf-muted); max-width: 700px; margin: 0 auto; line-height: 1.6; }
+
+    .bsf-container { max-width: 1250px; margin: 50px auto; padding: 0 20px; display: grid; grid-template-columns: 1.2fr 1fr; gap: 50px; }
+
+    .bsf-card {
+        background: var(--bsf-dark); border-radius: 20px; border: 1px solid var(--bsf-border); padding: 40px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    }
+    .bsf-card h3 { font-size: 1.6rem; font-weight: 800; color: #ffffff; margin: 0 0 10px 0; letter-spacing: -0.5px; }
+    .bsf-card p { color: var(--bsf-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 30px; }
+
+    /* Controls */
+    .slider-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 25px; }
+    .slider-group label { font-size: 0.8rem; font-weight: 800; color: var(--bsf-muted); text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: space-between; }
+    .slider-group label span { color: var(--bsf-primary); font-weight: 800; }
+    
+    .slider-group input[type="range"] {
+        width: 100%; -webkit-appearance: none; background: #0d1321; height: 8px; border-radius: 5px; outline: none;
+    }
+    .slider-group input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%;
+        background: var(--bsf-primary); cursor: pointer; transition: 0.2s;
+    }
+    .slider-group input[type="range"]::-webkit-slider-thumb:hover { background: var(--bsf-primary-hover); transform: scale(1.2); }
+
+    /* Results Dashboard */
+    .bsf-results { display: flex; flex-direction: column; gap: 25px; }
+    .metric-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .metric-card {
+        background: #0d1321; border-radius: 12px; border: 1px solid var(--bsf-border); padding: 25px;
+    }
+    .metric-card span { font-size: 0.75rem; color: var(--bsf-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px; }
+    .metric-card h4 { font-size: 2rem; font-weight: 800; color: #ffffff; margin: 0; }
+
+    .growth-meter-wrapper { margin-top: 10px; }
+    .growth-label { font-size: 0.8rem; font-weight: 800; color: var(--bsf-muted); text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: space-between; margin-bottom: 8px; }
+    .growth-bar { width: 100%; height: 10px; background: #0d1321; border-radius: 50px; overflow: hidden; border: 1px solid var(--bsf-border); }
+    .growth-fill { width: 0%; height: 100%; background: linear-gradient(90deg, var(--bsf-primary), var(--bsf-success)); border-radius: 50px; transition: width 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+    @media (max-width: 992px) {
+        .bsf-container { grid-template-columns: 1fr; gap: 30px; }
+    }
+</style>
+
+<section class="bsf-hero">
+    <div class="container">
+        <span class="hero-badge"><i class="fas fa-bug"></i> CIRCULAR BIOECONOMY CORE</span>
+        <h1>BSF Biomass Growth Simulator</h1>
+        <p>A mathematical biophysical simulator optimized to calculate feeding conversion ratios (FCR) and evaluate economic insect protein outputs based on substrate feedstocks and incubator heat indices.</p>
+    </div>
+</section>
+
+<div class="bsf-container">
+    <!-- Biophysical Parameter Controls Card -->
+    <div class="bsf-card">
+        <h3>Incubator Parameter Nodes</h3>
+        <p>Adjust the sliders below to balance incubator configurations and recalculate growth dynamics in real-time.</p>
+        
+        <div class="slider-group">
+            <label>Substrate Feedstock Type <span id="feedVal">Spent Brewer's Yeast</span></label>
+            <select id="feedType" onchange="runSimulation()" style="background: #0d1321; border: 1px solid var(--bsf-border); border-radius: 8px; padding: 14px 20px; color: white; outline: none; font-family: inherit; font-size: 0.95rem;">
+                <option value="yeast">Spent Brewer's Yeast (High Protein Nutrient)</option>
+                <option value="food">Market Vegetable Waste (High Moisture Index)</option>
+                <option value="starch">Cassava Agro-Starch Biomass (High Carbohydrate)</option>
+            </select>
+        </div>
+
+        <div class="slider-group">
+            <label>Ambient Temperature <span id="tempLabel">28°C</span></label>
+            <input type="range" id="tempVal" min="20" max="38" value="28" oninput="updateTemp(this.value); runSimulation();">
+        </div>
+
+        <div class="slider-group">
+            <label>Incubator Moisture Level <span id="moistLabel">65%</span></label>
+            <input type="range" id="moistVal" min="40" max="80" value="65" oninput="updateMoist(this.value); runSimulation();">
+        </div>
+
+        <div class="slider-group">
+            <label>Rearing Harvesting Window <span id="daysLabel">14 Days</span></label>
+            <input type="range" id="daysVal" min="10" max="22" value="14" oninput="updateDays(this.value); runSimulation();">
+        </div>
+    </div>
+
+    <!-- Output Dashboard Column -->
+    <div class="bsf-results">
+        <div class="bsf-card" style="padding: 35px;">
+            <h3>Simulated Metabolic Outputs</h3>
+            <p>Calculated outputs matching biological conversion vectors.</p>
+            
+            <div class="metric-row" style="margin-bottom: 25px;">
+                <div class="metric-card">
+                    <span>HARVESTED BIOMASS</span>
+                    <h4 id="outBiomass">0.0 kg</h4>
+                    <span style="font-size: 0.7rem; color: var(--bsf-muted);">Larvae output / estate crate</span>
+                </div>
+                <div class="metric-card">
+                    <span>PROTEIN DENSITY</span>
+                    <h4 id="outProtein">0.0%</h4>
+                    <span style="font-size: 0.7rem; color: var(--bsf-muted);">Dry weight analysis</span>
+                </div>
+                <div class="metric-card">
+                    <span>FEED CONVERSION (FCR)</span>
+                    <h4 id="outFCR">0.00</h4>
+                    <span style="font-size: 0.7rem; color: var(--bsf-muted);">Lower is more efficient</span>
+                </div>
+                <div class="metric-card">
+                    <span>SPOT MARKET VALUE</span>
+                    <h4 id="outValue">KSh 0</h4>
+                    <span style="font-size: 0.7rem; color: var(--bsf-success); font-weight: 700;">Agronomic spot payout</span>
+                </div>
+            </div>
+
+            <div class="growth-meter-wrapper">
+                <div class="growth-label">
+                    <span>Larval Maturation Index</span>
+                    <span id="maturationIndex">0%</span>
+                </div>
+                <div class="growth-bar">
+                    <div class="growth-fill" id="growthBarFill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateTemp(val) { document.getElementById('tempLabel').innerText = val + "°C"; }
+    function updateMoist(val) { document.getElementById('moistLabel').innerText = val + "%"; }
+    function updateDays(val) { document.getElementById('daysLabel').innerText = val + " Days"; }
+
+    function runSimulation() {
+        const substrate = document.getElementById('feedType').value;
+        const temp = parseFloat(document.getElementById('tempVal').value);
+        const moist = parseFloat(document.getElementById('moistVal').value);
+        const days = parseFloat(document.getElementById('daysVal').value);
+
+        // 1. Biological simulation formula mapping
+        let baseBiomass = 15.0; // Base kg output per crate
+        let baseProtein = 42.0; // Base protein percent
+        let baseFCR = 1.85;
+
+        // Substrate multipliers
+        if (substrate === 'yeast') {
+            baseBiomass *= 1.35;
+            baseProtein += 6.5;
+            baseFCR -= 0.35;
+        } else if (substrate === 'food') {
+            baseBiomass *= 1.15;
+            baseProtein += 2.0;
+            baseFCR -= 0.15;
+        } else if (substrate === 'starch') {
+            baseBiomass *= 0.85;
+            baseProtein -= 4.0;
+            baseFCR += 0.25;
+        }
+
+        // Temperature adjustments (optimal BSF threshold is 27°C - 31°C)
+        let tempDiff = Math.abs(temp - 29);
+        baseBiomass -= tempDiff * 0.45;
+        baseProtein -= tempDiff * 0.25;
+        baseFCR += tempDiff * 0.05;
+
+        // Moisture adjustments (optimal threshold is 60% - 70%)
+        let moistDiff = Math.abs(moist - 65);
+        baseBiomass -= moistDiff * 0.25;
+        baseFCR += moistDiff * 0.03;
+
+        // Harvesting cycle maturity curve
+        let maturity = (days / 16) * 100;
+        if (maturity > 100) maturity = 100;
+        if (days > 16) {
+            // Over-mature larvae begin pupating (decreasing soft biomass protein)
+            let overAge = days - 16;
+            baseBiomass -= overAge * 0.5;
+            baseProtein -= overAge * 0.8;
+        }
+
+        // Cap minima/maxima to maintain realism
+        if (baseBiomass < 2.0) baseBiomass = 2.0;
+        if (baseProtein < 25) baseProtein = 25;
+        if (baseFCR < 1.1) baseFCR = 1.1;
+        if (baseFCR > 4.5) baseFCR = 4.5;
+
+        // Calculate pricing spot values based on biomass and quality
+        let valuation = baseBiomass * 180 * (baseProtein / 40);
+
+        // Update displays with smooth counter animations if GSAP is available
+        if (typeof gsap !== 'undefined') {
+            gsap.to(document.getElementById('outBiomass'), {
+                innerText: baseBiomass,
+                duration: 0.4,
+                snap: { innerText: 0.1 },
+                onUpdate: function() { this.targets()[0].innerText = parseFloat(this.targets()[0].innerText).toFixed(1) + " kg"; }
+            });
+            gsap.to(document.getElementById('outProtein'), {
+                innerText: baseProtein,
+                duration: 0.4,
+                snap: { innerText: 0.1 },
+                onUpdate: function() { this.targets()[0].innerText = parseFloat(this.targets()[0].innerText).toFixed(1) + "%"; }
+            });
+            gsap.to(document.getElementById('outFCR'), {
+                innerText: baseFCR,
+                duration: 0.4,
+                snap: { innerText: 0.01 },
+                onUpdate: function() { this.targets()[0].innerText = parseFloat(this.targets()[0].innerText).toFixed(2); }
+            });
+            gsap.to(document.getElementById('outValue'), {
+                innerText: valuation,
+                duration: 0.4,
+                snap: { innerText: 1 },
+                onUpdate: function() { this.targets()[0].innerText = "KSh " + Math.round(this.targets()[0].innerText).toLocaleString(); }
+            });
+        } else {
+            // Fallback without GSAP
+            document.getElementById('outBiomass').innerText = baseBiomass.toFixed(1) + " kg";
+            document.getElementById('outProtein').innerText = baseProtein.toFixed(1) + "%";
+            document.getElementById('outFCR').innerText = baseFCR.toFixed(2);
+            document.getElementById('outValue').innerText = "KSh " + Math.round(valuation).toLocaleString();
+        }
+
+        document.getElementById('growthBarFill').style.width = Math.round(maturity) + "%";
+        document.getElementById('maturationIndex').innerText = Math.round(maturity) + "%";
+    }
+
+    // Run simulation automatically on load
+    document.addEventListener("DOMContentLoaded", () => {
+        runSimulation();
+    });
+</script>
+
+{% endblock %}

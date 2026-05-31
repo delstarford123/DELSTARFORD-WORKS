@@ -1,0 +1,302 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    :root {
+        --ds-primary: #3b82f6;
+        --ds-primary-hover: #2563eb;
+        --ds-success: #10b981;
+        --ds-danger: #ef4444;
+        --ds-warning: #f59e0b;
+        --ds-dark: #0f172a;
+        --ds-darker: #090d16;
+        --ds-border: #1e293b;
+        --ds-text: #f8fafc;
+        --ds-muted: #94a3b8;
+    }
+
+    body { background: var(--ds-darker) !important; color: var(--ds-text); font-family: 'Plus Jakarta Sans', sans-serif; }
+
+    .seg-hero {
+        padding: 130px 20px 60px;
+        background: radial-gradient(circle at center, rgba(59, 130, 246, 0.05) 0%, var(--ds-darker) 70%);
+        text-align: center;
+        border-bottom: 1px solid var(--ds-border);
+    }
+    .seg-hero h1 { font-size: 3.5rem; font-weight: 800; color: #ffffff; letter-spacing: -1.5px; margin: 0 0 15px 0; }
+    .seg-hero p { font-size: 1.15rem; color: var(--ds-muted); max-width: 700px; margin: 0 auto; line-height: 1.6; }
+
+    .seg-container { max-width: 1250px; margin: 50px auto; padding: 0 20px; display: grid; grid-template-columns: 1.2fr 1fr; gap: 50px; }
+
+    .seg-card {
+        background: var(--ds-dark); border-radius: 20px; border: 1px solid var(--ds-border); padding: 40px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.3); position: relative;
+    }
+    .seg-card h3 { font-size: 1.6rem; font-weight: 800; color: #ffffff; margin: 0 0 10px 0; letter-spacing: -0.5px; }
+    .seg-card p { color: var(--ds-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 30px; }
+
+    /* Scan Window Visualizer */
+    .scan-visualizer {
+        width: 100%; height: 350px; border-radius: 12px; border: 1px solid var(--ds-border);
+        background: #0d1321; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center;
+    }
+    .scan-visualizer img { max-width: 80%; max-height: 80%; object-fit: contain; border-radius: 8px; z-index: 1; transition: 0.5s; }
+    
+    /* Scanner Laser line overlay */
+    .laser-line {
+        position: absolute; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, transparent, var(--ds-primary), transparent);
+        box-shadow: 0 0 15px var(--ds-primary); top: 0; z-index: 2; display: none;
+    }
+
+    /* Contour Segmentation Overlays */
+    .contour-overlay {
+        position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 3; opacity: 0; transition: opacity 0.5s ease;
+    }
+    .contour-overlay svg { width: 80%; height: 80%; pointer-events: none; }
+
+    .controls-row { display: flex; gap: 15px; margin-top: 25px; }
+    .btn-action {
+        flex-grow: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        padding: 14px 25px; border-radius: 8px; font-weight: 800; border: none; cursor: pointer; transition: 0.3s;
+        text-transform: uppercase; font-size: 0.9rem; letter-spacing: 0.5px;
+    }
+    .btn-primary { background: var(--ds-primary); color: white; }
+    .btn-primary:hover { background: var(--ds-primary-hover); transform: translateY(-2px); }
+    .btn-outline { background: rgba(255,255,255,0.03); color: white; border: 1px solid var(--ds-border); }
+    .btn-outline:hover { background: rgba(255,255,255,0.08); }
+
+    /* Results Dashboard Column */
+    .results-dash { display: flex; flex-direction: column; gap: 25px; }
+    .metric-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .metric-card {
+        background: #0d1321; border-radius: 12px; border: 1px solid var(--ds-border); padding: 20px;
+    }
+    .metric-card span { font-size: 0.75rem; color: var(--ds-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px; }
+    .metric-card h4 { font-size: 1.8rem; font-weight: 800; color: #ffffff; margin: 0; }
+    
+    .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; }
+    .badge-alert { background: rgba(239, 68, 68, 0.1); color: var(--ds-danger); border: 1px solid var(--ds-danger); }
+    .badge-success { background: rgba(16, 185, 129, 0.1); color: var(--ds-success); border: 1px solid var(--ds-success); }
+
+    .action-panel {
+        background: var(--ds-dark); border-radius: 12px; border: 1px solid var(--ds-border); padding: 25px;
+    }
+    .action-panel h4 { font-size: 1.1rem; font-weight: 800; margin: 0 0 15px 0; color: #ffffff; }
+    .action-list { list-style: none; padding: 0; margin: 0; }
+    .action-list li { margin-bottom: 12px; font-size: 0.9rem; color: var(--ds-muted); display: flex; align-items: flex-start; gap: 10px; line-height: 1.5; }
+    .action-list li:last-child { margin-bottom: 0; }
+    .action-list i { color: var(--ds-success); margin-top: 3px; }
+
+    @media (max-width: 992px) {
+        .seg-container { grid-template-columns: 1fr; gap: 30px; }
+    }
+</style>
+
+<section class="seg-hero">
+    <div class="container">
+        <span class="hero-badge"><i class="fas fa-eye"></i> COMPUTER VISION SEGMENTATION CORE</span>
+        <h1>Leaf Disease Segmentation Lab</h1>
+        <p>Our deep learning semantic segmentation models isolate chlorotic, necrotic, and rust tissue margins up to the pixel level, allowing targeted chemical applications.</p>
+    </div>
+</section>
+
+<div class="seg-container">
+    <!-- Visual Scanner Column -->
+    <div class="seg-card">
+        <h3>Crop Tissue Scanner</h3>
+        <p>Select a demonstration leaf sample below and initiate the neural scanning sequence to map tissue degradation parameters.</p>
+        
+        <div class="scan-visualizer">
+            <div class="laser-line" id="laser"></div>
+            
+            <!-- Default Raw Leaf Image -->
+            <img src="{{ url_for('static', filename='images/Flyer.png') }}" id="cropImg" alt="Crop Specimen" style="max-height: 70%; max-width: 70%; object-fit: contain;">
+
+            <!-- SVG Bounding Contour Overlay for Segment -->
+            <div class="contour-overlay" id="contours">
+                <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Leaf Outline (Slightly Pulsing Neon Green) -->
+                    <path d="M250,50 C380,120 400,300 250,450 C100,300 120,120 250,50 Z" fill="none" stroke="#10b981" stroke-width="4" stroke-dasharray="8 4" opacity="0.6"/>
+                    
+                    <!-- Fungal Rust Infection Contours (Glowing Neon Yellow/Red) -->
+                    <path d="M220,150 Q240,160 210,180 Z" fill="rgba(245, 158, 11, 0.4)" stroke="#ef4444" stroke-width="2" />
+                    <path d="M280,220 Q290,200 310,240 Z" fill="rgba(245, 158, 11, 0.4)" stroke="#ef4444" stroke-width="2" />
+                    <path d="M180,260 Q170,290 200,280 Z" fill="rgba(245, 158, 11, 0.4)" stroke="#ef4444" stroke-width="2" />
+                    <path d="M250,330 Q270,350 240,360 Z" fill="rgba(245, 158, 11, 0.4)" stroke="#ef4444" stroke-width="2" />
+                </svg>
+            </div>
+        </div>
+
+        <div class="controls-row">
+            <button class="btn-action btn-outline" onclick="loadSample('maize')"><i class="fas fa-seedling"></i> Sample Maize Leaf</button>
+            <button class="btn-action btn-primary" id="scanBtn" onclick="runSegmentation()"><i class="fas fa-qrcode"></i> Scan Crop Leaf</button>
+        </div>
+    </div>
+
+    <!-- Diagnostic Details Dashboard Column -->
+    <div class="results-dash">
+        <div class="seg-card" style="padding: 30px;">
+            <h3>Diagnostics Telemetry</h3>
+            <p style="margin-bottom: 20px;">Real-time inference records returned from our U-Net model loop.</p>
+            
+            <div class="metric-row">
+                <div class="metric-card">
+                    <span>PATHOGEN DIAGNOSIS</span>
+                    <h4 style="font-size: 1.15rem; font-weight: 800; color: #ffffff;" id="diagClass">Waiting for Scan...</h4>
+                    <span class="status-badge badge-alert" id="diagStatus" style="margin-top: 8px; display: none;">Infection Active</span>
+                </div>
+                <div class="metric-card">
+                    <span>TISSUE DAMAGE</span>
+                    <h4 id="diagDamage">0.00%</h4>
+                    <span style="font-size: 0.7rem; color: var(--ds-muted);" id="damageText">Scan leaf to calculate</span>
+                </div>
+                <div class="metric-card">
+                    <span>CNN MODEL PRECISION</span>
+                    <h4 id="diagPrecision">0.00%</h4>
+                    <span style="font-size: 0.7rem; color: var(--ds-muted);" id="modelCode">No active models</span>
+                </div>
+                <div class="metric-card">
+                    <span>LATENCY TARGET</span>
+                    <h4 id="diagLatency">0ms</h4>
+                    <span style="font-size: 0.7rem; color: var(--ds-muted);">Edge classification speeds</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-panel" id="actionPanel" style="opacity: 0.5;">
+            <h4>Targeted Agronomic Menu</h4>
+            <ul class="action-list" id="actionList">
+                <li><i class="fas fa-info-circle" style="color: var(--ds-primary);"></i> Select a crop leaf and initiate the semantic diagnostic sequence to generate micro-sprayer recipes and nitrogen restore guidelines.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    const leafSamples = {
+        'maize': {
+            img: 'https://images.unsplash.com/photo-1551649001-c1b1ff872700?q=80&w=600&auto=format&fit=crop',
+            diagnosis: 'Puccinia polysora (Southern Corn Rust)',
+            damage: '14.82%',
+            precision: '99.42%',
+            latency: '42ms',
+            model: 'U-Net Foliar-Net V4',
+            actions: [
+                'Isolate the infected agricultural sub-block 4B immediately.',
+                'Dispense localized copper-based fungicide at a concentration of 0.15%.',
+                'Upload machinery sprayer map recipe coordinates into Node-4 tractor API.',
+                'Increment potassium levels in nearby grid zones by 10% to build defense walls.'
+            ]
+        }
+    };
+
+    let activeSample = null;
+
+    function loadSample(type) {
+        const sample = leafSamples[type];
+        activeSample = sample;
+
+        const img = document.getElementById('cropImg');
+        img.src = sample.img;
+        img.style.maxHeight = '80%';
+        img.style.maxWidth = '80%';
+
+        // Reset display state
+        document.getElementById('contours').style.opacity = '0';
+        document.getElementById('diagClass').innerText = "Maize Specimen Loaded";
+        document.getElementById('diagStatus').style.display = "none";
+        document.getElementById('diagDamage').innerText = "0.00%";
+        document.getElementById('diagPrecision').innerText = "0.00%";
+        document.getElementById('diagLatency').innerText = "0ms";
+        
+        document.getElementById('actionPanel').style.opacity = "0.5";
+        document.getElementById('actionList').innerHTML = '<li><i class="fas fa-play-circle" style="color: var(--ds-primary);"></i> Specimen loaded. Click "Scan Crop Leaf" to run semantic diagnostic classification.</li>';
+    }
+
+    // Auto-load Maize sample on startup to showcase it
+    document.addEventListener("DOMContentLoaded", () => {
+        loadSample('maize');
+    });
+
+    function runSegmentation() {
+        if (!activeSample) return alert("Please select a sample leaf first.");
+
+        const laser = document.getElementById('laser');
+        const contours = document.getElementById('contours');
+        const btn = document.getElementById('scanBtn');
+        const originalText = btn.innerHTML;
+
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Ingesting...`;
+        
+        // 1. Trigger scanning animation
+        laser.style.display = "block";
+        laser.style.top = "0";
+
+        if(typeof gsap !== 'undefined') {
+            const tl = gsap.timeline();
+            tl.to(laser, { top: "350px", duration: 1.5, ease: "sine.inOut" })
+              .to(laser, { top: "0px", duration: 1.5, ease: "sine.inOut" })
+              .call(() => {
+                  laser.style.display = "none";
+                  contours.style.opacity = "1";
+                  
+                  // Ingest records
+                  document.getElementById('diagClass').innerText = activeSample.diagnosis;
+                  document.getElementById('diagStatus').style.display = "inline-flex";
+                  
+                  // Animate metrics reveal
+                  gsap.fromTo(document.getElementById('diagDamage'), {innerText: 0}, {
+                      innerText: parseFloat(activeSample.damage),
+                      duration: 1.0,
+                      snap: { innerText: 0.01 },
+                      onUpdate: function() { this.targets()[0].innerText += "%"; }
+                  });
+                  gsap.fromTo(document.getElementById('diagPrecision'), {innerText: 0}, {
+                      innerText: parseFloat(activeSample.precision),
+                      duration: 1.0,
+                      snap: { innerText: 0.01 },
+                      onUpdate: function() { this.targets()[0].innerText += "%"; }
+                  });
+                  gsap.fromTo(document.getElementById('diagLatency'), {innerText: 0}, {
+                      innerText: parseInt(activeSample.latency),
+                      duration: 0.6,
+                      snap: { innerText: 1 },
+                      onUpdate: function() { this.targets()[0].innerText += "ms"; }
+                  });
+
+                  document.getElementById('modelCode').innerText = activeSample.model;
+                  document.getElementById('damageText').innerText = "Infected tissue proportion";
+                  
+                  // Reveal Action Menu
+                  document.getElementById('actionPanel').style.opacity = "1";
+                  document.getElementById('actionList').innerHTML = activeSample.actions.map(act => `
+                      <li><i class="fas fa-check-circle"></i> ${act}</li>
+                  `).join('');
+
+                  btn.disabled = false;
+                  btn.innerHTML = originalText;
+              });
+        } else {
+            // Fallback without GSAP
+            setTimeout(() => {
+                laser.style.display = "none";
+                contours.style.opacity = "1";
+                document.getElementById('diagClass').innerText = activeSample.diagnosis;
+                document.getElementById('diagStatus').style.display = "inline-flex";
+                document.getElementById('diagDamage').innerText = activeSample.damage;
+                document.getElementById('diagPrecision').innerText = activeSample.precision;
+                document.getElementById('diagLatency').innerText = activeSample.latency;
+                document.getElementById('modelCode').innerText = activeSample.model;
+                document.getElementById('actionPanel').style.opacity = "1";
+                document.getElementById('actionList').innerHTML = activeSample.actions.map(act => `
+                    <li><i class="fas fa-check-circle"></i> ${act}</li>
+                `).join('');
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }, 3000);
+        }
+    }
+</script>
+
+{% endblock %}

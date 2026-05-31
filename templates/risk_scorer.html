@@ -1,0 +1,279 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    :root {
+        --fn-primary: #3b82f6;
+        --fn-primary-hover: #2563eb;
+        --fn-success: #10b981;
+        --fn-danger: #ef4444;
+        --fn-warning: #f59e0b;
+        --fn-dark: #0f172a;
+        --fn-darker: #090d16;
+        --fn-border: #1e293b;
+        --fn-text: #f8fafc;
+        --fn-muted: #94a3b8;
+    }
+
+    body { background: var(--fn-darker) !important; color: var(--fn-text); font-family: 'Plus Jakarta Sans', sans-serif; }
+
+    .fn-hero {
+        padding: 130px 20px 60px;
+        background: radial-gradient(circle at center, rgba(59, 130, 246, 0.05) 0%, var(--fn-darker) 70%);
+        text-align: center;
+        border-bottom: 1px solid var(--fn-border);
+    }
+    .fn-hero h1 { font-size: 3.5rem; font-weight: 800; color: #ffffff; letter-spacing: -1.5px; margin: 0 0 15px 0; }
+    .fn-hero p { font-size: 1.15rem; color: var(--fn-muted); max-width: 700px; margin: 0 auto; line-height: 1.6; }
+
+    .fn-container { max-width: 1250px; margin: 50px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 1.2fr; gap: 50px; }
+
+    .fn-card {
+        background: var(--fn-dark); border-radius: 20px; border: 1px solid var(--fn-border); padding: 40px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    }
+    .fn-card h3 { font-size: 1.6rem; font-weight: 800; color: #ffffff; margin: 0 0 10px 0; letter-spacing: -0.5px; }
+    .fn-card p { color: var(--fn-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 30px; }
+
+    /* Inputs Styling */
+    .input-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+    .input-group label { font-size: 0.8rem; font-weight: 800; color: var(--fn-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .input-group select, .input-group input {
+        background: #0d1321; border: 1px solid var(--fn-border); border-radius: 8px; padding: 14px 20px;
+        color: white; outline: none; font-family: inherit; font-size: 0.95rem; transition: 0.3s;
+    }
+    .input-group select:focus, .input-group input:focus { border-color: var(--fn-primary); }
+
+    .btn-submit-fn {
+        width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        padding: 16px 25px; border-radius: 8px; font-weight: 800; border: none; cursor: pointer; transition: 0.3s;
+        text-transform: uppercase; font-size: 0.95rem; letter-spacing: 0.5px; background: var(--fn-primary); color: white;
+    }
+    .btn-submit-fn:hover { background: var(--fn-primary-hover); transform: translateY(-2px); }
+
+    /* Gauge / Display Column */
+    .gauge-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 40px; }
+    
+    /* Interactive dial mockup */
+    .score-dial {
+        width: 200px; height: 200px; border-radius: 50%; border: 10px solid #0d1321;
+        border-top-color: var(--fn-primary); display: flex; flex-direction: column; align-items: center; justify-content: center;
+        position: relative; transition: all 1s ease; box-shadow: 0 0 30px rgba(59, 130, 246, 0.2);
+    }
+    .score-dial h4 { font-size: 3rem; font-weight: 800; margin: 0; color: white; line-height: 1; }
+    .score-dial span { font-size: 0.75rem; color: var(--fn-muted); font-weight: 800; margin-top: 5px; }
+    
+    .score-rating {
+        margin-top: 20px; font-size: 1.1rem; font-weight: 800; display: inline-block; padding: 6px 16px; border-radius: 50px;
+    }
+    .rating-excellent { background: rgba(16, 185, 129, 0.1); color: var(--fn-success); border: 1px solid var(--fn-success); }
+    .rating-waiting { background: rgba(255, 255, 255, 0.05); color: var(--fn-muted); border: 1px solid var(--fn-border); }
+
+    /* Loan Parameters Card */
+    .loan-params-card {
+        background: #0d1321; border-radius: 12px; border: 1px solid var(--fn-border); padding: 30px;
+        opacity: 0.5; transition: 0.5s;
+    }
+    .loan-params-card h4 { font-size: 1.25rem; font-weight: 800; color: white; margin: 0 0 15px 0; }
+    .loan-list { list-style: none; padding: 0; margin: 0; }
+    .loan-list li { display: flex; justify-content: space-between; border-bottom: 1px solid var(--fn-border); padding: 12px 0; font-size: 0.95rem; }
+    .loan-list li:last-child { border-bottom: none; }
+    .loan-list strong { color: white; font-weight: 700; }
+    .loan-list span { color: var(--fn-muted); }
+
+    @media (max-width: 992px) {
+        .fn-container { grid-template-columns: 1fr; gap: 30px; }
+    }
+</style>
+
+<section class="fn-hero">
+    <div class="container">
+        <span class="hero-badge"><i class="fas fa-hand-holding-usd"></i> COGNITIVE UNDERWRITING TERMINAL</span>
+        <h1>Micro-Lending Risk Scorer</h1>
+        <p>Providing financial institutions with precise, dynamic credit scores for farming cooperatives by cross-referencing soil fertility telemetry, weather volatility indices, and historical remote sensing output charts.</p>
+    </div>
+</section>
+
+<div class="fn-container">
+    <!-- Underwriting Parameters Form Card -->
+    <div class="fn-card">
+        <h3>Underwriting Parameters</h3>
+        <p>Input field coordinates and cooperative details below to calculate the dynamic ag-risk score and optimal lending limits.</p>
+        
+        <form id="riskForm" onsubmit="calculateRisk(event)">
+            <div class="input-group">
+                <label>Farming Cooperative Zone</label>
+                <select id="coopZone">
+                    <option value="kakamega">Kakamega Central Cooperative (High Rainfall)</option>
+                    <option value="eldoret">Eldoret North Grain Union (High Soil Carbon)</option>
+                    <option value="nakuru">Nakuru Rift Agri-Cluster (Moderate Evapotranspiration)</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Soil Performance Index (NPK Array)</label>
+                <select id="soilNPK">
+                    <option value="excellent">Optimal Nutrient Seeding (Nitrogen-Rich)</option>
+                    <option value="moderate">Moderate Yield Potential (Potassium-Deficit)</option>
+                    <option value="low">Low Organic Carbon Index</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Satellite EVI Vegetation Index (Current Seasonal Crop Status)</label>
+                <select id="eviIndex">
+                    <option value="high">EVI High Peak (Dense Chlorophyll)</option>
+                    <option value="moderate">EVI Moderate Yield (Scouting Recommended)</option>
+                    <option value="stressed">EVI Low Stress (Anomalous Moisture Alert)</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn-submit-fn" id="submitRiskBtn">
+                <span id="btnRiskText">Generate Underwriting Index &rarr;</span>
+            </button>
+        </form>
+    </div>
+
+    <!-- Live Risk Score Indicator Column -->
+    <div class="results-dash">
+        <div class="fn-card" style="text-align: center;">
+            <h3>Calculated Risk Profile</h3>
+            <p>Underwriting models continuously updated against global radar indices.</p>
+            
+            <div class="gauge-wrapper">
+                <div class="score-dial" id="dial">
+                    <h4 id="scoreNumber">---</h4>
+                    <span>SYSTEM OUT OF 1000</span>
+                </div>
+                <div class="score-rating rating-waiting" id="ratingBadge">Waiting for Parameters...</div>
+            </div>
+
+            <div class="loan-params-card" id="loanCard">
+                <h4>Lending Guidelines</h4>
+                <ul class="loan-list">
+                    <li>
+                        <span>Credit Authorization Limit</span>
+                        <strong id="limitVal">KSh 0</strong>
+                    </li>
+                    <li>
+                        <span>Optimal Pricing Interest Rate</span>
+                        <strong id="rateVal">0.0% EAT Base</strong>
+                    </li>
+                    <li>
+                        <span>Evapotranspiration Payout Trigger</span>
+                        <strong id="triggerVal">0.00 Index</strong>
+                    </li>
+                    <li>
+                        <span>Underwriting Category</span>
+                        <strong id="classVal">Unclassified</strong>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const scoringRules = {
+        'kakamega-excellent-high': { score: 945, limit: 'KSh 250,000', rate: '5.2%', trigger: '0.32 index', category: 'Platinum (Sovereign Core)' },
+        'kakamega-excellent-moderate': { score: 865, limit: 'KSh 180,000', rate: '6.0%', trigger: '0.35 index', category: 'Gold (High Yield)' },
+        'eldoret-excellent-high': { score: 920, limit: 'KSh 220,000', rate: '5.5%', trigger: '0.30 index', category: 'Platinum (Sovereign Core)' },
+        'nakuru-moderate-stressed': { score: 480, limit: 'KSh 50,000', rate: '11.0%', trigger: '0.45 index', category: 'Bronze (Alert Status)' }
+    };
+
+    function calculateRisk(e) {
+        e.preventDefault();
+        const btn = document.getElementById('submitRiskBtn');
+        const btnText = document.getElementById('btnRiskText');
+        const dial = document.getElementById('dial');
+        const scoreNum = document.getElementById('scoreNumber');
+        const badge = document.getElementById('ratingBadge');
+        const loanCard = document.getElementById('loanCard');
+
+        const coop = document.getElementById('coopZone').value;
+        const soil = document.getElementById('soilNPK').value;
+        const evi = document.getElementById('eviIndex').value;
+        const key = `${coop}-${soil}-${evi}`;
+
+        // Get matching rule, or fallback to default
+        const result = scoringRules[key] || {
+            score: 720, limit: 'KSh 120,000', rate: '7.8%', trigger: '0.38 index', category: 'Silver (Standard Crop)'
+        };
+
+        btn.disabled = true;
+        btnText.innerText = "Calculating Risk Vector...";
+        dial.style.borderColor = "#0d1321";
+        dial.style.boxShadow = "none";
+        
+        // Progress cycle simulation
+        if (typeof gsap !== 'undefined') {
+            gsap.fromTo(scoreNum, { innerText: 0 }, {
+                innerText: result.score,
+                duration: 2.0,
+                snap: { innerText: 1 },
+                onStart: () => {
+                    badge.className = "score-rating rating-waiting";
+                    badge.innerText = "Underwriting...";
+                    loanCard.style.opacity = "0.5";
+                },
+                onComplete: () => {
+                    // Update Colors based on risk score
+                    if (result.score >= 800) {
+                        dial.style.borderColor = "var(--fn-success)";
+                        dial.style.borderTopColor = "#0d1321";
+                        dial.style.boxShadow = "0 0 30px rgba(16, 185, 129, 0.3)";
+                        badge.className = "score-rating rating-excellent";
+                        badge.style.background = "rgba(16, 185, 129, 0.1)";
+                        badge.style.color = "var(--fn-success)";
+                        badge.style.borderColor = "var(--fn-success)";
+                        badge.innerText = "Sovereign Low Risk";
+                    } else if (result.score >= 600) {
+                        dial.style.borderColor = "var(--fn-warning)";
+                        dial.style.borderTopColor = "#0d1321";
+                        dial.style.boxShadow = "0 0 30px rgba(245, 158, 11, 0.3)";
+                        badge.className = "score-rating";
+                        badge.style.background = "rgba(245, 158, 11, 0.1)";
+                        badge.style.color = "var(--fn-warning)";
+                        badge.style.borderColor = "var(--fn-warning)";
+                        badge.innerText = "Standard Risk Profile";
+                    } else {
+                        dial.style.borderColor = "var(--fn-danger)";
+                        dial.style.borderTopColor = "#0d1321";
+                        dial.style.boxShadow = "0 0 30px rgba(239, 68, 68, 0.3)";
+                        badge.className = "score-rating";
+                        badge.style.background = "rgba(239, 68, 68, 0.1)";
+                        badge.style.color = "var(--fn-danger)";
+                        badge.style.borderColor = "var(--fn-danger)";
+                        badge.innerText = "Critical Yield Alert";
+                    }
+
+                    // Ingest loan parameters
+                    document.getElementById('limitVal').innerText = result.limit;
+                    document.getElementById('rateVal').innerText = result.rate + " EAT Base";
+                    document.getElementById('triggerVal').innerText = result.trigger;
+                    document.getElementById('classVal').innerText = result.category;
+                    loanCard.style.opacity = "1";
+
+                    btn.disabled = false;
+                    btnText.innerText = "Generate Underwriting Index \u2192";
+                }
+            });
+        } else {
+            // Fallback without GSAP
+            setTimeout(() => {
+                scoreNum.innerText = result.score;
+                badge.innerText = result.category;
+                badge.className = "score-rating rating-excellent";
+                
+                document.getElementById('limitVal').innerText = result.limit;
+                document.getElementById('rateVal').innerText = result.rate + " EAT Base";
+                document.getElementById('triggerVal').innerText = result.trigger;
+                document.getElementById('classVal').innerText = result.category;
+                loanCard.style.opacity = "1";
+
+                btn.disabled = false;
+                btnText.innerText = "Generate Underwriting Index \u2192";
+            }, 2000);
+        }
+    }
+</script>
+
+{% endblock %}

@@ -189,6 +189,31 @@ def about(): return render_template('about.html')
 @app.route('/works')
 def works(): return render_template('works.html')
 
+# ==============================================================================
+# ADVANCED AGRICULTURAL AI SYSTEM MODULES
+# ==============================================================================
+
+@app.route('/diagnostics/segmentation')
+def disease_segmentation():
+    """
+    Renders the Leaf Disease Semantic Segmentation Lab.
+    """
+    return render_template('disease_segmentation.html')
+
+@app.route('/finance/risk-scorer')
+def risk_scorer():
+    """
+    Renders the Micro-Lending Agronomic Risk Scorer.
+    """
+    return render_template('risk_scorer.html')
+
+@app.route('/biotech/bsf-simulator')
+def bsf_simulator():
+    """
+    Renders the Black Soldier Fly Biomass Growth Simulator.
+    """
+    return render_template('bsf_simulator.html')
+
 @app.route('/privacy')
 def privacy(): return render_template('privacy.html')
 

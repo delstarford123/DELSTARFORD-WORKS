@@ -12,3 +12,4 @@ __pycache__/
 *.json
 !manifest.json
 !knowledge.json
+.vercel

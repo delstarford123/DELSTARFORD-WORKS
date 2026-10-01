@@ -1,0 +1,341 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    .quickpay-section {
+        background: #f8fafc;
+        min-height: calc(100vh - var(--header-height));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 20px;
+    }
+    .qp-standalone-card {
+        background: #ffffff;
+        width: 100%;
+        max-width: 500px;
+        border-radius: 24px;
+        padding: 50px 40px;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.1);
+        border-top: 6px solid #3b82f6;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .qp-header { text-align: center; margin-bottom: 30px; }
+    .qp-icon {
+        width: 70px; height: 70px; background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6; border-radius: 50%; display: flex; align-items: center;
+        justify-content: center; font-size: 2rem; margin: 0 auto 15px;
+    }
+    .qp-header h3 { margin: 0 0 10px; font-size: 1.8rem; color: #0f172a; font-weight: 800; }
+    .qp-header p { margin: 0; color: #64748b; font-size: 0.95rem; line-height: 1.5; }
+
+    .qp-form-group { margin-bottom: 20px; text-align: left; }
+    .qp-form-group label { display: block; margin-bottom: 8px; font-weight: 700; color: #1e293b; font-size: 0.9rem; }
+    
+    .qp-input-wrap {
+        display: flex; align-items: center; background: #f8fafc;
+        border: 2px solid #e2e8f0; border-radius: 12px; padding: 12px 15px;
+        transition: all 0.3s ease;
+    }
+    .qp-input-wrap:focus-within { border-color: #3b82f6; background: #fff; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
+    .qp-input-wrap i { color: #94a3b8; margin-right: 12px; font-size: 1.1rem; }
+    .qp-input-wrap input {
+        border: none; background: none; flex: 1; outline: none;
+        font-family: inherit; font-size: 1rem; color: #0f172a;
+    }
+
+    .qp-submit-btn {
+        width: 100%; padding: 16px; background: #3b82f6; color: white;
+        border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 800;
+        cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+        transition: all 0.3s ease; margin-top: 10px; font-family: inherit;
+    }
+    .qp-submit-btn:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3); }
+    .qp-submit-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+    
+    .qp-spinner {
+        display: none; width: 20px; height: 20px;
+        border: 3px solid rgba(255,255,255,0.3);
+        border-radius: 50%; border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .qp-status-box {
+        margin-top: 20px; padding: 15px; border-radius: 10px; font-size: 0.95rem;
+        display: none; animation: slideUp 0.3s ease; font-weight: 600; text-align: center;
+    }
+    .qp-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+    .qp-error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
+    .qp-footer {
+        text-align: center; margin-top: 25px; font-size: 0.8rem;
+        color: #94a3b8; font-weight: 600;
+    }
+    .qp-footer i { color: #10b981; margin-right: 5px; }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- MOBILE RESPONSIVENESS --- */
+    @media (max-width: 600px) {
+        .quickpay-section { padding: 30px 15px; }
+        .qp-standalone-card { padding: 35px 25px; border-radius: 20px; }
+        .qp-header h3 { font-size: 1.5rem; }
+    }
+
+    /* --- INSTALL APP BANNER --- */
+    .qp-install-app {
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        border: 1px solid #bfdbfe;
+        border-radius: 12px;
+        padding: 12px 15px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .qp-install-info { display: flex; align-items: center; gap: 12px; }
+    .qp-install-icon {
+        width: 36px; height: 36px; background: #3b82f6; color: white;
+        border-radius: 8px; display: flex; align-items: center;
+        justify-content: center; font-size: 1.1rem;
+    }
+    .qp-install-text h4 { margin: 0; font-size: 0.95rem; color: #1e3a8a; font-weight: 800; }
+    .qp-install-text p { margin: 0; font-size: 0.75rem; color: #3b82f6; font-weight: 600; }
+    .qp-install-btn {
+        background: #2563eb; color: white; border: none; padding: 8px 14px;
+        border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer;
+        transition: 0.2s; font-family: inherit;
+    }
+    .qp-install-btn:hover { background: #1d4ed8; }
+</style>
+
+<div class="quickpay-section">
+    <div class="qp-standalone-card">
+        
+        <!-- Install App Banner -->
+        <div class="qp-install-app" id="pwa-install-banner">
+            <div class="qp-install-info">
+                <div class="qp-install-icon"><i class="fas fa-download"></i></div>
+                <div class="qp-install-text">
+                    <h4>Install App</h4>
+                    <p>Faster & secure access</p>
+                </div>
+            </div>
+            <button class="qp-install-btn" id="pwa-install-btn">Install</button>
+        </div>
+
+        <div class="qp-header">
+            <div class="qp-icon"><i class="fas fa-wallet"></i></div>
+            <h3>Quick Pay Portal</h3>
+            <p>Securely pay for services, models, or clear invoices via M-Pesa STK push.</p>
+        </div>
+
+        <form id="standaloneQuickPayForm">
+            <div class="qp-form-group">
+                <label>M-Pesa Phone Number</label>
+                <div class="qp-input-wrap">
+                    <i class="fas fa-phone-alt"></i>
+                    <input type="tel" id="sqp-phone" placeholder="07XX XXX XXX" required>
+                </div>
+            </div>
+
+            <div class="qp-form-group">
+                <label>Amount (KSh)</label>
+                <div class="qp-input-wrap">
+                    <span style="color:#94a3b8; margin-right:10px; font-weight:700;">KSh</span>
+                    <input type="number" id="sqp-amount" min="1" placeholder="Enter amount" required>
+                </div>
+            </div>
+
+            <div class="qp-form-group">
+                <label>Service / Invoice Reference</label>
+                <div class="qp-input-wrap">
+                    <i class="fas fa-file-invoice"></i>
+                    <input type="text" id="sqp-service" placeholder="e.g., AI Model Deposit" required>
+                </div>
+            </div>
+
+            <div class="qp-form-group">
+                <label>Brief Reason / Note</label>
+                <div class="qp-input-wrap">
+                    <i class="fas fa-pen"></i>
+                    <input type="text" id="sqp-reason" placeholder="e.g., Phase 1 balance" required>
+                </div>
+            </div>
+
+            <button type="submit" class="qp-submit-btn" id="sqp-submit">
+                <span id="sqp-btn-text">Initiate Secure Payment</span>
+                <i class="fas fa-paper-plane" id="sqp-btn-icon"></i>
+                <div class="qp-spinner" id="sqp-spinner"></div>
+            </button>
+            
+            <div id="sqp-status" class="qp-status-box"></div>
+        </form>
+
+        <div class="qp-footer">
+            <i class="fas fa-lock"></i> End-to-End Encrypted via Safaricom Daraja API
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // --- PWA INSTALL LOGIC ---
+    let deferredPrompt;
+    const installBanner = document.getElementById('pwa-install-banner');
+    const installBtn = document.getElementById('pwa-install-btn');
+
+    // Initially hide the banner until we know it can be installed
+    installBanner.style.display = 'none';
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        // Show the banner since the app can be installed
+        installBanner.style.display = 'flex';
+    });
+
+    installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                installBanner.style.display = 'none';
+            }
+            deferredPrompt = null;
+        } else {
+            alert("To install the app on iOS, tap the Share icon and select 'Add to Home Screen'.");
+        }
+    });
+
+    // If on iOS or standalone (already installed), hide banner
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+        installBanner.style.display = 'none';
+    } else {
+        // Show on mobile by default to offer iOS instructions if needed
+        if(/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
+            installBanner.style.display = 'flex';
+        }
+    }
+
+    const form = document.getElementById('standaloneQuickPayForm');
+    if (!form) return;
+
+    form.onsubmit = async (e) => {
+        e.preventDefault();
+        
+        const btn = document.getElementById('sqp-submit');
+        const btnText = document.getElementById('sqp-btn-text');
+        const btnIcon = document.getElementById('sqp-btn-icon');
+        const spinner = document.getElementById('sqp-spinner');
+        const statusBox = document.getElementById('sqp-status');
+
+        if(btn.disabled) return;
+
+        btn.disabled = true;
+        btnText.textContent = "Connecting to Safaricom...";
+        btnIcon.style.display = 'none';
+        spinner.style.display = 'block';
+        statusBox.style.display = 'none';
+
+        const phone = document.getElementById('sqp-phone').value;
+        const amount = document.getElementById('sqp-amount').value;
+        const service = document.getElementById('sqp-service').value;
+        const reason = document.getElementById('sqp-reason').value;
+        
+        const combinedItemName = `${service} (${reason})`;
+
+        const payload = {
+            phone: phone,
+            amount: amount,
+            items: [{ name: combinedItemName }]
+        };
+
+        try {
+            const response = await fetch('/pay', { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            
+            const result = await response.json();
+
+            if (response.ok && result.ResponseCode === '0') {
+                statusBox.innerHTML = '<i class="fas fa-mobile-alt"></i> Prompt sent! Please enter your M-Pesa PIN on your phone.';
+                statusBox.className = 'qp-status-box qp-success';
+                statusBox.style.display = 'block';
+                
+                btn.style.background = "#10b981";
+                btnText.textContent = "Awaiting PIN...";
+                
+                const checkoutId = result.CheckoutRequestID;
+                let pollCount = 0;
+                const maxPolls = 40;
+                
+                const pollInterval = setInterval(async () => {
+                    pollCount++;
+                    try {
+                        const statusRes = await fetch(`/check-payment-status/${checkoutId}`);
+                        if(!statusRes.ok) return;
+                        
+                        const statusData = await statusRes.json();
+                        
+                        if (statusData.status === 'Payment Successful') {
+                            clearInterval(pollInterval);
+                            statusBox.innerHTML = '<i class="fas fa-check-circle"></i> Payment Received! Thank you.';
+                            btnText.textContent = "Payment Complete";
+                            spinner.style.display = 'none';
+                            btnIcon.className = "fas fa-check";
+                            btnIcon.style.display = 'block';
+                        } else if (statusData.status === 'Payment Failed') {
+                            clearInterval(pollInterval);
+                            statusBox.innerHTML = '<i class="fas fa-times-circle"></i> ' + (statusData.failure_reason || 'Payment Failed');
+                            statusBox.className = 'qp-status-box qp-error';
+                            btn.style.background = "#ef4444";
+                            btnText.textContent = "Failed";
+                            spinner.style.display = 'none';
+                            btnIcon.className = "fas fa-times";
+                            btnIcon.style.display = 'block';
+                            btn.disabled = false;
+                        }
+                    } catch(e) {
+                        console.error(e);
+                    }
+                    
+                    if (pollCount >= maxPolls) {
+                        clearInterval(pollInterval);
+                        statusBox.innerHTML = '<i class="fas fa-info-circle"></i> Verification timeout. We will update your dashboard once received.';
+                        statusBox.className = 'qp-status-box qp-error';
+                        spinner.style.display = 'none';
+                        btnText.textContent = "Timeout";
+                        btnIcon.className = "fas fa-exclamation-triangle";
+                        btnIcon.style.display = 'block';
+                        btn.disabled = false;
+                    }
+                }, 3000);
+                
+            } else {
+                statusBox.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + (result.error || 'Failed to send prompt.');
+                statusBox.className = 'qp-status-box qp-error';
+                statusBox.style.display = 'block';
+                btnText.textContent = "Try Again";
+                spinner.style.display = 'none';
+                btnIcon.style.display = 'block';
+                btn.disabled = false;
+            }
+        } catch (err) {
+            statusBox.innerHTML = '<i class="fas fa-wifi"></i> Network Error. Please check your connection.';
+            statusBox.className = 'qp-status-box qp-error';
+            statusBox.style.display = 'block';
+            btnText.textContent = "Try Again";
+            spinner.style.display = 'none';
+            btnIcon.style.display = 'block';
+            btn.disabled = false;
+        }
+    };
+});
+</script>
+{% endblock %}

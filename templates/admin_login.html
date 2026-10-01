@@ -246,7 +246,7 @@
                 // Success Ping Animation
                 if(typeof gsap !== 'undefined') { gsap.to(".gsap-admin-card", { scale: 1.02, duration: 0.2, yoyo: true, repeat: 1 }); }
                 
-                setTimeout(() => { window.location.href = "/admin-dashboard"; }, 800);
+                window.location.href = "/admin-dashboard";
             } else {
                 await firebase.auth().signOut();
                 throw new Error("Clearance Level Insufficient.");

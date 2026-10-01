@@ -1,4 +1,13 @@
+# -*- coding: utf-8 -*-
 import os
+
+# Limit multi-threaded libraries to 1 thread to prevent cPanel crash
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["NUMEXPR_NUM_THREADS"] = "1"
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
+
 import datetime
 import smtplib
 import ssl
@@ -35,13 +44,13 @@ DATA_PATH = os.path.join("chatbot", "data", "knowledge.json")
 try:
     if os.path.exists(os.path.join(MODEL_DIR, "tfidf_vectorizer.pkl")):
         masha_predictor = ChatbotPredictor(MODEL_DIR, DATA_PATH)
-        print("✅ MASHA Chatbot Initialized.")
+        print("[OK] MASHA Chatbot Initialized.")
     else:
         masha_predictor = None
-        print("⚠️ WARNING: Chatbot model not found. Run train.py to enable MASHA.")
+        print("[WARNING] Chatbot model not found. Run train.py to enable MASHA.")
 except Exception as e:
     masha_predictor = None
-    print(f"❌ Error Initializing MASHA: {e}")
+    print(f"[ERROR] Error Initializing MASHA: {e}")
 # [CRITICAL] Set a secret key for session security
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "DELSTARFORD_SECURE_KEY_2026")
 
@@ -61,13 +70,16 @@ MPESA_SHORT_CODE = '174379'
 MPESA_CALLBACK_URL = os.getenv('MPESA_CALLBACK_URL', 'https://your-ngrok-url.ngrok-free.app/callback')
 
 # --- WHITELIST CREDENTIALS (Admin) ---
-
+ADMIN_WHITELIST = {
+    "email": "admin@delstarfordworks.co.ke",
+    "password": "AdminPassword123!"
+}
 
 # --- EMAIL CONFIG ---
 SENDER_EMAIL = os.getenv("SENDER_EMAIL")
 SENDER_PASSWORD = os.getenv("SENDER_PASSWORD")
-SMTP_SERVER = "smtp.gmail.com"
-SMTP_PORT = 587
+SMTP_SERVER = os.getenv("SMTP_SERVER", "smtp.gmail.com")
+SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
 
 # --- FIREBASE INITIALIZATION ---
 # Automatically loads credentials based on your .env file or fallback
@@ -79,11 +91,11 @@ if not firebase_admin._apps:
         if os.path.exists(SERVICE_ACCOUNT_KEY):
             cred = credentials.Certificate(SERVICE_ACCOUNT_KEY)
             firebase_admin.initialize_app(cred, {'databaseURL': DATABASE_URL})
-            print("✅ Firebase Initialized Successfully.")
+            print("[OK] Firebase Initialized Successfully.")
         else:
-            print("⚠️ WARNING: service_account_key.json not found. Database features will fail.")
+            print("[WARNING] service_account_key.json not found. Database features will fail.")
     except Exception as e:
-        print(f"❌ Error Initializing Firebase: {e}")
+        print(f"[ERROR] Error Initializing Firebase: {e}")
 
 # --- AI MODELS DATA ---
 AI_MODELS = [
@@ -104,7 +116,7 @@ AI_MODELS = [
 def get_mpesa_access_token():
     api_url = "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
     try:
-        r = requests.get(api_url, auth=(MPESA_CONSUMER_KEY, MPESA_CONSUMER_SECRET))
+        r = requests.get(api_url, auth=(MPESA_CONSUMER_KEY, MPESA_CONSUMER_SECRET), timeout=15)
         r.raise_for_status()
         return r.json()['access_token']
     except Exception as e:
@@ -129,10 +141,23 @@ def send_email_background(to_email, subject, html_content):
         msg.attach(MIMEText(html_content, 'html'))
 
         context = ssl.create_default_context()
-        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT, timeout=60) as server:
-            server.starttls(context=context)
-            server.login(SENDER_EMAIL, SENDER_PASSWORD)
-            server.send_message(msg)
+        if SMTP_SERVER.lower() in ['localhost', '127.0.0.1']:
+            context.check_hostname = False
+            context.verify_mode = ssl.CERT_NONE
+
+        if SMTP_PORT == 465:
+            with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT, context=context, timeout=60) as server:
+                server.login(SENDER_EMAIL, SENDER_PASSWORD)
+                server.send_message(msg)
+        else:
+            with smtplib.SMTP(SMTP_SERVER, SMTP_PORT, timeout=60) as server:
+                # Some local servers don't support STARTTLS, so we can try to wrap it or ignore errors
+                try:
+                    server.starttls(context=context)
+                except Exception as e:
+                    print(f">> STARTTLS skipped or failed: {e}")
+                server.login(SENDER_EMAIL, SENDER_PASSWORD)
+                server.send_message(msg)
         print(f">> Email sent to {to_email}")
     except Exception as e:
         print(f">> Failed to send email: {e}")
@@ -188,6 +213,12 @@ def about(): return render_template('about.html')
 
 @app.route('/works')
 def works(): return render_template('works.html')
+
+@app.route('/quickpay')
+@app.route('/quick-pay')
+def quick_pay():
+    """Renders the standalone Quick Pay portal for direct link sharing."""
+    return render_template('quick_pay.html')
 
 # ==============================================================================
 # ADVANCED AGRICULTURAL AI SYSTEM MODULES
@@ -408,16 +439,22 @@ MPESA_SHORT_CODE = os.environ.get('BUSINESS_SHORT_CODE')
 MPESA_PASSKEY = os.environ.get('PASSKEY')
 MPESA_CALLBACK_URL = os.environ.get('CALLBACK_URL')
 
+# B2C Credentials
+DARAJA_INITIATOR_NAME = os.environ.get('DARAJA_INITIATOR_NAME')
+DARAJA_SECURITY_CREDENTIAL = os.environ.get('DARAJA_SECURITY_CREDENTIAL')
+DARAJA_B2C_TIMEOUT_URL = os.environ.get('DARAJA_B2C_TIMEOUT_URL')
+DARAJA_B2C_RESULT_URL = os.environ.get('DARAJA_B2C_RESULT_URL')
+
 def get_mpesa_access_token():
     """Authenticates with Daraja to get a temporary access token."""
     api_url = "https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
     try:
         # HTTPBasicAuth automatically handles the required Base64 encoding of Key:Secret
-        response = requests.get(api_url, auth=HTTPBasicAuth(MPESA_CONSUMER_KEY, MPESA_CONSUMER_SECRET))
+        response = requests.get(api_url, auth=HTTPBasicAuth(MPESA_CONSUMER_KEY, MPESA_CONSUMER_SECRET), timeout=15)
         response.raise_for_status() # Will raise an exception for 400/500 errors
         return response.json()['access_token']
     except Exception as e:
-        print(f"❌ Error getting M-Pesa token: {e}")
+        print(f"[ERROR] Error getting M-Pesa token: {e}")
         if 'response' in locals() and response is not None:
             print(f"Safaricom Response: {response.text}")
         return None
@@ -427,6 +464,52 @@ def generate_mpesa_password(timestamp):
     data_to_encode = MPESA_SHORT_CODE + MPESA_PASSKEY + timestamp
     encoded_string = base64.b64encode(data_to_encode.encode())
     return encoded_string.decode('utf-8')
+
+def initiate_b2c_payment(phone_number, amount, reason, command_id="SalaryPayment"):
+    """Initiates a B2C payment using Daraja API."""
+    access_token = get_mpesa_access_token()
+    if not access_token:
+        print("[ERROR] Failed to get access token for B2C.")
+        return {"error": "Authentication failed"}
+
+    # Sanitize phone (e.g. 2547...)
+    clean_phone = ''.join(filter(str.isdigit, str(phone_number)))
+    if clean_phone.startswith('0'):
+        clean_phone = '254' + clean_phone[1:]
+    elif clean_phone.startswith('+254'):
+        clean_phone = clean_phone[1:]
+
+    import uuid
+    payload = {
+        "OriginatorConversationID": str(uuid.uuid4()),
+        "InitiatorName": DARAJA_INITIATOR_NAME,
+        "SecurityCredential": DARAJA_SECURITY_CREDENTIAL,
+        "CommandID": command_id,
+        "Amount": amount,
+        "PartyA": MPESA_SHORT_CODE,
+        "PartyB": clean_phone,
+        "Remarks": reason,
+        "QueueTimeOutURL": DARAJA_B2C_TIMEOUT_URL,
+        "ResultURL": DARAJA_B2C_RESULT_URL,
+        "Occasion": reason
+    }
+    
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json'
+    }
+
+    # Use sandbox for development, switch to production if needed
+    # b2c_url = "https://api.safaricom.co.ke/mpesa/b2c/v3/paymentrequest"
+    b2c_url = "https://api.safaricom.co.ke/mpesa/b2c/v3/paymentrequest" # Assuming prod as per URL 
+
+    try:
+        response = requests.post(b2c_url, json=payload, headers=headers, timeout=15)
+        return response.json()
+    except Exception as e:
+        print(f"B2C Exception: {e}")
+        return {"error": str(e)}
+
 
 
 # ==============================================================================
@@ -491,14 +574,14 @@ def pay():
     stk_url = "https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
     
     try:
-        response = requests.post(stk_url, json=payload, headers=headers)
+        response = requests.post(stk_url, json=payload, headers=headers, timeout=15)
         
         # --- NEW: BULLETPROOF ERROR CATCHING ---
         try:
             response_data = response.json()
         except Exception:
             print("=======================================")
-            print(f"❌ SAFARICOM API REJECTED THE REQUEST")
+            print(f"[ERROR] SAFARICOM API REJECTED THE REQUEST")
             print(f"Status Code: {response.status_code}")
             print(f"Raw Response: {response.text}")
             print(f"Payload Sent: {payload}")
@@ -656,7 +739,8 @@ def events_page():
                 val['is_expired'] = is_expired
                 single_event = val
         
-        return render_template('events.html', events=events, single_event=single_event)
+        is_admin = request.args.get('admin') == 'true'
+        return render_template('events.html', events=events, single_event=single_event, is_admin=is_admin)
     except Exception as e:
         print(f"Error loading events: {e}")
         return render_template('events.html', events=[], single_event=None)
@@ -713,16 +797,16 @@ def register_event():
         map_link_html = ""
         if lat and lng:
             map_url = f"https://www.google.com/maps/search/?api=1&query={lat},{lng}"
-            map_link_html = f"""
+            map_link_html = """
             <div style="margin-top: 15px; padding: 12px; background-color: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0;">
                 <p style="margin: 0; font-size: 13.5px; color: #475569;">
-                    📍 <strong>Pinned Event Coordinates</strong>:
+                    * <strong>Pinned Event Coordinates</strong>:
                 </p>
                 <a href="{map_url}" target="_blank" style="color: #2563eb; font-weight: 700; text-decoration: none; font-size: 13.5px; display: inline-block; margin-top: 6px;">
                     View on Google Maps & Get Directions &rarr;
                 </a>
             </div>
-            """
+            """.replace('{map_url}', map_url)
         
         html_content = f"""
         <html>
@@ -786,6 +870,42 @@ def register_event():
     except Exception as e:
         print(f"Event Registration Error: {e}")
         return jsonify({"success": False, "message": "Server error. Please try again."}), 500
+
+import csv
+import io
+from flask import Response
+
+@app.route('/api/download-registrations/<event_id>', methods=['GET'])
+def download_registrations(event_id):
+    try:
+        registrations_ref = db.reference(f'event_registrations/{event_id}')
+        data = registrations_ref.get()
+        
+        if not data:
+            return "No registrations found for this event.", 404
+
+        si = io.StringIO()
+        cw = csv.writer(si)
+        cw.writerow(['Registration ID', 'Name', 'Email', 'Role', 'Timestamp'])
+        
+        for reg_id, reg_data in data.items():
+            cw.writerow([
+                reg_id,
+                reg_data.get('name', ''),
+                reg_data.get('email', ''),
+                reg_data.get('role', ''),
+                reg_data.get('timestamp', '')
+            ])
+            
+        output = si.getvalue()
+        return Response(
+            output,
+            mimetype="text/csv",
+            headers={"Content-Disposition": f"attachment;filename=registrations_{event_id}.csv"}
+        )
+    except Exception as e:
+        return str(e), 500
+
 # ==============================================================================
 # 5. FORM SUBMISSION & CLIENT ROUTES
 # ==============================================================================
@@ -796,7 +916,7 @@ def submit_contact():
         data = request.json if request.is_json else request.form
         name, email, subject, message = data.get('name'), data.get('email'), data.get('subject'), data.get('message')
 
-        admin_subject = f"📩 New Inquiry: {subject} from {name}"
+        admin_subject = f"[INQUIRY] New Inquiry: {subject} from {name}"
         admin_body = render_template('email_contact_admin.html', name=name, email=email, subject=subject, message=message, timestamp=datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
         send_email_html(SENDER_EMAIL, admin_subject, admin_body)
 
@@ -882,7 +1002,7 @@ def contact():
             message = data.get('message')
 
             # 2. EMAIL TO ADMIN (Notification)
-            admin_subject = f"📩 New Inquiry: {subject} from {name}"
+            admin_subject = f"[INQUIRY] New Inquiry: {subject} from {name}"
             admin_body = render_template('email_contact_admin.html', 
                                          name=name, email=email, subject=subject, message=message, 
                                          timestamp=datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
@@ -925,7 +1045,7 @@ def submit_agreement():
         })
 
         admin_html = render_template('email_admin.html', name=client_name, email="[Contract]", service=f"Contract: {sector}", budget=total_cost, timeline="Signed", details="See DB for Signature")
-        send_email_html(SENDER_EMAIL, f"📝 Contract Signed: {client_name}", admin_html)
+        send_email_html(SENDER_EMAIL, f"[CONTRACT] Contract Signed: {client_name}", admin_html)
         
         client_html = render_template('email_client.html', name=client_name, service=f"Service Agreement ({contract_id})")
         send_email_html(SENDER_EMAIL, f"Agreement Receipt - {contract_id}", client_html)
@@ -1203,6 +1323,391 @@ def get_dashboard_data():
         print(f"Dashboard Data Error: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
 
+
+# ==============================================================================
+# B2C PAYROLL & STIPENDS ROUTES
+# ==============================================================================
+
+@app.route('/admin/api/b2c-pay', methods=['POST'])
+def b2c_pay():
+    data = request.json
+    phone = data.get('phone')
+    amount = data.get('amount')
+    reason = data.get('reason', 'Stipend')
+    name = data.get('name', 'Unknown')
+    email = data.get('email', '')
+
+    res = initiate_b2c_payment(phone, amount, reason)
+    if 'error' not in res and res.get('ResponseCode') == '0':
+        db.reference(f'b2c_payments/history/{res.get("OriginatorConversationID")}').set({
+            'name': name, 'email': email, 'phone': phone, 'amount': amount,
+            'reason': reason, 'status': 'Pending Verification', 
+            'timestamp': str(datetime.datetime.now()),
+            'conversation_id': res.get('ConversationID')
+        })
+        return jsonify({"success": True, "message": "Payment initiated."})
+    return jsonify({"success": False, "error": res.get('errorMessage', str(res))})
+
+@app.route('/admin/api/b2c-schedule', methods=['POST'])
+def b2c_schedule():
+    data = request.json
+    schedule_id = f"SCH-{int(datetime.datetime.now().timestamp())}"
+    db.reference(f'b2c_payments/schedules/{schedule_id}').set({
+        'name': data.get('name'), 'phone': data.get('phone'), 'email': data.get('email'),
+        'amount': data.get('amount'), 'reason': data.get('reason'),
+        'frequency': data.get('frequency'), 'start_time': data.get('start_time'),
+        'last_run': '', 'status': 'Active'
+    })
+    return jsonify({"success": True, "message": "Schedule added."})
+
+@app.route('/mpesa/b2c/timeout', methods=['POST'])
+def b2c_timeout():
+    data = request.json
+    print("B2C Timeout:", data)
+    return "OK"
+
+@app.route('/mpesa/b2c/result', methods=['POST'])
+def b2c_result():
+    data = request.json
+    print("B2C Result:", data)
+    try:
+        result = data.get('Result', {})
+        conv_id = result.get('OriginatorConversationID')
+        if conv_id:
+            status = 'Completed' if result.get('ResultCode') == 0 else 'Failed'
+            db.reference(f'b2c_payments/history/{conv_id}').update({
+                'status': status,
+                'result_desc': result.get('ResultDesc')
+            })
+    except Exception as e:
+        print("Error in B2C result:", e)
+    return "OK"
+
+@app.route('/admin/api/b2c-statements', methods=['GET'])
+def b2c_statements():
+    try:
+        data = db.reference('b2c_payments/history').get() or {}
+        si = io.StringIO()
+        cw = csv.writer(si)
+        cw.writerow(['Transaction ID', 'Name', 'Phone', 'Amount', 'Reason', 'Status', 'Date'])
+        for k, v in data.items():
+            if isinstance(v, dict):
+                cw.writerow([k, v.get('name'), v.get('phone'), v.get('amount'), v.get('reason'), v.get('status'), v.get('timestamp')])
+        
+        output = si.getvalue()
+        return Response(output, mimetype="text/csv", headers={"Content-Disposition": "attachment;filename=payroll_statements.csv"})
+    except Exception as e:
+        return str(e), 500
+
+import time
+import uuid as uuid_module
+
+# ==============================================================================
+# BULK PAYROLL ROUTE - Professional Multi-Recipient Payment System
+# ==============================================================================
+
+@app.route('/admin/api/bulk-pay', methods=['POST'])
+def bulk_pay():
+    """
+    Initiates M-Pesa B2C payments to multiple recipients in a single batch.
+    Each recipient has: employee_number, name, phone, amount, department, narration.
+    Records a full audit trail with a unique Batch ID in Firebase.
+    """
+    try:
+        data = request.json
+        recipients = data.get('recipients', [])
+        batch_label = data.get('batch_label', 'Payroll Run')
+        initiated_by = data.get('initiated_by', 'System Admin')
+        max_cap = data.get('max_cap', None)  # Optional total amount cap
+
+        if not recipients or not isinstance(recipients, list):
+            return jsonify({"success": False, "error": "No recipients provided."}), 400
+
+        # Validate all recipients before processing
+        for i, r in enumerate(recipients):
+            if not r.get('phone'):
+                return jsonify({"success": False, "error": f"Recipient #{i+1} missing phone number."}), 400
+            if not r.get('amount') or int(r.get('amount', 0)) < 10:
+                return jsonify({"success": False, "error": f"Recipient #{i+1} has invalid amount (min KSh 10)."}), 400
+
+        # Optional: Enforce total amount cap
+        total_amount = sum(int(r.get('amount', 0)) for r in recipients)
+        if max_cap and total_amount > int(max_cap):
+            return jsonify({
+                "success": False,
+                "error": f"Total amount KSh {total_amount:,} exceeds configured cap of KSh {int(max_cap):,}."
+            }), 400
+
+        # Generate a unique Batch ID for this run
+        batch_id = f"BATCH-{int(time.time())}-{uuid_module.uuid4().hex[:6].upper()}"
+        batch_timestamp = str(datetime.datetime.now())
+
+        # Write the batch header to Firebase (audit trail)
+        db.reference(f'b2c_payments/batches/{batch_id}').set({
+            'batch_label': batch_label,
+            'initiated_by': initiated_by,
+            'total_recipients': len(recipients),
+            'total_amount': total_amount,
+            'status': 'Processing',
+            'created_at': batch_timestamp,
+            'recipient_count': len(recipients)
+        })
+
+        results = []
+        successful_count = 0
+        failed_count = 0
+
+        for idx, recipient in enumerate(recipients):
+            emp_num   = recipient.get('employee_number', f'EMP-{idx+1:03d}')
+            name      = recipient.get('name', 'Unknown')
+            phone     = recipient.get('phone', '')
+            amount    = int(recipient.get('amount', 0))
+            dept      = recipient.get('department', 'General')
+            narration = recipient.get('narration', batch_label)
+            email     = recipient.get('email', '')
+
+            # Initiate the B2C payment
+            res = initiate_b2c_payment(phone, amount, narration)
+
+            if res and 'error' not in res and res.get('ResponseCode') == '0':
+                conv_id = res.get('OriginatorConversationID', f'CONV-{uuid_module.uuid4().hex[:8]}')
+                status = 'Pending Verification'
+                successful_count += 1
+            else:
+                conv_id = f"FAIL-{uuid_module.uuid4().hex[:8]}"
+                status = 'Failed'
+                failed_count += 1
+
+            # Record individual payment under the batch
+            entry = {
+                'batch_id': batch_id,
+                'employee_number': emp_num,
+                'name': name,
+                'phone': phone,
+                'email': email,
+                'amount': amount,
+                'department': dept,
+                'narration': narration,
+                'status': status,
+                'conversation_id': conv_id,
+                'timestamp': str(datetime.datetime.now()),
+                'initiated_by': initiated_by
+            }
+            db.reference(f'b2c_payments/history/{conv_id}').set(entry)
+
+            results.append({
+                'employee_number': emp_num,
+                'name': name,
+                'phone': phone,
+                'amount': amount,
+                'department': dept,
+                'status': status,
+                'conversation_id': conv_id
+            })
+
+        # Update batch summary with final stats
+        db.reference(f'b2c_payments/batches/{batch_id}').update({
+            'status': 'Completed' if failed_count == 0 else 'Completed with Errors',
+            'successful_count': successful_count,
+            'failed_count': failed_count,
+            'completed_at': str(datetime.datetime.now())
+        })
+
+        return jsonify({
+            "success": True,
+            "batch_id": batch_id,
+            "total_recipients": len(recipients),
+            "total_amount": total_amount,
+            "successful": successful_count,
+            "failed": failed_count,
+            "results": results
+        })
+
+    except Exception as e:
+        print(f"[ERROR] Bulk Pay Error: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route('/admin/api/bulk-batch-history', methods=['GET'])
+def bulk_batch_history():
+    """Returns a list of all bulk payment batches for the admin dashboard."""
+    try:
+        data = db.reference('b2c_payments/batches').get() or {}
+        batches = []
+        for batch_id, batch_data in data.items():
+            if isinstance(batch_data, dict):
+                batch_data['batch_id'] = batch_id
+                batches.append(batch_data)
+        # Sort newest first
+        batches.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+        return jsonify({"success": True, "batches": batches})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route('/admin/api/bulk-batch-detail/<batch_id>', methods=['GET'])
+def bulk_batch_detail(batch_id):
+    """Returns all individual payment records for a specific batch."""
+    try:
+        all_history = db.reference('b2c_payments/history').get() or {}
+        records = []
+        for conv_id, record in all_history.items():
+            if isinstance(record, dict) and record.get('batch_id') == batch_id:
+                record['conversation_id'] = conv_id
+                records.append(record)
+        records.sort(key=lambda x: x.get('timestamp', ''), reverse=False)
+        return jsonify({"success": True, "records": records})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route('/admin/api/bulk-batch-csv/<batch_id>', methods=['GET'])
+def bulk_batch_csv(batch_id):
+    """Exports all individual payment records for a specific batch as CSV."""
+    try:
+        all_history = db.reference('b2c_payments/history').get() or {}
+        batch_info = db.reference(f'b2c_payments/batches/{batch_id}').get() or {}
+
+        si = io.StringIO()
+        cw = csv.writer(si)
+        cw.writerow([
+            'Batch ID', 'Batch Label', 'Employee No', 'Name', 'Phone', 'Email',
+            'Amount (KSh)', 'Department', 'Narration', 'Status', 'Transaction ID', 'Timestamp', 'Initiated By'
+        ])
+        for conv_id, record in all_history.items():
+            if isinstance(record, dict) and record.get('batch_id') == batch_id:
+                cw.writerow([
+                    batch_id,
+                    batch_info.get('batch_label', ''),
+                    record.get('employee_number', ''),
+                    record.get('name', ''),
+                    record.get('phone', ''),
+                    record.get('email', ''),
+                    record.get('amount', ''),
+                    record.get('department', ''),
+                    record.get('narration', ''),
+                    record.get('status', ''),
+                    conv_id,
+                    record.get('timestamp', ''),
+                    record.get('initiated_by', '')
+                ])
+        output = si.getvalue()
+        safe_label = batch_info.get('batch_label', batch_id).replace(' ', '_')
+        return Response(
+            output,
+            mimetype="text/csv",
+            headers={"Content-Disposition": f"attachment;filename=bulk_payroll_{safe_label}_{batch_id}.csv"}
+        )
+    except Exception as e:
+        return str(e), 500
+
+
+@app.route('/admin/api/retry-failed-batch', methods=['POST'])
+def retry_failed_batch():
+    """Retries all failed payment entries in a given batch."""
+    try:
+        data = request.json
+        batch_id = data.get('batch_id')
+        initiated_by = data.get('initiated_by', 'System Admin')
+
+        if not batch_id:
+            return jsonify({"success": False, "error": "batch_id is required."}), 400
+
+        all_history = db.reference('b2c_payments/history').get() or {}
+        retried = 0
+
+        for conv_id, record in all_history.items():
+            if isinstance(record, dict) and record.get('batch_id') == batch_id and record.get('status') == 'Failed':
+                phone  = record.get('phone', '')
+                amount = record.get('amount', 0)
+                reason = record.get('narration', 'Payroll Retry')
+                name   = record.get('name', 'Unknown')
+                
+                res = initiate_b2c_payment(phone, amount, reason)
+                if res and 'error' not in res and res.get('ResponseCode') == '0':
+                    new_conv_id = res.get('OriginatorConversationID', f'RETRY-{uuid_module.uuid4().hex[:8]}')
+                    # Create new entry
+                    new_entry = dict(record)
+                    new_entry.update({
+                        'status': 'Pending Verification',
+                        'conversation_id': new_conv_id,
+                        'timestamp': str(datetime.datetime.now()),
+                        'initiated_by': initiated_by,
+                        'is_retry': True,
+                        'original_conv_id': conv_id
+                    })
+                    db.reference(f'b2c_payments/history/{new_conv_id}').set(new_entry)
+                    # Mark original as retried
+                    db.reference(f'b2c_payments/history/{conv_id}').update({'status': 'Retried'})
+                    retried += 1
+
+        return jsonify({"success": True, "retried": retried})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route('/admin/api/cron/run-schedules', methods=['GET'])
+def b2c_scheduler_cron():
+    """Endpoint for cPanel Cron Job to trigger scheduled B2C payments safely."""
+    try:
+        if not firebase_admin._apps:
+            return jsonify({"status": "error", "message": "Firebase not initialized"}), 500
+            
+        schedules = db.reference('b2c_payments/schedules').get() or {}
+        now = datetime.datetime.now()
+        executed_count = 0
+        
+        for sched_id, sched in schedules.items():
+            if sched.get('status') != 'Active': continue
+            
+            start_time_str = sched.get('start_time')
+            if not start_time_str: continue
+            
+            try:
+                start_time = datetime.datetime.strptime(start_time_str, "%Y-%m-%dT%H:%M")
+            except:
+                continue
+            
+            if now >= start_time:
+                freq = sched.get('frequency')
+                last_run_str = sched.get('last_run')
+                should_run = False
+                
+                if not last_run_str:
+                    should_run = True
+                else:
+                    try:
+                        last_run = datetime.datetime.strptime(last_run_str, "%Y-%m-%d %H:%M:%S")
+                        delta = now - last_run
+                        if freq == 'daily' and delta.days >= 1: should_run = True
+                        elif freq == 'weekly' and delta.days >= 7: should_run = True
+                        elif freq == 'monthly' and delta.days >= 30: should_run = True
+                        elif freq == 'yearly' and delta.days >= 365: should_run = True
+                    except:
+                        should_run = True
+                    
+                if should_run:
+                    print(f"Running scheduled B2C payment for {sched.get('name')}")
+                    res = initiate_b2c_payment(sched.get('phone'), sched.get('amount'), sched.get('reason', 'Scheduled Salary'))
+                    
+                    hist_id = res.get("OriginatorConversationID") if res and res.get('ResponseCode') == '0' else f"ERR-{int(time.time())}"
+                    status = 'Pending Verification' if res and res.get('ResponseCode') == '0' else 'Failed'
+                    db.reference(f'b2c_payments/history/{hist_id}').set({
+                        'name': sched.get('name'), 'phone': sched.get('phone'), 'amount': sched.get('amount'),
+                        'reason': sched.get('reason', 'Scheduled Salary'), 'status': status,
+                        'timestamp': str(now), 'schedule_id': sched_id
+                    })
+                    
+                    db.reference(f'b2c_payments/schedules/{sched_id}').update({
+                        'last_run': now.strftime("%Y-%m-%d %H:%M:%S")
+                    })
+                    executed_count += 1
+                    
+        return jsonify({"status": "success", "executed": executed_count}), 200
+        
+    except Exception as e:
+        print("Scheduler error:", e)
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 # ==============================================================================
 # 7. RUN SERVER

@@ -6,7 +6,7 @@
     <meta name="description" content="Delstarford Works is a premier AI-powered software company engineering custom enterprise AI systems, high-performance web applications, and cutting-edge biotech solutions.">
     <meta name="keywords" content="Delstarford Works, Delstarford, AI software company, biotech solutions, enterprise AI, web development Kenya, agritech solutions, custom software development">
     <meta name="author" content="Delstarford Works">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#050811">
     
     <!-- Open Graph / Facebook / WhatsApp -->
     <meta property="og:type" content="website">
@@ -50,7 +50,7 @@
     <title>DELSTARFORD WORKS | AI-Powered Software & Biotech Solutions</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}">
@@ -66,151 +66,197 @@
     <script src="{{ url_for('static', filename='js/firebase-init.js') }}" defer></script>
 
     <style>
-        /* --- CORE RESPONSIVE ENGINE --- */
+        /* --- CORE RESPONSIVE ENGINE (DEEP SPACE DARK) --- */
         :root {
-            --header-height: 80px;
-            --primary: #3b82f6;
-            --dark: #0f172a;
+            --header-height: 78px;
+            --primary: #7c3aed;
+            --dsw-cyan: #06b6d4;
+            --dark: #050811;
         }
 
         html { scroll-behavior: smooth; }
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            margin: 0; padding: 0; 
-            background: #f8fafc; 
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0; padding: 0;
+            background: #050811;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
+            color: #f1f5f9;
         }
 
-        ::selection { background: var(--primary); color: #ffffff; }
+        ::selection { background: #7c3aed; color: #ffffff; }
 
         .container {
-            width: 100%;
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 1.5rem;
-            box-sizing: border-box;
+            width: 100%; max-width: 1280px;
+            margin: 0 auto; padding: 0 1.5rem; box-sizing: border-box;
         }
 
-        ::-webkit-scrollbar { width: 8px; height: 6px; }
-        ::-webkit-scrollbar-track { background: var(--dark); }
-        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #2563eb; }
+        ::-webkit-scrollbar { width: 6px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #080d1a; }
+        ::-webkit-scrollbar-thumb { background: #7c3aed; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
 
         /* --- PRELOADER --- */
         #preloader {
-            position: fixed; inset: 0; background: var(--dark); z-index: 9999;
+            position: fixed; inset: 0; background: #050811; z-index: 9999;
             display: flex; justify-content: center; align-items: center;
             transition: opacity 0.5s ease;
         }
         #preloader img { height: 60px; animation: pulseLogo 1.5s infinite; }
-        @keyframes pulseLogo { 
-            0% { transform: scale(1); opacity: 0.8; } 
-            50% { transform: scale(1.1); opacity: 1; filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.8));} 
-            100% { transform: scale(1); opacity: 0.8; } 
+        @keyframes pulseLogo {
+            0% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.12); opacity: 1; filter: drop-shadow(0 0 22px rgba(124, 58, 237, 0.9)); }
+            100% { transform: scale(1); opacity: 0.7; }
         }
 
-        #scrollProgress { 
-            position: fixed; top: 0; left: 0; height: 4px; width: 0%; z-index: 4000; 
-            background: linear-gradient(to right, #3b82f6, #10b981); 
-            transition: width 0.1s ease-out; box-shadow: 0 0 15px rgba(16, 185, 129, 0.8); 
+        #scrollProgress {
+            position: fixed; top: 0; left: 0; height: 3px; width: 0%; z-index: 4000;
+            background: linear-gradient(to right, #7c3aed, #06b6d4);
+            transition: width 0.1s ease-out;
+            box-shadow: 0 0 12px rgba(124, 58, 237, 0.7);
         }
 
         /* --- HEADER STYLING --- */
         .site-header {
             position: fixed; top: 0; width: 100%; z-index: 3000;
-            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            background: rgba(5, 8, 17, 0.88);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(124, 58, 237, 0.2);
             transition: all 0.3s ease;
         }
-        
+
         .header-inner { display: flex; justify-content: space-between; align-items: center; height: var(--header-height); }
 
-        .brand-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; flex-shrink: 0; transition: transform 0.3s; }
+        .brand-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; flex-shrink: 0; transition: transform 0.3s; }
         .brand-logo:hover { transform: scale(1.02); }
         .brand-text { display: flex; flex-direction: column; line-height: 1.1; }
-        .brand-name { color: #fff; font-weight: 800; font-size: 1.2rem; letter-spacing: -0.5px; }
-        .brand-suffix { color: var(--primary); font-weight: 700; font-size: 0.85rem; letter-spacing: 2px; }
-        
+        .brand-name { color: #fff; font-weight: 900; font-size: 1.15rem; letter-spacing: -0.5px; }
+        .brand-suffix {
+            font-weight: 700; font-size: 0.72rem; letter-spacing: 2.5px;
+            background: linear-gradient(135deg, #7c3aed, #06b6d4);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
         .contact-pill {
-            background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px;
-            color: #94a3b8; font-size: 0.75rem; margin-left: 10px; border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(124,58,237,0.1); padding: 4px 10px; border-radius: 6px;
+            color: #a78bfa; font-size: 0.73rem; margin-left: 10px;
+            border: 1px solid rgba(124,58,237,0.25);
         }
 
-        .desktop-nav { display: flex; align-items: center; gap: 20px; overflow-x: auto; scrollbar-width: none; }
+        .desktop-nav { display: flex; align-items: center; gap: 22px; overflow-x: auto; scrollbar-width: none; }
         .desktop-nav::-webkit-scrollbar { display: none; }
-        .nav-link { color: #cbd5e1; text-decoration: none; font-size: 0.95rem; font-weight: 600; transition: 0.3s; flex-shrink: 0; }
+        .nav-link { color: #8b9cc4; text-decoration: none; font-size: 0.92rem; font-weight: 600; transition: 0.3s; flex-shrink: 0; }
         .nav-link:hover { color: #fff; transform: translateY(-1px); }
-        
-        .header-utils { display: flex; align-items: center; gap: 15px; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 20px; margin-left: 10px; flex-shrink: 0; }
-        
-        .search-box { position: relative; }
-        .search-box input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 8px 15px 8px 35px; border-radius: 20px; width: 120px; transition: all 0.4s ease; font-family: inherit; font-size: 0.85rem; outline: none; }
-        .search-box input:focus { width: 200px; border-color: var(--primary); background: rgba(255,255,255,0.1); box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); }
-        .search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.85rem; pointer-events: none; }
 
-        .btn-primary-small { 
-            background: var(--primary); color: white; padding: 10px 22px; border-radius: 8px; 
-            font-weight: 700; text-decoration: none; transition: all 0.3s; position: relative; overflow: hidden;
-            box-shadow: 0 4px 10px rgba(37,99,235,0.2); cursor: pointer; border: none;
+        .header-utils { display: flex; align-items: center; gap: 15px; border-left: 1px solid rgba(124,58,237,0.2); padding-left: 20px; margin-left: 10px; flex-shrink: 0; }
+
+        .search-box { position: relative; }
+        .search-box input {
+            background: rgba(124,58,237,0.08); border: 1px solid rgba(124,58,237,0.2);
+            color: #fff; padding: 8px 15px 8px 36px; border-radius: 20px; width: 130px;
+            transition: all 0.4s ease; font-family: inherit; font-size: 0.85rem; outline: none;
         }
-        .btn-primary-small:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,99,235,0.4); }
+        .search-box input:focus {
+            width: 210px; border-color: #7c3aed;
+            background: rgba(124,58,237,0.12); box-shadow: 0 0 15px rgba(124,58,237,0.25);
+        }
+        .search-box input::placeholder { color: #4a5a7a; }
+        .search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #4a5a7a; font-size: 0.82rem; pointer-events: none; }
+
+        .btn-primary-small {
+            background: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
+            color: white; padding: 10px 22px; border-radius: 8px;
+            font-weight: 700; text-decoration: none; transition: all 0.3s;
+            box-shadow: 0 4px 14px rgba(124,58,237,0.3); cursor: pointer; border: none;
+            font-family: inherit; font-size: 0.9rem;
+        }
+        .btn-primary-small:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(124,58,237,0.5); filter: brightness(1.1); }
 
         /* --- MOBILE MENU --- */
-        .mobile-toggle { 
-            display: none; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); 
-            cursor: pointer; flex-direction: column; gap: 5px; z-index: 3100; padding: 10px; border-radius: 8px; 
+        .mobile-toggle {
+            display: none; background: rgba(124,58,237,0.1);
+            border: 1px solid rgba(124,58,237,0.25);
+            cursor: pointer; flex-direction: column; gap: 5px;
+            z-index: 3100; padding: 10px; border-radius: 8px;
         }
-        .bar { width: 24px; height: 2px; background-color: #fff; transition: 0.4s; border-radius: 2px; }
-        
+        .bar { width: 24px; height: 2px; background-color: #a78bfa; transition: 0.4s; border-radius: 2px; }
         .mobile-toggle.active .bar:nth-child(1) { transform: translateY(7px) rotate(45deg); background-color: #ef4444; }
         .mobile-toggle.active .bar:nth-child(2) { opacity: 0; }
         .mobile-toggle.active .bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background-color: #ef4444; }
-        
+
         .mobile-menu-overlay {
-            position: fixed; inset: 0; z-index: 2500; display: flex; flex-direction: column; 
-            background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            position: fixed; inset: 0; z-index: 2500; display: flex; flex-direction: column;
+            background: rgba(5, 8, 17, 0.98); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
             opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s;
-            padding-top: 100px; overflow-y: auto; 
+            padding-top: 100px; overflow-y: auto;
         }
         .mobile-menu-overlay.active { opacity: 1; visibility: visible; }
 
         .mobile-nav-content { display: flex; flex-direction: column; align-items: center; width: 100%; padding: 0 20px 100px; }
-        .mobile-nav-links { display: flex; flex-direction: column; gap: 15px; text-align: center; width: 100%; transform: translateY(30px); transition: transform 0.5s ease; }
+        .mobile-nav-links { display: flex; flex-direction: column; gap: 12px; text-align: center; width: 100%; transform: translateY(30px); transition: transform 0.5s ease; }
         .mobile-menu-overlay.active .mobile-nav-links { transform: translateY(0); }
-        
-        .m-link { position: relative; color: #f8fafc; text-decoration: none; font-size: 1.6rem; font-weight: 800; transition: color 0.3s; padding: 5px 10px; }
-        .m-link:hover { color: var(--primary); }
 
-        .btn-mobile-cta { background: var(--primary); color: white; padding: 15px 30px; border-radius: 12px; margin-top: 20px; font-size: 1.2rem; text-decoration: none; font-weight: 700; display: inline-block; }
+        .m-link {
+            position: relative; color: #c4b5fd; text-decoration: none;
+            font-size: 1.7rem; font-weight: 800; transition: color 0.3s; padding: 8px 10px;
+            letter-spacing: -0.5px;
+        }
+        .m-link:hover { color: #fff; }
+
+        .btn-mobile-cta {
+            background: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
+            color: white; padding: 16px 35px; border-radius: 14px;
+            margin-top: 25px; font-size: 1.1rem; text-decoration: none;
+            font-weight: 800; display: inline-block;
+            box-shadow: 0 8px 25px rgba(124,58,237,0.4);
+        }
 
         /* --- PWA INSTALL BANNER --- */
         .pwa-banner {
             position: fixed; top: -120px; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 450px; background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255,255,255,0.15); border-radius: 16px;
+            width: 90%; max-width: 450px;
+            background: rgba(8, 13, 26, 0.96);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(124,58,237,0.3); border-radius: 16px;
             z-index: 9999; display: flex; align-items: center; justify-content: space-between;
             padding: 15px 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.6);
             transition: top 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .pwa-banner.show { top: 20px; }
-        .pwa-banner-content { display: flex; align-items: center; gap: 15px; }
-        .pwa-logo { width: 45px; height: 45px; border-radius: 10px; background: #fff; padding: 2px; }
-        .pwa-text { display: flex; flex-direction: column; color: #fff; }
-        .pwa-text strong { font-size: 1rem; font-weight: 800; letter-spacing: -0.5px; }
-        .pwa-text span { font-size: 0.8rem; color: #cbd5e1; }
-        .pwa-actions { display: flex; align-items: center; gap: 15px; }
-        .pwa-close { background: none; border: none; color: #94a3b8; font-size: 1.4rem; cursor: pointer; transition: color 0.3s; padding: 0; display: flex; align-items: center;}
+        .pwa-banner-content { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1; }
+        .pwa-logo { width: 45px; height: 45px; border-radius: 10px; background: #fff; padding: 2px; flex-shrink: 0; }
+        .pwa-text { display: flex; flex-direction: column; color: #fff; min-width: 0; }
+        .pwa-text strong { font-size: 0.95rem; font-weight: 800; letter-spacing: -0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pwa-text span { font-size: 0.75rem; color: #a78bfa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pwa-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; margin-left: 10px; }
+        .pwa-close { background: none; border: none; color: #4a5a7a; font-size: 1.4rem; cursor: pointer; transition: color 0.3s; padding: 0; display: flex; align-items: center; flex-shrink: 0; }
         .pwa-close:hover { color: #ef4444; }
 
         /* --- UTILITIES --- */
-        #backToTop { position: fixed; bottom: 30px; right: 30px; background: var(--dark); color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; cursor: pointer; border: 2px solid var(--primary); opacity: 0; visibility: hidden; transition: all 0.3s; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        #backToTop {
+            position: fixed; bottom: 110px; right: 30px;
+            background: rgba(124,58,237,0.15); color: #a78bfa;
+            width: 48px; height: 48px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.1rem; cursor: pointer;
+            border: 1px solid rgba(124,58,237,0.35);
+            opacity: 0; visibility: hidden; transition: all 0.3s; z-index: 1000;
+            box-shadow: 0 4px 15px rgba(124,58,237,0.2);
+            backdrop-filter: blur(8px);
+        }
         #backToTop.show { opacity: 1; visibility: visible; }
-        #backToTop:hover { background: var(--primary); transform: translateY(-8px); }
+        #backToTop:hover { background: #7c3aed; color: #fff; transform: translateY(-5px); box-shadow: 0 8px 25px rgba(124,58,237,0.5); }
 
         .flash-wrapper { position: fixed; top: 90px; right: 20px; z-index: 4000; display: flex; flex-direction: column; gap: 10px; }
-        .flash-card { background: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 15px; border-left: 4px solid var(--primary); min-width: 300px; }
+        .flash-card {
+            background: #0d1424; padding: 15px 20px; border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            display: flex; align-items: center; gap: 15px;
+            border-left: 3px solid #7c3aed; min-width: 300px;
+            border: 1px solid rgba(124,58,237,0.25);
+            border-left: 3px solid #7c3aed;
+        }
 
         @media (max-width: 1250px) { .contact-pill { display: none; } }
         @media (max-width: 1100px) { .desktop-nav, .header-utils { display: none; } .mobile-toggle { display: flex; } }
@@ -223,8 +269,8 @@
         <div class="pwa-banner-content">
             <img src="{{ url_for('static', filename='images/logo.png') }}" alt="DELSTARFORD WORKS Logo" class="pwa-logo">
             <div class="pwa-text">
-                <strong>Install DELSTARFORD WORKS Application</strong>
-                <span>Faster, secure offline access</span>
+                <strong>Install App</strong>
+                <span>Faster & secure access</span>
             </div>
         </div>
         <div class="pwa-actions">
@@ -256,11 +302,11 @@
                 <a href="/ai-lab" class="nav-link">AI Market</a>
                 <a href="/support" class="nav-link">Support</a>
                 <a href="/contact" class="nav-link">Contact</a>
-                <a href="/agreement" class="nav-link" style="color: #10b981;">Pricing</a>
+                <a href="/agreement" class="nav-link" style="color: #a78bfa;">Pricing</a>
                 
                 <div style="width:1px; height:20px; background:rgba(255,255,255,0.2); margin:0 5px;"></div>
                 
-                <a href="/dashboard" id="nav-dashboard" class="nav-link" style="display:none; color: #3b82f6;"><i class="fas fa-layer-group"></i> My Dashboard</a>
+                <a href="/dashboard" id="nav-dashboard" class="nav-link" style="display:none; color: #a78bfa;"><i class="fas fa-layer-group"></i> My Dashboard</a>
                 <a href="/register2" id="nav-register" class="nav-link">Join</a>
                 <a href="/login" id="nav-login" class="nav-link">Login</a>
                 <a href="javascript:void(0)" onclick="globalLogout()" id="nav-logout" class="nav-link" style="display:none; color: #ef4444;">Logout</a>
@@ -303,7 +349,7 @@
                 <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 15px 0; width: 100%;"></div>
                 <a href="/register2" id="mobile-nav-register" class="m-link">Join Now</a>
                 <a href="/login" id="mobile-nav-login" class="m-link">Client Login</a>
-                <a href="/dashboard" id="mobile-nav-dashboard" class="m-link" style="display:none; color: #3b82f6;">Client Console</a>
+                <a href="/dashboard" id="mobile-nav-dashboard" class="m-link" style="display:none; color: #a78bfa;">Client Console</a>
                 <a href="javascript:void(0)" onclick="globalLogout()" id="mobile-nav-logout" class="m-link" style="display:none; color: #ef4444;">Logout</a>
                 
                 <a href="/custom" class="btn-mobile-cta">Start a Project</a>
@@ -335,17 +381,23 @@
 
     {% include 'footer.html' %}
 
-    <button id="fab-pay" class="fab-pay-btn" onclick="toggleQuickPay()" aria-label="Make a Payment">
+    <button id="fab-pay" class="fab-pay-btn" onclick="window.location.href='https://delstarfordworks.co.ke/quickpay'" aria-label="Make a Payment">
         <i class="fas fa-wallet"></i>
         <span class="fab-text">Quick Pay</span>
-        <span class="fab-tooltip">Instant M-Pesa Payment</span>
+        <span class="fab-tooltip" id="tooltip-pay">
+            Instant M-Pesa Payment 
+            <i class="fas fa-times" style="margin-left:8px; cursor:pointer; color:#ef4444;" onclick="event.stopPropagation(); document.getElementById('tooltip-pay').style.display='none';"></i>
+        </span>
     </button>
 
     <!-- MASHA Chatbot Button -->
     <button id="fab-masha" class="fab-masha-btn" onclick="toggleMasha()" aria-label="Chat with MASHA">
         <i class="fas fa-robot"></i>
         <span class="fab-text">MASHA</span>
-        <span class="fab-tooltip">Chat with AI Assistant</span>
+        <span class="fab-tooltip" id="tooltip-masha">
+            Chat with AI Assistant 
+            <i class="fas fa-times" style="margin-left:8px; cursor:pointer; color:#ef4444;" onclick="event.stopPropagation(); document.getElementById('tooltip-masha').style.display='none';"></i>
+        </span>
     </button>
 
     <!-- MASHA Chat Window -->
@@ -381,291 +433,249 @@
         </div>
     </div>
 
-    <div id="quickPayOverlay" class="qp-overlay" onclick="toggleQuickPay(event)">
-        <div class="qp-card" onclick="event.stopPropagation()">
-            
-            <button class="qp-close" onclick="toggleQuickPay()">&times;</button>
-            
-            <div class="qp-header">
-                <div class="qp-icon"><i class="fas fa-mobile-alt"></i></div>
-                <h3>Secure Remittance</h3>
-                <p>Initiate a direct M-Pesa STK push to your device.</p>
-            </div>
-
-            <form id="quickPayForm">
-                <div class="qp-form-group">
-                    <label>M-Pesa Phone Number</label>
-                    <div class="qp-input-wrap">
-                        <i class="fas fa-phone-alt"></i>
-                        <input type="tel" id="qp-phone" placeholder="07XX XXX XXX" required>
-                    </div>
-                </div>
-
-                <div class="qp-form-group">
-                    <label>Amount (KSh)</label>
-                    <div class="qp-input-wrap">
-                        <span style="color:#94a3b8; margin-right:10px; font-weight:700;">KSh</span>
-                        <input type="number" id="qp-amount" min="1" placeholder="5000" required>
-                    </div>
-                </div>
-
-                <div class="qp-form-group">
-                    <label>Service / Invoice Reference</label>
-                    <div class="qp-input-wrap">
-                        <i class="fas fa-file-invoice"></i>
-                        <input type="text" id="qp-service" placeholder="e.g., Deposit for AI Model" required>
-                    </div>
-                </div>
-
-                <div class="qp-form-group">
-                    <label>Brief Reason / Note</label>
-                    <div class="qp-input-wrap">
-                        <i class="fas fa-pen"></i>
-                        <input type="text" id="qp-reason" placeholder="e.g., Clearing Phase 1 balance" required>
-                    </div>
-                </div>
-
-                <button type="submit" class="qp-submit-btn" id="qp-submit">
-                    <span id="qp-btn-text">Send Payment Prompt</span>
-                    <i class="fas fa-paper-plane" id="qp-btn-icon"></i>
-                    <div class="qp-spinner" id="qp-spinner"></div>
-                </button>
-                
-                <div id="qp-status" class="qp-status-box"></div>
-            </form>
-
-            <div class="qp-footer">
-                <i class="fas fa-lock"></i> Secured by Delstarford Works Encryption
-            </div>
-        </div>
-    </div>
 
     <style>
-        /* --- FLOATING BUTTONS --- */
+        /* --- FLOATING BUTTONS (DEEP SPACE DARK) --- */
         .fab-pay-btn {
-            position: fixed;
-            bottom: 30px;
-            left: 30px;
-            background: #10b981;
-            color: white;
-            border: none;
-            border-radius: 50px;
-            padding: 15px 25px;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 1rem;
-            font-weight: 800;
-            cursor: pointer;
-            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
-            z-index: 9998;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            position: fixed; bottom: 30px; left: 30px;
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white; border: none; border-radius: 50px;
+            padding: 14px 24px; font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.95rem; font-weight: 800; cursor: pointer;
+            box-shadow: 0 8px 22px rgba(16, 185, 129, 0.4);
+            z-index: 9998; display: flex; align-items: center; gap: 10px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .fab-pay-btn:hover {
             transform: translateY(-5px);
-            background: #059669;
-            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.5);
+            box-shadow: 0 14px 32px rgba(16, 185, 129, 0.55);
+            filter: brightness(1.1);
         }
-        .fab-pay-btn i { font-size: 1.2rem; }
+        .fab-pay-btn i { font-size: 1.1rem; }
 
         .fab-masha-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 50px;
-            padding: 15px 25px;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 1rem;
-            font-weight: 800;
-            cursor: pointer;
-            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
-            z-index: 9998;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            position: fixed; bottom: 30px; right: 30px;
+            background: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
+            color: white; border: none; border-radius: 50px;
+            padding: 14px 24px; font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.95rem; font-weight: 800; cursor: pointer;
+            box-shadow: 0 8px 22px rgba(124, 58, 237, 0.45);
+            z-index: 9998; display: flex; align-items: center; gap: 10px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .fab-masha-btn:hover {
             transform: translateY(-5px);
-            background: #1d4ed8;
-            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.5);
+            box-shadow: 0 14px 32px rgba(124, 58, 237, 0.6);
+            filter: brightness(1.1);
         }
-        .fab-masha-btn i { font-size: 1.2rem; }
+        .fab-masha-btn i { font-size: 1.1rem; }
 
         /* --- TOOLTIPS --- */
         .fab-tooltip {
-            position: absolute;
-            bottom: 120%;
-            left: 50%;
+            position: absolute; bottom: 120%; left: 50%;
             transform: translateX(-50%) translateY(10px);
-            background: #0f172a;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            white-space: nowrap;
-            opacity: 0;
-            visibility: hidden;
+            background: #0d1424; color: #f1f5f9;
+            padding: 8px 15px; border-radius: 8px;
+            font-size: 0.78rem; font-weight: 700; white-space: nowrap;
+            opacity: 0; visibility: hidden;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            pointer-events: none;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            pointer-events: auto;
+            border: 1px solid rgba(124,58,237,0.2);
         }
         .fab-tooltip::after {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            border: 6px solid transparent;
-            border-top-color: #0f172a;
+            content: ''; position: absolute; top: 100%; left: 50%;
+            transform: translateX(-50%); border: 6px solid transparent;
+            border-top-color: #0d1424;
         }
         .fab-pay-btn:hover .fab-tooltip,
         .fab-masha-btn:hover .fab-tooltip {
-            opacity: 1;
-            visibility: visible;
+            opacity: 1; visibility: visible;
             transform: translateX(-50%) translateY(0);
         }
 
-        /* --- MASHA WINDOW --- */
+        @media (max-width: 768px) {
+            .fab-tooltip {
+                opacity: 1; visibility: visible; white-space: normal;
+                width: 140px; text-align: center; line-height: 1.4; transform: translateY(0);
+            }
+            .fab-pay-btn .fab-tooltip { left: -10px; transform: translateY(0); }
+            .fab-pay-btn .fab-tooltip::after { left: 35px; }
+            .fab-masha-btn .fab-tooltip { left: auto; right: -10px; transform: translateY(0); }
+            .fab-masha-btn .fab-tooltip::after { left: auto; right: 35px; transform: translateX(50%); }
+            .fab-tooltip .fa-times {
+                display: block !important; margin: 8px auto 0 !important;
+                background: rgba(239,68,68,0.1); border-radius: 50%;
+                width: 26px; height: 26px; line-height: 26px; text-align: center; padding: 0;
+            }
+        }
+
+        /* --- MASHA WINDOW (DARK THEME) --- */
         .masha-window {
-            position: fixed; bottom: 100px; right: 30px; width: 350px; height: 500px;
-            background: #fff; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            position: fixed; bottom: 100px; right: 30px; width: 360px; height: 520px;
+            background: #0d1424; border-radius: 22px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(124,58,237,0.2);
             z-index: 9999; display: flex; flex-direction: column; overflow: hidden;
-            opacity: 0; visibility: hidden; transform: translateY(20px); transition: all 0.3s ease;
-            border: 1px solid rgba(0,0,0,0.1);
+            opacity: 0; visibility: hidden; transform: translateY(20px); transition: all 0.35s cubic-bezier(0.175,0.885,0.32,1.275);
+            border: 1px solid rgba(124,58,237,0.25);
         }
         .masha-window.active { opacity: 1; visibility: visible; transform: translateY(0); }
 
         .masha-header {
-            background: #3b82f6; color: #fff; padding: 20px; display: flex; align-items: center; gap: 15px;
+            background: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
+            color: #fff; padding: 20px;
+            display: flex; align-items: center; gap: 14px;
         }
         .masha-avatar {
-            width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+            width: 42px; height: 42px; background: rgba(255,255,255,0.15);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; border: 2px solid rgba(255,255,255,0.25);
         }
-        .masha-info h3 { margin: 0; font-size: 1.1rem; font-weight: 800; }
-        .masha-info p { margin: 0; font-size: 0.75rem; opacity: 0.9; display: flex; align-items: center; gap: 5px; }
-        .status-dot { width: 8px; height: 8px; background: #10b981; border-radius: 50%; display: inline-block; }
-        .masha-close { background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; margin-left: auto; }
+        .masha-info h3 { margin: 0; font-size: 1.05rem; font-weight: 800; }
+        .masha-info p { margin: 0; font-size: 0.73rem; opacity: 0.9; display: flex; align-items: center; gap: 5px; }
+        .status-dot { width: 7px; height: 7px; background: #34d399; border-radius: 50%; display: inline-block; box-shadow: 0 0 6px rgba(52,211,153,0.7); }
+        .masha-close { background: none; border: none; color: rgba(255,255,255,0.8); font-size: 1.5rem; cursor: pointer; margin-left: auto; transition: 0.2s; }
+        .masha-close:hover { color: #fff; transform: rotate(90deg); }
 
-        .masha-body { flex: 1; padding: 20px; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 15px; }
-        .masha-msg { max-width: 85%; padding: 12px 16px; border-radius: 15px; font-size: 0.9rem; line-height: 1.4; }
-        .masha-msg.bot { align-self: flex-start; background: #fff; color: #0f172a; border-bottom-left-radius: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .masha-msg.user { align-self: flex-end; background: #3b82f6; color: #fff; border-bottom-right-radius: 2px; }
+        .masha-body {
+            flex: 1; padding: 18px; overflow-y: auto;
+            background: #080d1a;
+            display: flex; flex-direction: column; gap: 14px;
+        }
+        .masha-body::-webkit-scrollbar { width: 4px; }
+        .masha-body::-webkit-scrollbar-track { background: transparent; }
+        .masha-body::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.4); border-radius: 10px; }
+
+        .masha-msg { max-width: 88%; padding: 11px 15px; border-radius: 16px; font-size: 0.88rem; line-height: 1.5; }
+        .masha-msg.bot {
+            align-self: flex-start; background: #0d1424; color: #d1d5e8;
+            border-bottom-left-radius: 4px;
+            border: 1px solid rgba(124,58,237,0.2);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .masha-msg.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #7c3aed, #06b6d4);
+            color: #fff; border-bottom-right-radius: 4px;
+        }
         .msg-content ul { margin: 10px 0 0 15px; padding: 0; }
-        
         .msg-content a {
-            color: #3b82f6;
-            font-weight: 800;
-            text-decoration: none;
-            border-bottom: 2px solid rgba(59, 130, 246, 0.2);
-            transition: all 0.2s ease;
-            display: inline-block;
+            color: #a78bfa; font-weight: 700; text-decoration: none;
+            border-bottom: 1px solid rgba(167,139,250,0.3);
+            transition: all 0.2s ease; display: inline-block;
         }
-        .msg-content a:hover {
-            color: #1d4ed8;
-            border-bottom-color: #1d4ed8;
-            transform: translateY(-1px);
-            text-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+        .msg-content a:hover { color: #22d3ee; border-bottom-color: rgba(34,211,238,0.4); transform: translateY(-1px); }
+
+        .masha-footer {
+            padding: 14px; background: #0d1424;
+            border-top: 1px solid rgba(124,58,237,0.15);
+            display: flex; gap: 10px;
         }
+        .masha-footer input {
+            flex: 1; border: 1px solid rgba(124,58,237,0.2); border-radius: 10px;
+            padding: 10px 14px; outline: none; font-family: inherit;
+            background: #080d1a; color: #f1f5f9; font-size: 0.88rem;
+        }
+        .masha-footer input::placeholder { color: #4a5a7a; }
+        .masha-footer input:focus { border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124,58,237,0.15); }
+        .masha-footer button {
+            background: linear-gradient(135deg, #7c3aed, #06b6d4);
+            color: #fff; border: none; width: 42px; height: 42px;
+            border-radius: 10px; cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .masha-footer button:hover { filter: brightness(1.15); transform: scale(1.05); }
 
-        .masha-footer { padding: 15px; background: #fff; border-top: 1px solid #f1f5f9; display: flex; gap: 10px; }
-        .masha-footer input { flex: 1; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 15px; outline: none; font-family: inherit; }
-        .masha-footer input:focus { border-color: #3b82f6; }
-        .masha-footer button { background: #3b82f6; color: #fff; border: none; width: 40px; height: 40px; border-radius: 10px; cursor: pointer; transition: 0.2s; }
-        .masha-footer button:hover { background: #1d4ed8; }
-
-        /* --- MODAL OVERLAY --- */
+        /* --- MODAL OVERLAY (DARK) --- */
         .qp-overlay {
-            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(8px);
+            position: fixed; inset: 0;
+            background: rgba(5, 8, 17, 0.75); backdrop-filter: blur(10px);
             z-index: 9999; display: flex; align-items: center; justify-content: center;
             opacity: 0; visibility: hidden; transition: all 0.3s ease; padding: 20px;
         }
         .qp-overlay.active { opacity: 1; visibility: visible; }
 
-        /* --- MODAL CARD --- */
         .qp-card {
-            background: #ffffff; width: 100%; max-width: 450px; border-radius: 24px;
-            padding: 40px; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.2);
-            transform: translateY(30px) scale(0.95); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border-top: 6px solid #3b82f6; font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #0d1424; width: 100%; max-width: 450px; border-radius: 24px;
+            padding: 40px; position: relative;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(124,58,237,0.25);
+            transform: translateY(30px) scale(0.95);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-top: 4px solid transparent;
+            border-image: linear-gradient(135deg, #7c3aed, #06b6d4) 1;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
         .qp-overlay.active .qp-card { transform: translateY(0) scale(1); }
 
         .qp-close {
-            position: absolute; top: 20px; right: 20px; background: #f1f5f9; border: none;
-            width: 35px; height: 35px; border-radius: 50%; font-size: 1.5rem; color: #64748b;
-            cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center;
+            position: absolute; top: 18px; right: 18px;
+            background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.2);
+            width: 34px; height: 34px; border-radius: 50%;
+            font-size: 1.3rem; color: #8b9cc4;
+            cursor: pointer; transition: 0.25s;
+            display: flex; align-items: center; justify-content: center;
         }
-        .qp-close:hover { background: #fee2e2; color: #ef4444; transform: rotate(90deg);}
+        .qp-close:hover { background: rgba(239,68,68,0.15); color: #ef4444; transform: rotate(90deg); border-color: rgba(239,68,68,0.3); }
 
-        /* --- MODAL HEADER --- */
         .qp-header { text-align: center; margin-bottom: 30px; }
         .qp-icon {
-            width: 60px; height: 60px; background: #eff6ff; color: #3b82f6; border-radius: 16px;
-            display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 15px;
+            width: 60px; height: 60px;
+            background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(6,182,212,0.2));
+            color: #a78bfa; border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; margin: 0 auto 15px;
+            border: 1px solid rgba(124,58,237,0.3);
         }
-        .qp-header h3 { margin: 0 0 5px 0; color: #0f172a; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px;}
-        .qp-header p { margin: 0; color: #64748b; font-size: 0.95rem; font-weight: 500;}
+        .qp-header h3 { margin: 0 0 5px 0; color: #fff; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
+        .qp-header p { margin: 0; color: #8b9cc4; font-size: 0.92rem; font-weight: 500; }
 
-        /* --- FORM ELEMENTS --- */
         .qp-form-group { margin-bottom: 20px; }
-        .qp-form-group label { display: block; font-size: 0.8rem; font-weight: 800; color: #64748b; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;}
-        
+        .qp-form-group label { display: block; font-size: 0.78rem; font-weight: 700; color: #8b9cc4; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.7px; }
+
         .qp-input-wrap {
-            display: flex; align-items: center; background: #f8fafc; border: 1px solid #cbd5e1;
+            display: flex; align-items: center;
+            background: #080d1a; border: 1px solid rgba(124,58,237,0.2);
             border-radius: 10px; padding: 0 15px; transition: 0.3s;
         }
-        .qp-input-wrap:focus-within { border-color: #3b82f6; background: #ffffff; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
-        .qp-input-wrap i { color: #94a3b8; margin-right: 12px; transition: 0.3s;}
-        .qp-input-wrap:focus-within i { color: #3b82f6; }
-        
+        .qp-input-wrap:focus-within { border-color: #7c3aed; background: #0d1424; box-shadow: 0 0 0 3px rgba(124,58,237,0.15); }
+        .qp-input-wrap i { color: #4a5a7a; margin-right: 12px; transition: 0.3s; }
+        .qp-input-wrap:focus-within i { color: #a78bfa; }
         .qp-input-wrap input {
             width: 100%; border: none; background: transparent; padding: 14px 0;
-            outline: none; color: #0f172a; font-size: 1rem; font-weight: 600; font-family: inherit;
+            outline: none; color: #f1f5f9; font-size: 1rem; font-weight: 600; font-family: inherit;
         }
-        .qp-input-wrap input::placeholder { color: #94a3b8; font-weight: 400;}
+        .qp-input-wrap input::placeholder { color: #4a5a7a; font-weight: 400; }
 
-        /* --- SUBMIT BUTTON --- */
         .qp-submit-btn {
-            width: 100%; background: #3b82f6; color: white; border: none; padding: 18px;
-            border-radius: 10px; font-weight: 800; font-size: 1.05rem; cursor: pointer;
+            width: 100%;
+            background: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
+            color: white; border: none; padding: 17px;
+            border-radius: 10px; font-weight: 800; font-size: 1rem; cursor: pointer;
             display: flex; justify-content: center; align-items: center; gap: 10px;
-            transition: 0.3s; margin-top: 30px; text-transform: uppercase; letter-spacing: 1px;
-            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3); font-family: inherit;
+            transition: 0.3s; margin-top: 28px; text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 8px 22px rgba(124,58,237,0.35); font-family: inherit;
         }
-        .qp-submit-btn:hover { background: #2563eb; transform: translateY(-2px); box-shadow: 0 12px 25px rgba(59, 130, 246, 0.4); }
-        .qp-submit-btn:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+        .qp-submit-btn:hover { filter: brightness(1.1); transform: translateY(-2px); box-shadow: 0 12px 30px rgba(124,58,237,0.5); }
+        .qp-submit-btn:disabled { background: #1e293b; color: #4a5a7a; cursor: not-allowed; transform: none; box-shadow: none; }
 
-        .qp-spinner { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: qp-spin 1s linear infinite; display: none; }
+        .qp-spinner { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.25); border-top-color: white; border-radius: 50%; animation: qp-spin 1s linear infinite; display: none; }
         @keyframes qp-spin { to { transform: rotate(360deg); } }
 
-        /* --- STATUS & FOOTER --- */
-        .qp-status-box { margin-top: 15px; text-align: center; font-size: 0.9rem; font-weight: 700; padding: 12px; border-radius: 8px; display: none;}
-        .qp-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; display: block;}
-        .qp-error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; display: block;}
+        .qp-status-box { margin-top: 14px; text-align: center; font-size: 0.88rem; font-weight: 700; padding: 12px; border-radius: 8px; display: none; }
+        .qp-success { background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.25); display: block; }
+        .qp-error   { background: rgba(239,68,68,0.12);  color: #f87171; border: 1px solid rgba(239,68,68,0.25);  display: block; }
 
-        .qp-footer { text-align: center; margin-top: 25px; font-size: 0.8rem; color: #94a3b8; font-weight: 600;}
-        .qp-footer i { color: #10b981; margin-right: 5px;}
+        .qp-footer { text-align: center; margin-top: 22px; font-size: 0.78rem; color: #4a5a7a; font-weight: 600; }
+        .qp-footer i { color: #10b981; margin-right: 5px; }
 
         @media (max-width: 600px) {
-            .fab-pay-btn { bottom: 20px; left: 20px; padding: 14px 20px; }
-            .fab-masha-btn { bottom: 20px; right: 20px; padding: 14px 20px; }
+            .fab-pay-btn { bottom: 20px; left: 20px; padding: 12px 18px; }
+            .fab-masha-btn { bottom: 20px; right: 20px; padding: 12px 18px; }
             .fab-text { display: none; }
-            .qp-card { padding: 30px 20px; }
-            .masha-window { 
-                bottom: 80px; 
-                right: 10px; 
-                left: 10px; 
-                width: auto; 
-                height: 70vh; 
-                max-height: 500px;
-                border-radius: 15px;
+            .qp-card { padding: 28px 18px; }
+            .masha-window {
+                bottom: 80px; right: 10px; left: 10px; width: auto;
+                height: 70vh; max-height: 500px; border-radius: 16px;
             }
         }
     </style>
@@ -807,26 +817,28 @@
             });
         }
 
-        // --- QUICK PAY POLLING & SUBMIT LOGIC ---
-        function toggleQuickPay(e) {
-            if (e && e.target.classList.contains('qp-card')) return;
-            
-            const overlay = document.getElementById('quickPayOverlay');
-            overlay.classList.toggle('active');
-            
-            if (!overlay.classList.contains('active')) {
+        // --- AUTO-HIDE QUICK PAY & MASHA TOOLTIPS AFTER 2 SECONDS ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const payTooltip = document.getElementById('tooltip-pay');
+            const mashaTooltip = document.getElementById('tooltip-masha');
+
+            if (payTooltip) {
                 setTimeout(() => {
-                    document.getElementById('quickPayForm').reset();
-                    document.getElementById('qp-status').style.display = 'none';
-                    document.getElementById('qp-submit').style.background = '#3b82f6';
-                    document.getElementById('qp-btn-text').textContent = 'Send Payment Prompt';
-                    document.getElementById('qp-btn-icon').className = 'fas fa-paper-plane';
-                    document.getElementById('qp-btn-icon').style.display = 'block';
-                    document.getElementById('qp-spinner').style.display = 'none';
-                    document.getElementById('qp-submit').disabled = false;
-                }, 300);
+                    payTooltip.style.transition = 'opacity 0.4s ease, visibility 0.4s ease';
+                    payTooltip.style.opacity = '0';
+                    payTooltip.style.visibility = 'hidden';
+                }, 2000);
             }
-        }
+
+            if (mashaTooltip) {
+                setTimeout(() => {
+                    mashaTooltip.style.transition = 'opacity 0.4s ease, visibility 0.4s ease';
+                    mashaTooltip.style.opacity = '0';
+                    mashaTooltip.style.visibility = 'hidden';
+                }, 2000);
+            }
+        });
+
 
         // --- MASHA CHATBOT LOGIC ---
         function toggleMasha() {
@@ -878,120 +890,7 @@
             body.scrollTop = body.scrollHeight;
         }
 
-        document.getElementById('quickPayForm').onsubmit = async (e) => {
-            e.preventDefault();
-            
-            const btn = document.getElementById('qp-submit');
-            const btnText = document.getElementById('qp-btn-text');
-            const btnIcon = document.getElementById('qp-btn-icon');
-            const spinner = document.getElementById('qp-spinner');
-            const statusBox = document.getElementById('qp-status');
 
-            if(btn.disabled) return;
-
-            // 1. Initial Loading State
-            btn.disabled = true;
-            btnText.textContent = "Connecting to Safaricom...";
-            btnIcon.style.display = 'none';
-            spinner.style.display = 'block';
-            statusBox.style.display = 'none';
-
-            const phone = document.getElementById('qp-phone').value;
-            const amount = document.getElementById('qp-amount').value;
-            const service = document.getElementById('qp-service').value;
-            const reason = document.getElementById('qp-reason').value;
-            
-            const combinedItemName = `${service} (${reason})`;
-
-            const payload = {
-                phone: phone,
-                amount: amount,
-                items: [{ name: combinedItemName }]
-            };
-
-            try {
-                // 2. Trigger STK Push
-                const response = await fetch('/pay', { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                const result = await response.json();
-
-                if (response.ok && result.ResponseCode === '0') {
-                    // Success State - Prompt Sent
-                    statusBox.innerHTML = '<i class="fas fa-mobile-alt"></i> Prompt sent! Please enter your M-Pesa PIN on your phone.';
-                    statusBox.className = 'qp-status-box qp-success';
-                    statusBox.style.display = 'block';
-                    
-                    btn.style.background = "#10b981";
-                    btnText.textContent = "Awaiting PIN...";
-                    
-                    // 3. START POLLING BACKEND
-                    const checkoutId = result.CheckoutRequestID;
-                    let pollCount = 0;
-                    const maxPolls = 20; // 60 seconds max timeout
-                    
-                    const pollInterval = setInterval(async () => {
-                        pollCount++;
-                        
-                        try {
-                            const statusRes = await fetch(`/check-payment-status/${checkoutId}`);
-                            if(!statusRes.ok) return; // Keep trying if network blip
-                            
-                            const statusData = await statusRes.json();
-                            
-                            if (statusData.status === 'Payment Successful') {
-                                clearInterval(pollInterval);
-                                statusBox.innerHTML = '<i class="fas fa-check-circle"></i> Payment Received! Thank you.';
-                                btnText.textContent = "Success";
-                                spinner.style.display = 'none';
-                                btnIcon.className = "fas fa-check";
-                                btnIcon.style.display = "block";
-                                
-                                setTimeout(() => { window.location.href = "/dashboard"; }, 1500);
-                                
-                            } else if (statusData.status === 'Payment Failed') {
-                                clearInterval(pollInterval);
-                                statusBox.innerHTML = `<i class="fas fa-times-circle"></i> Payment Failed: ${statusData.failure_reason || 'Transaction cancelled.'}`;
-                                statusBox.className = 'qp-status-box qp-error';
-                                resetButton();
-                            }
-                            
-                            // Timeout handling
-                            if (pollCount >= maxPolls) {
-                                clearInterval(pollInterval);
-                                statusBox.innerHTML = '<i class="fas fa-clock"></i> Request timed out. Did you receive the prompt?';
-                                statusBox.className = 'qp-status-box qp-error';
-                                resetButton();
-                            }
-                            
-                        } catch (pollErr) {
-                            console.error("Polling error:", pollErr);
-                        }
-                    }, 3000); // Poll every 3 seconds
-                    
-                } else {
-                    throw new Error(result.error || result.errorMessage || "Failed to initiate STK push.");
-                }
-            } catch (error) {
-                console.error(error);
-                statusBox.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${error.message}`;
-                statusBox.className = 'qp-status-box qp-error';
-                statusBox.style.display = 'block';
-                resetButton();
-            }
-
-            function resetButton() {
-                btn.disabled = false;
-                btn.style.background = '#3b82f6';
-                btnText.textContent = "Try Again";
-                spinner.style.display = 'none';
-                btnIcon.className = "fas fa-redo";
-                btnIcon.style.display = "block";
-            }
-        };
     </script>    
 </body>
 </html>

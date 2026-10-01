@@ -252,6 +252,9 @@
             <button class="admin-nav-btn" onclick="switchTab('events-panel', this)">
                 <i class="fas fa-calendar-alt"></i> <span>Events & News</span>
             </button>
+            <button class="admin-nav-btn" onclick="switchTab('payroll-panel', this)">
+                <i class="fas fa-money-check-alt"></i> <span>Payroll & Stipends</span>
+            </button>
         </nav>
         <div class="sidebar-footer">
             <button class="btn-public" onclick="window.location.href='/'">
@@ -480,6 +483,429 @@
             </div>
         </div>
 
+        <div id="payroll-panel" class="data-panel">
+
+            <!-- PAYROLL SUB-NAVIGATION TABS -->
+            <style>
+                .payroll-tabs { display: flex; gap: 8px; margin-bottom: 28px; border-bottom: 2px solid var(--border-light); padding-bottom: 0; flex-wrap: wrap; }
+                .payroll-tab-btn { background: none; border: none; font-family: inherit; font-weight: 700; font-size: 0.88rem; color: var(--text-muted); padding: 12px 20px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s ease; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+                .payroll-tab-btn:hover { color: var(--primary); }
+                .payroll-tab-btn.pt-active { color: var(--primary); border-bottom-color: var(--primary); background: none; }
+                .payroll-sub-panel { display: none; }
+                .payroll-sub-panel.pt-panel-active { display: block; }
+
+                /* BULK PAYMENT STYLES */
+                .bulk-config-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+                .bulk-config-field label { display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+                .bulk-config-field input, .bulk-config-field select { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border-light); border-radius: 8px; font-family: inherit; font-size: 0.9rem; outline: none; box-sizing: border-box; transition: border-color 0.2s; background: white; }
+                .bulk-config-field input:focus, .bulk-config-field select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
+                @media(max-width: 900px) { .bulk-config-grid { grid-template-columns: 1fr 1fr; } }
+                @media(max-width: 600px) { .bulk-config-grid { grid-template-columns: 1fr; } }
+
+                .bulk-recipients-table-wrap { border: 1.5px solid var(--border-light); border-radius: 12px; overflow: hidden; margin-bottom: 24px; }
+                .bulk-rec-table { width: 100%; border-collapse: collapse; }
+                .bulk-rec-table thead { background: #f8fafc; }
+                .bulk-rec-table th { padding: 11px 14px; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); text-align: left; white-space: nowrap; }
+                .bulk-rec-table td { padding: 6px 8px; border-top: 1px solid #f1f5f9; vertical-align: middle; }
+                .bulk-rec-table tr:hover td { background: #fafbff; }
+                .bulk-rec-input { width: 100%; padding: 7px 10px; border: 1.5px solid transparent; border-radius: 6px; font-family: inherit; font-size: 0.85rem; outline: none; transition: all 0.2s; background: transparent; box-sizing: border-box; }
+                .bulk-rec-input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 2px var(--primary-glow); }
+                .bulk-rec-input.is-invalid { border-color: var(--danger) !important; background: #fff5f5; }
+                .btn-remove-row { background: none; border: none; color: #ef4444; cursor: pointer; padding: 5px 8px; border-radius: 5px; font-size: 0.9rem; transition: 0.2s; }
+                .btn-remove-row:hover { background: #fee2e2; }
+                .btn-add-row { display: flex; align-items: center; gap: 8px; background: #eff6ff; color: var(--primary); border: 1.5px dashed #bfdbfe; border-radius: 8px; padding: 11px 20px; font-family: inherit; font-weight: 700; font-size: 0.88rem; cursor: pointer; width: 100%; justify-content: center; transition: all 0.2s; margin-bottom: 8px; }
+                .btn-add-row:hover { background: #dbeafe; border-color: var(--primary); }
+
+                .bulk-totals-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; background: #f8fafc; border: 1.5px solid var(--border-light); border-radius: 10px; padding: 14px 20px; margin-bottom: 20px; }
+                .bulk-total-item { display: flex; flex-direction: column; gap: 2px; }
+                .bulk-total-item .lbl { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+                .bulk-total-item .val { font-size: 1.1rem; font-weight: 800; color: var(--text-main); }
+                .bulk-total-item .val.green { color: var(--success); }
+                .bulk-total-item .val.blue { color: var(--primary); }
+                .bulk-total-item .val.red { color: var(--danger); }
+
+                .btn-bulk-submit { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; padding: 14px 32px; border-radius: 10px; font-family: inherit; font-weight: 800; font-size: 1rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 14px rgba(37,99,235,0.25); }
+                .btn-bulk-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37,99,235,0.3); }
+                .btn-bulk-submit:disabled { background: #94a3b8; transform: none; box-shadow: none; cursor: not-allowed; }
+
+                /* CONFIRMATION MODAL */
+                .bulk-confirm-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.5); z-index: 5000; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+                .bulk-confirm-overlay.active { opacity: 1; pointer-events: all; }
+                .bulk-confirm-modal { background: white; border-radius: 16px; max-width: 680px; width: 100%; max-height: 85vh; overflow-y: auto; box-shadow: 0 25px 60px rgba(15,23,42,0.2); transform: translateY(20px); transition: transform 0.25s; }
+                .bulk-confirm-overlay.active .bulk-confirm-modal { transform: translateY(0); }
+                .bcm-header { padding: 24px 28px 20px; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; }
+                .bcm-header h3 { margin: 0; font-size: 1.15rem; color: var(--text-main); }
+                .bcm-body { padding: 24px 28px; }
+                .bcm-summary-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
+                .bcm-summary-row:last-child { border-bottom: none; }
+                .bcm-summary-row .bcm-label { color: var(--text-muted); font-weight: 600; }
+                .bcm-summary-row .bcm-value { font-weight: 800; color: var(--text-main); }
+                .bcm-recipient-list { max-height: 220px; overflow-y: auto; border: 1px solid var(--border-light); border-radius: 8px; margin: 16px 0; }
+                .bcm-recipient-row { display: grid; grid-template-columns: 60px 1fr 1fr 90px; padding: 8px 14px; font-size: 0.82rem; border-bottom: 1px solid #f8fafc; }
+                .bcm-recipient-row:last-child { border-bottom: none; }
+                .bcm-recipient-row.bcm-rec-head { background: #f8fafc; font-weight: 800; font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); }
+                .bcm-foot { padding: 20px 28px; border-top: 1px solid var(--border-light); display: flex; gap: 12px; justify-content: flex-end; }
+                .btn-bcm-cancel { background: white; border: 1.5px solid var(--border-light); color: var(--text-muted); padding: 12px 24px; border-radius: 8px; font-family: inherit; font-weight: 700; cursor: pointer; }
+                .btn-bcm-confirm { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; padding: 12px 28px; border-radius: 8px; font-family: inherit; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(37,99,235,0.25); }
+
+                /* PROGRESS TRACKER */
+                .bulk-progress-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 6000; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+                .bulk-progress-overlay.active { opacity: 1; pointer-events: all; }
+                .bulk-progress-modal { background: white; border-radius: 16px; max-width: 580px; width: 100%; max-height: 80vh; overflow-y: auto; box-shadow: 0 25px 60px rgba(15,23,42,0.2); padding: 32px; }
+                .bpm-title { font-size: 1.2rem; font-weight: 800; margin: 0 0 8px 0; color: var(--text-main); }
+                .bpm-sub { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
+                .bpm-overall-bar-wrap { background: #f1f5f9; border-radius: 100px; height: 10px; overflow: hidden; margin-bottom: 24px; }
+                .bpm-overall-bar { height: 100%; background: linear-gradient(90deg, #2563eb, #10b981); border-radius: 100px; transition: width 0.3s ease; }
+                .bpm-list { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; }
+                .bpm-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; background: #f8fafc; border: 1px solid #f1f5f9; }
+                .bpm-item-icon { font-size: 0.9rem; width: 20px; text-align: center; flex-shrink: 0; }
+                .bpm-item-name { flex: 1; font-weight: 700; }
+                .bpm-item-phone { color: var(--text-muted); font-size: 0.8rem; }
+                .bpm-item-amount { font-weight: 800; color: var(--text-main); margin-left: auto; white-space: nowrap; }
+                .bpm-item-status { font-size: 0.75rem; padding: 3px 8px; border-radius: 100px; font-weight: 700; flex-shrink: 0; }
+                .bpm-status-queued { background: #f1f5f9; color: #64748b; }
+                .bpm-status-sending { background: #dbeafe; color: #1d4ed8; }
+                .bpm-status-success { background: #d1fae5; color: #065f46; }
+                .bpm-status-failed { background: #fee2e2; color: #991b1b; }
+                .bpm-finish-area { margin-top: 20px; border-top: 1px solid var(--border-light); padding-top: 20px; display: none; }
+                .bpm-result-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+                .bpm-result-box { background: #f8fafc; border-radius: 10px; padding: 14px; text-align: center; }
+                .bpm-result-box .rn { font-size: 1.5rem; font-weight: 900; }
+                .bpm-result-box .rl { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-top: 4px; }
+                .bpm-result-box.rg { border: 2px solid #d1fae5; } .bpm-result-box.rg .rn { color: var(--success); }
+                .bpm-result-box.rr { border: 2px solid #fee2e2; } .bpm-result-box.rr .rn { color: var(--danger); }
+                .bpm-result-box.rb { border: 2px solid #dbeafe; } .bpm-result-box.rb .rn { color: var(--primary); }
+                .btn-bpm-done { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-family: inherit; font-weight: 800; cursor: pointer; width: 100%; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+                /* BATCH HISTORY */
+                .batch-hist-card { background: white; border: 1.5px solid var(--border-light); border-radius: 12px; padding: 18px 20px; display: flex; align-items: center; gap: 16px; cursor: pointer; transition: all 0.2s; margin-bottom: 12px; }
+                .batch-hist-card:hover { border-color: var(--primary); box-shadow: 0 4px 15px rgba(37,99,235,0.08); transform: translateY(-1px); }
+                .batch-hist-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+                .batch-hist-icon.ok { background: #d1fae5; color: #059669; }
+                .batch-hist-icon.err { background: #fee2e2; color: #dc2626; }
+                .batch-hist-icon.proc { background: #dbeafe; color: #2563eb; }
+                .batch-hist-info { flex: 1; min-width: 0; }
+                .batch-hist-label { font-weight: 800; font-size: 0.95rem; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+                .batch-hist-meta { font-size: 0.78rem; color: var(--text-muted); margin-top: 3px; }
+                .batch-hist-right { text-align: right; flex-shrink: 0; }
+                .batch-hist-amount { font-size: 1rem; font-weight: 800; color: var(--text-main); }
+                .batch-hist-recipients { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+
+                /* BATCH DETAIL DRAWER */
+                .batch-detail-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.5); z-index: 4000; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+                .batch-detail-overlay.active { opacity: 1; pointer-events: all; }
+                .batch-detail-drawer { position: fixed; right: 0; top: 0; height: 100vh; width: 520px; max-width: 95vw; background: white; z-index: 4001; transform: translateX(100%); transition: transform 0.3s ease; display: flex; flex-direction: column; box-shadow: -8px 0 30px rgba(15,23,42,0.1); }
+                .batch-detail-overlay.active .batch-detail-drawer { transform: translateX(0); }
+                .bdd-header { padding: 24px; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+                .bdd-header h3 { margin: 0; font-size: 1.05rem; }
+                .bdd-body { flex: 1; overflow-y: auto; padding: 20px 24px; }
+                .bdd-stat-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+                .bdd-stat { background: #f8fafc; border-radius: 10px; padding: 14px; border: 1px solid var(--border-light); text-align: center; }
+                .bdd-stat .dsn { font-size: 1.4rem; font-weight: 900; }
+                .bdd-stat .dsl { font-size: 0.7rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-top: 2px; }
+                .bdd-record { background: #f8fafc; border-radius: 8px; padding: 12px 14px; margin-bottom: 8px; border-left: 3px solid; display: flex; justify-content: space-between; align-items: center; }
+                .bdd-record.s { border-color: var(--success); }
+                .bdd-record.f { border-color: var(--danger); }
+                .bdd-record.p { border-color: var(--primary); }
+                .bdd-record.r { border-color: #f59e0b; }
+                .bdd-rec-name { font-weight: 700; font-size: 0.88rem; }
+                .bdd-rec-dept { font-size: 0.75rem; color: var(--text-muted); }
+                .bdd-rec-amt { font-weight: 800; font-size: 0.9rem; }
+                .bdd-foot { padding: 16px 24px; border-top: 1px solid var(--border-light); display: flex; gap: 10px; flex-shrink: 0; }
+                .btn-bdd-csv { background: #f8fafc; border: 1.5px solid var(--border-light); color: var(--text-main); padding: 10px 18px; border-radius: 8px; font-family: inherit; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.85rem; }
+                .btn-bdd-retry { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; padding: 10px 18px; border-radius: 8px; font-family: inherit; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.85rem; }
+                .section-subhead { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin: 18px 0 10px 0; }
+            </style>
+
+            <!-- SUB-TABS -->
+            <div class="payroll-tabs">
+                <button class="payroll-tab-btn pt-active" onclick="switchPayrollTab('bulk-tab', this)" id="bulk-tab-btn">
+                    <i class="fas fa-users"></i> Bulk Payment
+                </button>
+                <button class="payroll-tab-btn" onclick="switchPayrollTab('oneoff-tab', this)">
+                    <i class="fas fa-paper-plane"></i> One-Off Payment
+                </button>
+                <button class="payroll-tab-btn" onclick="switchPayrollTab('schedule-tab', this)">
+                    <i class="fas fa-clock"></i> Schedule Payment
+                </button>
+                <button class="payroll-tab-btn" onclick="switchPayrollTab('history-tab', this); loadBatchHistory();">
+                    <i class="fas fa-history"></i> Batch History
+                </button>
+                <button class="payroll-tab-btn" onclick="switchPayrollTab('statements-tab', this)">
+                    <i class="fas fa-file-invoice-dollar"></i> Statements
+                </button>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- TAB 1: BULK PAYMENT                                          -->
+            <!-- ============================================================ -->
+            <div id="bulk-tab" class="payroll-sub-panel pt-panel-active">
+                <div class="data-card">
+                    <!-- SECTION 1: Batch Configuration -->
+                    <div class="data-card-header">
+                        <h3><i class="fas fa-layer-group" style="color:var(--primary);"></i> Bulk Payroll Disbursement</h3>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                            <button class="btn-refresh" onclick="importBulkCSV()" id="btn-import-csv"><i class="fas fa-file-import"></i> Import CSV</button>
+                            <input type="file" id="csv-file-input" accept=".csv" style="display:none;" onchange="handleCSVImport(event)">
+                            <button class="btn-refresh" onclick="downloadBulkTemplate()"><i class="fas fa-file-download"></i> CSV Template</button>
+                        </div>
+                    </div>
+                    <div style="padding: 24px;">
+
+                        <!-- Batch Meta Fields -->
+                        <div class="bulk-config-grid" style="margin-bottom: 20px;">
+                            <div class="bulk-config-field" style="grid-column: span 2;">
+                                <label>Batch Label / Payroll Run Name</label>
+                                <input type="text" id="bulk-label" placeholder="e.g. October 2026 Salary Run" value="Monthly Salary Disbursement">
+                            </div>
+                            <div class="bulk-config-field">
+                                <label>Payment Category</label>
+                                <select id="bulk-category">
+                                    <option>Monthly Salary</option>
+                                    <option>Weekly Stipend</option>
+                                    <option>Bonus Payment</option>
+                                    <option>Project Payment</option>
+                                    <option>Allowance</option>
+                                    <option>Commission</option>
+                                    <option>Overtime Pay</option>
+                                    <option>Other</option>
+                                </select>
+                            </div>
+                            <div class="bulk-config-field">
+                                <label>Max Total Cap (KSh) <span style="color:#94a3b8;font-weight:500;">(optional)</span></label>
+                                <input type="number" id="bulk-cap" placeholder="Leave blank for no limit">
+                            </div>
+                            <div class="bulk-config-field">
+                                <label>Default Narration</label>
+                                <input type="text" id="bulk-narration" placeholder="e.g. October Salary" value="Monthly Salary">
+                            </div>
+                            <div class="bulk-config-field">
+                                <label>Initiated By</label>
+                                <input type="text" id="bulk-initiator" placeholder="Admin Name / Reference" value="System Admin">
+                            </div>
+                        </div>
+
+                        <!-- Feature Callouts -->
+                        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 24px;">
+                            <div style="background:#eff6ff; border-radius:8px; padding:10px 14px; display:flex; align-items:center; gap:8px; font-size:0.78rem; font-weight:700; color:#1d4ed8;"><i class="fas fa-shield-alt"></i> Pre-flight Validation</div>
+                            <div style="background:#f0fdf4; border-radius:8px; padding:10px 14px; display:flex; align-items:center; gap:8px; font-size:0.78rem; font-weight:700; color:#065f46;"><i class="fas fa-fingerprint"></i> Unique Batch ID</div>
+                            <div style="background:#fefce8; border-radius:8px; padding:10px 14px; display:flex; align-items:center; gap:8px; font-size:0.78rem; font-weight:700; color:#92400e;"><i class="fas fa-scroll"></i> Full Audit Trail</div>
+                            <div style="background:#fdf4ff; border-radius:8px; padding:10px 14px; display:flex; align-items:center; gap:8px; font-size:0.78rem; font-weight:700; color:#6b21a8;"><i class="fas fa-redo"></i> Retry Failed</div>
+                            <div style="background:#fff1f2; border-radius:8px; padding:10px 14px; display:flex; align-items:center; gap:8px; font-size:0.78rem; font-weight:700; color:#9f1239;"><i class="fas fa-lock"></i> Amount Cap Lock</div>
+                        </div>
+
+                        <!-- Recipient Table -->
+                        <div class="section-subhead"><i class="fas fa-users"></i> Recipients List</div>
+                        <div class="bulk-recipients-table-wrap">
+                            <table class="bulk-rec-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:36px;">#</th>
+                                        <th>Emp. No.</th>
+                                        <th style="min-width:130px;">Full Name <span style="color:var(--danger);">*</span></th>
+                                        <th style="min-width:130px;">Phone (254...) <span style="color:var(--danger);">*</span></th>
+                                        <th style="min-width:90px;">Amount (KSh) <span style="color:var(--danger);">*</span></th>
+                                        <th style="min-width:110px;">Department</th>
+                                        <th style="min-width:110px;">Narration</th>
+                                        <th style="min-width:120px;">Email (opt.)</th>
+                                        <th style="width:36px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bulk-recipients-tbody">
+                                    <!-- Rows inserted by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <button class="btn-add-row" onclick="addBulkRow()">
+                            <i class="fas fa-plus-circle"></i> Add Recipient Row
+                        </button>
+
+                        <!-- Live Totals Bar -->
+                        <div class="bulk-totals-bar" id="bulk-totals-bar">
+                            <div class="bulk-total-item">
+                                <span class="lbl"><i class="fas fa-users"></i> Recipients</span>
+                                <span class="val blue" id="bulk-total-recipients">0</span>
+                            </div>
+                            <div class="bulk-total-item">
+                                <span class="lbl"><i class="fas fa-money-bill-wave"></i> Total Amount</span>
+                                <span class="val green" id="bulk-total-amount">KSh 0</span>
+                            </div>
+                            <div class="bulk-total-item">
+                                <span class="lbl"><i class="fas fa-chart-bar"></i> Avg. Per Person</span>
+                                <span class="val" id="bulk-avg-amount">KSh 0</span>
+                            </div>
+                            <div class="bulk-total-item" id="bulk-cap-indicator" style="display:none;">
+                                <span class="lbl"><i class="fas fa-lock"></i> Cap Status</span>
+                                <span class="val" id="bulk-cap-status">—</span>
+                            </div>
+                            <button class="btn-bulk-submit" id="btn-bulk-submit" onclick="openBulkConfirm()">
+                                <i class="fas fa-paper-plane"></i> Review & Send Payments
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- TAB 2: ONE-OFF PAYMENT                                       -->
+            <!-- ============================================================ -->
+            <div id="oneoff-tab" class="payroll-sub-panel">
+                <div class="data-card">
+                    <div class="data-card-header"><h3><i class="fas fa-paper-plane" style="color:var(--primary);"></i> One-Off Payment</h3></div>
+                    <div style="padding:24px; max-width: 480px;">
+                        <form id="oneOffPaymentForm" onsubmit="submitOneOffPayment(event)" style="display:grid; gap:16px;">
+                            <div class="bulk-config-field"><label>Full Name</label><input type="text" id="b2c-name" required></div>
+                            <div class="bulk-config-field"><label>Phone (254...)</label><input type="text" id="b2c-phone" required></div>
+                            <div class="bulk-config-field"><label>Email (Optional)</label><input type="email" id="b2c-email"></div>
+                            <div class="bulk-config-field"><label>Amount (KSh)</label><input type="number" id="b2c-amount" required min="10"></div>
+                            <div class="bulk-config-field"><label>Reason / Narration</label><input type="text" id="b2c-reason" value="Stipend" required></div>
+                            <button type="submit" class="btn-reply" style="margin-top:4px;">Send Payment</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- TAB 3: SCHEDULE PAYMENT                                      -->
+            <!-- ============================================================ -->
+            <div id="schedule-tab" class="payroll-sub-panel">
+                <div class="data-card">
+                    <div class="data-card-header"><h3><i class="fas fa-clock" style="color:var(--warning);"></i> Schedule Recurring Payment</h3></div>
+                    <div style="padding:24px; max-width: 480px;">
+                        <form id="schedulePaymentForm" onsubmit="submitScheduledPayment(event)" style="display:grid; gap:16px;">
+                            <div class="bulk-config-field"><label>Full Name</label><input type="text" id="sch-name" required></div>
+                            <div class="bulk-config-field"><label>Phone (254...)</label><input type="text" id="sch-phone" required></div>
+                            <div class="bulk-config-field"><label>Amount (KSh)</label><input type="number" id="sch-amount" required min="10"></div>
+                            <div class="bulk-config-field">
+                                <label>Frequency</label>
+                                <select id="sch-freq" required>
+                                    <option value="daily">Daily</option>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly">Monthly</option>
+                                    <option value="yearly">Yearly</option>
+                                </select>
+                            </div>
+                            <div class="bulk-config-field"><label>Exact Start Time</label><input type="datetime-local" id="sch-time" required></div>
+                            <button type="submit" class="btn-reply" style="background: linear-gradient(135deg, #f59e0b, #d97706); margin-top:4px;">Add Schedule</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- TAB 4: BATCH HISTORY                                         -->
+            <!-- ============================================================ -->
+            <div id="history-tab" class="payroll-sub-panel">
+                <div class="data-card">
+                    <div class="data-card-header">
+                        <h3><i class="fas fa-history" style="color:var(--primary);"></i> Bulk Payment Batch History</h3>
+                        <button class="btn-refresh" onclick="loadBatchHistory(this)"><i class="fas fa-sync-alt"></i> Refresh</button>
+                    </div>
+                    <div style="padding: 20px;" id="batch-history-container">
+                        <div style="text-align:center; padding:40px; color:var(--text-muted);">
+                            <i class="fas fa-circle-notch fa-spin" style="font-size:1.5rem;"></i><br><br>Loading batch history...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- TAB 5: STATEMENTS                                            -->
+            <!-- ============================================================ -->
+            <div id="statements-tab" class="payroll-sub-panel">
+                <div class="data-card">
+                    <div class="data-card-header">
+                        <h3><i class="fas fa-file-invoice-dollar" style="color:var(--primary);"></i> Payment Statements</h3>
+                        <button class="btn-refresh" onclick="window.location.href='/admin/api/b2c-statements'"><i class="fas fa-download"></i> Download Full CSV</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead><tr><th>Transaction ID</th><th>Name</th><th>Phone</th><th>Amount / Status</th><th>Date</th></tr></thead>
+                            <tbody id="b2c-table-body">
+                                <tr><td colspan="5" style="text-align:center; padding:40px; color:var(--text-muted);">Click "Download Full CSV" to view complete statement history.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- CONFIRMATION MODAL                                           -->
+        <!-- ============================================================ -->
+        <div class="bulk-confirm-overlay" id="bulkConfirmOverlay">
+            <div class="bulk-confirm-modal">
+                <div class="bcm-header">
+                    <h3><i class="fas fa-shield-check" style="color:var(--primary); margin-right:10px;"></i>Pre-Flight Confirmation</h3>
+                    <button style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--text-muted);" onclick="closeBulkConfirm()"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="bcm-body">
+                    <div id="bcm-summary-box"></div>
+                    <div class="section-subhead">Recipients Preview</div>
+                    <div class="bcm-recipient-list">
+                        <div class="bcm-recipient-row bcm-rec-head">
+                            <span>#</span><span>Name</span><span>Phone</span><span>Amount</span>
+                        </div>
+                        <div id="bcm-recipient-list-body"></div>
+                    </div>
+                    <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:12px 16px; font-size:0.83rem; color:#92400e;">
+                        <i class="fas fa-exclamation-triangle"></i> <strong>Irreversible Action:</strong> Payments will be dispatched immediately via M-Pesa B2C. Ensure all details are correct before proceeding.
+                    </div>
+                </div>
+                <div class="bcm-foot">
+                    <button class="btn-bcm-cancel" onclick="closeBulkConfirm()"><i class="fas fa-times"></i> Cancel</button>
+                    <button class="btn-bcm-confirm" id="btn-bcm-confirm-go" onclick="executeBulkPayment()">
+                        <i class="fas fa-paper-plane"></i> Confirm & Dispatch All
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- REAL-TIME PROGRESS TRACKER MODAL                            -->
+        <!-- ============================================================ -->
+        <div class="bulk-progress-overlay" id="bulkProgressOverlay">
+            <div class="bulk-progress-modal">
+                <p class="bpm-title"><i class="fas fa-paper-plane" style="color:var(--primary);"></i> Dispatching Bulk Payments</p>
+                <p class="bpm-sub" id="bpm-sub-text">Processing... Please do not close this window.</p>
+                <div class="bpm-overall-bar-wrap"><div class="bpm-overall-bar" id="bpm-overall-bar" style="width:0%;"></div></div>
+                <div class="bpm-list" id="bpm-list"></div>
+                <div class="bpm-finish-area" id="bpm-finish-area">
+                    <div class="bpm-result-grid">
+                        <div class="bpm-result-box rb"><div class="rn" id="bpm-r-total">0</div><div class="rl">Total</div></div>
+                        <div class="bpm-result-box rg"><div class="rn" id="bpm-r-success">0</div><div class="rl">Success</div></div>
+                        <div class="bpm-result-box rr"><div class="rn" id="bpm-r-failed">0</div><div class="rl">Failed</div></div>
+                    </div>
+                    <div style="background:#f0fdf4; border:1px solid #a7f3d0; border-radius:8px; padding:12px 16px; margin-bottom:14px; font-size:0.83rem; color:#065f46;">
+                        <i class="fas fa-check-circle"></i> Batch recorded. View full details in <strong>Batch History</strong>.
+                    </div>
+                    <button class="btn-bpm-done" onclick="closeBulkProgress()"><i class="fas fa-check"></i> Done — View Batch History</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- BATCH DETAIL DRAWER                                          -->
+        <!-- ============================================================ -->
+        <div class="batch-detail-overlay" id="batchDetailOverlay" onclick="closeBatchDetailDrawer(event)">
+            <div class="batch-detail-drawer" onclick="event.stopPropagation()">
+                <div class="bdd-header">
+                    <h3 id="bdd-title"><i class="fas fa-layer-group"></i> Batch Detail</h3>
+                    <button style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--text-muted);" onclick="closeBatchDetailDrawer()"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="bdd-body">
+                    <div class="bdd-stat-row" id="bdd-stats"></div>
+                    <div class="section-subhead">Payment Records</div>
+                    <div id="bdd-records-list"></div>
+                </div>
+                <div class="bdd-foot">
+                    <button class="btn-bdd-csv" id="btn-bdd-csv"><i class="fas fa-file-csv"></i> Export CSV</button>
+                    <button class="btn-bdd-retry" id="btn-bdd-retry"><i class="fas fa-redo"></i> Retry Failed</button>
+                </div>
+            </div>
+        </div>
+
     </main>
 </div>
 
@@ -602,27 +1028,29 @@
 
     // --- AUTH & DATA INITIALIZATION ---
     document.addEventListener("DOMContentLoaded", () => {
-        setTimeout(() => {
-            if (window.auth) {
-                auth.onAuthStateChanged(async (user) => {
-                    if (user) {
-                        try {
-                            const snap = await firebase.database().ref('users/' + user.uid).once('value');
-                            if (snap.val() && snap.val().role === 'admin') {
-                                document.getElementById('admin-name').innerText = snap.val().name || "System Admin";
-                                loadAllStats();
-                            } else {
-                                adminLogout();
-                            }
-                        } catch(err) {
-                            console.error("Auth verify error:", err);
+        if (window.auth) {
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    try {
+                        const snap = await firebase.database().ref('users/' + user.uid).once('value');
+                        if (snap.val() && snap.val().role === 'admin') {
+                            document.getElementById('admin-name').innerText = snap.val().name || "System Admin";
+                            firebase.database().ref('payments/initiated').on('value', () => {
+                                if (document.getElementById('overview-panel').classList.contains('active')) loadAllStats();
+                                if (document.getElementById('orders-panel').classList.contains('active')) loadOrders();
+                            });
+                            loadAllStats();
+                        } else {
+                            adminLogout();
                         }
-                    } else {
-                        window.location.href = '/admin-login';
+                    } catch(err) {
+                        console.error("Auth verify error:", err);
                     }
-                });
-            }
-        }, 800);
+                } else {
+                    window.location.href = '/admin-login';
+                }
+            });
+        }
     });
 
     // --- DATA LOADERS ---
@@ -1056,6 +1484,7 @@
                     const a = data[key];
                     const typeClass = a.type === 'EVENT' ? 'badge success' : 'badge member';
                     const meetLinkHtml = a.meet_link ? `<a href="${a.meet_link}" target="_blank" style="color:var(--primary); font-size:0.8rem; font-weight:700;">Join Meet <i class="fas fa-external-link-alt"></i></a>` : '<span style="color:var(--text-muted);">N/A</span>';
+                    const downloadLinkHtml = a.type === 'EVENT' ? `<a href="/api/download-registrations/${key}" class="btn-action-view" style="background:#10b981; color:white; text-decoration:none; margin-right:5px; padding: 6px 12px; border-radius: 4px; display: inline-block; text-align: center;" title="Download CSV"><i class="fas fa-file-excel"></i> CSV</a>` : '';
                     
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
@@ -1065,7 +1494,10 @@
                         </td>
                         <td><div style="font-weight:700; color:var(--text-main);">${sanitizeHTML(a.title)}</div></td>
                         <td>${meetLinkHtml}</td>
-                        <td><button class="btn-action-view" onclick="deleteAnnouncement('${key}')">Delete</button></td>
+                        <td style="display:flex; align-items:center;">
+                            ${downloadLinkHtml}
+                            <button class="btn-action-view" style="padding: 6px 12px;" onclick="deleteAnnouncement('${key}')">Delete</button>
+                        </td>
                     `;
                     tbody.appendChild(tr);
                 });
@@ -1086,6 +1518,567 @@
             loadEvents();
         } catch(e) { alert(e.message); }
     }
+
+    async function submitOneOffPayment(e) {
+        e.preventDefault();
+        const btn = e.target.querySelector('button');
+        const originalText = btn.innerText;
+        btn.innerText = "Processing...";
+        btn.disabled = true;
+
+        const payload = {
+            name: document.getElementById('b2c-name').value,
+            phone: document.getElementById('b2c-phone').value,
+            email: document.getElementById('b2c-email').value,
+            amount: document.getElementById('b2c-amount').value,
+            reason: document.getElementById('b2c-reason').value
+        };
+
+        try {
+            const res = await fetch('/admin/api/b2c-pay', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const result = await res.json();
+            if(result.success) {
+                alert("Payment initiated successfully!");
+                e.target.reset();
+            } else {
+                throw new Error(result.error);
+            }
+        } catch(err) {
+            alert("Payment Error: " + err.message);
+        } finally {
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }
+    }
+
+    async function submitScheduledPayment(e) {
+        e.preventDefault();
+        const btn = e.target.querySelector('button');
+        const originalText = btn.innerText;
+        btn.innerText = "Adding Schedule...";
+        btn.disabled = true;
+
+        const payload = {
+            name: document.getElementById('sch-name').value,
+            phone: document.getElementById('sch-phone').value,
+            amount: document.getElementById('sch-amount').value,
+            frequency: document.getElementById('sch-freq').value,
+            start_time: document.getElementById('sch-time').value
+        };
+
+        try {
+            const res = await fetch('/admin/api/b2c-schedule', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const result = await res.json();
+            if(result.success) {
+                alert("Schedule added successfully!");
+                e.target.reset();
+            } else {
+                throw new Error(result.error);
+            }
+        } catch(err) {
+            alert("Schedule Error: " + err.message);
+        } finally {
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }
+    }
+
+    // ===================================================================
+    // BULK PAYMENT SYSTEM — JAVASCRIPT ENGINE
+    // ===================================================================
+
+    let bulkRowCount = 0;
+    let currentBatchIdForDetail = null;
+
+    // --- Sub-tab Switcher ---
+    function switchPayrollTab(panelId, btn) {
+        document.querySelectorAll('.payroll-sub-panel').forEach(p => p.classList.remove('pt-panel-active'));
+        document.querySelectorAll('.payroll-tab-btn').forEach(b => b.classList.remove('pt-active'));
+        document.getElementById(panelId).classList.add('pt-panel-active');
+        btn.classList.add('pt-active');
+    }
+
+    // --- Add a new recipient row to the table ---
+    function addBulkRow(prefill = {}) {
+        bulkRowCount++;
+        const tbody = document.getElementById('bulk-recipients-tbody');
+        const defaultNarration = document.getElementById('bulk-narration').value || 'Monthly Salary';
+        const tr = document.createElement('tr');
+        tr.dataset.rowId = bulkRowCount;
+        tr.innerHTML = `
+            <td style="color:var(--text-muted); font-weight:700; font-size:0.82rem; text-align:center;">${bulkRowCount}</td>
+            <td><input class="bulk-rec-input" type="text" placeholder="EMP-001" value="${sanitizeHTML(prefill.employee_number||'')}"></td>
+            <td><input class="bulk-rec-input" type="text" placeholder="Full Name" required value="${sanitizeHTML(prefill.name||'')}" oninput="updateBulkTotals()"></td>
+            <td><input class="bulk-rec-input" type="text" placeholder="254712345678" required value="${sanitizeHTML(prefill.phone||'')}"></td>
+            <td><input class="bulk-rec-input" type="number" placeholder="0" min="10" required value="${sanitizeHTML(prefill.amount||'')}" oninput="updateBulkTotals()"></td>
+            <td><input class="bulk-rec-input" type="text" placeholder="Department" value="${sanitizeHTML(prefill.department||'')}"></td>
+            <td><input class="bulk-rec-input" type="text" placeholder="${defaultNarration}" value="${sanitizeHTML(prefill.narration||defaultNarration)}"></td>
+            <td><input class="bulk-rec-input" type="email" placeholder="optional@email.com" value="${sanitizeHTML(prefill.email||'')}"></td>
+            <td><button class="btn-remove-row" onclick="removeBulkRow(this)" title="Remove row"><i class="fas fa-trash-alt"></i></button></td>
+        `;
+        tbody.appendChild(tr);
+        updateBulkTotals();
+        // Animate new row
+        if(typeof gsap !== 'undefined') gsap.from(tr, { x: -20, opacity: 0, duration: 0.25, ease: 'power2.out' });
+    }
+
+    function removeBulkRow(btn) {
+        const tr = btn.closest('tr');
+        if(typeof gsap !== 'undefined') {
+            gsap.to(tr, { x: 20, opacity: 0, duration: 0.2, onComplete: () => { tr.remove(); updateBulkTotals(); renumberBulkRows(); }});
+        } else { tr.remove(); updateBulkTotals(); renumberBulkRows(); }
+    }
+
+    function renumberBulkRows() {
+        document.querySelectorAll('#bulk-recipients-tbody tr').forEach((tr, i) => {
+            tr.querySelector('td:first-child').textContent = i + 1;
+        });
+    }
+
+    // --- Live Totals Calculation ---
+    function updateBulkTotals() {
+        const rows = document.querySelectorAll('#bulk-recipients-tbody tr');
+        let total = 0, count = 0;
+        rows.forEach(tr => {
+            const amtInput = tr.querySelectorAll('td input')[3]; // 4th input = amount
+            const amt = parseFloat(amtInput.value) || 0;
+            if (amt > 0) { total += amt; count++; }
+        });
+        document.getElementById('bulk-total-recipients').textContent = count;
+        document.getElementById('bulk-total-amount').textContent = 'KSh ' + total.toLocaleString();
+        document.getElementById('bulk-avg-amount').textContent = count > 0 ? 'KSh ' + Math.round(total / count).toLocaleString() : 'KSh 0';
+
+        // Cap check
+        const cap = parseFloat(document.getElementById('bulk-cap').value);
+        const capIndicator = document.getElementById('bulk-cap-indicator');
+        const capStatus = document.getElementById('bulk-cap-status');
+        if (cap > 0) {
+            capIndicator.style.display = 'flex';
+            if (total > cap) {
+                capStatus.textContent = `EXCEEDED (${Math.round(((total - cap) / cap) * 100)}% over)`;
+                capStatus.className = 'val red';
+            } else {
+                capStatus.textContent = `Within Cap (${Math.round((total / cap) * 100)}%)`;
+                capStatus.className = 'val green';
+            }
+        } else {
+            capIndicator.style.display = 'none';
+        }
+    }
+
+    // --- Collect all recipient data from the table ---
+    function collectBulkRecipients() {
+        const rows = document.querySelectorAll('#bulk-recipients-tbody tr');
+        const recipients = [];
+        let valid = true;
+        rows.forEach((tr, i) => {
+            const inputs = tr.querySelectorAll('td input');
+            const empNum = inputs[0].value.trim() || `EMP-${String(i + 1).padStart(3, '0')}`;
+            const name   = inputs[1].value.trim();
+            const phone  = inputs[2].value.trim();
+            const amount = inputs[3].value.trim();
+            const dept   = inputs[4].value.trim();
+            const narr   = inputs[5].value.trim();
+            const email  = inputs[6].value.trim();
+
+            // Inline validation
+            [inputs[1], inputs[2], inputs[3]].forEach(inp => inp.classList.remove('is-invalid'));
+            if (!name) { inputs[1].classList.add('is-invalid'); valid = false; }
+            if (!phone) { inputs[2].classList.add('is-invalid'); valid = false; }
+            if (!amount || parseFloat(amount) < 10) { inputs[3].classList.add('is-invalid'); valid = false; }
+
+            recipients.push({ employee_number: empNum, name, phone, amount, department: dept, narration: narr, email });
+        });
+        return { valid, recipients };
+    }
+
+    // --- Open Pre-flight Confirmation Modal ---
+    function openBulkConfirm() {
+        const { valid, recipients } = collectBulkRecipients();
+        if (!valid) {
+            alert('⚠️ Please fix the highlighted fields. Name, Phone, and Amount are required for every row.');
+            return;
+        }
+        if (recipients.length === 0) {
+            alert('Add at least one recipient before sending.');
+            return;
+        }
+
+        const totalAmt = recipients.reduce((s, r) => s + parseFloat(r.amount || 0), 0);
+        const cap = parseFloat(document.getElementById('bulk-cap').value);
+        if (cap > 0 && totalAmt > cap) {
+            alert(`❌ Total amount KSh ${totalAmt.toLocaleString()} exceeds your configured cap of KSh ${cap.toLocaleString()}. Please reduce amounts or increase the cap.`);
+            return;
+        }
+
+        const label = document.getElementById('bulk-label').value || 'Payroll Run';
+        const category = document.getElementById('bulk-category').value;
+        const initiator = document.getElementById('bulk-initiator').value;
+
+        // Build summary
+        document.getElementById('bcm-summary-box').innerHTML = `
+            <div class="bcm-summary-row"><span class="bcm-label">Batch Label</span><span class="bcm-value">${sanitizeHTML(label)}</span></div>
+            <div class="bcm-summary-row"><span class="bcm-label">Category</span><span class="bcm-value">${sanitizeHTML(category)}</span></div>
+            <div class="bcm-summary-row"><span class="bcm-label">Total Recipients</span><span class="bcm-value" style="color:var(--primary);">${recipients.length}</span></div>
+            <div class="bcm-summary-row"><span class="bcm-label">Total Amount</span><span class="bcm-value" style="color:var(--success);">KSh ${totalAmt.toLocaleString()}</span></div>
+            <div class="bcm-summary-row"><span class="bcm-label">Initiated By</span><span class="bcm-value">${sanitizeHTML(initiator)}</span></div>
+            <div class="bcm-summary-row"><span class="bcm-label">Date & Time</span><span class="bcm-value">${new Date().toLocaleString('en-KE')}</span></div>
+        `;
+
+        const listBody = document.getElementById('bcm-recipient-list-body');
+        listBody.innerHTML = recipients.map((r, i) => `
+            <div class="bcm-recipient-row">
+                <span style="color:var(--text-muted); font-weight:700;">${i + 1}</span>
+                <span style="font-weight:700;">${sanitizeHTML(r.name)}</span>
+                <span style="color:var(--text-muted);">${sanitizeHTML(r.phone)}</span>
+                <span style="font-weight:800; color:var(--primary);">KSh ${parseFloat(r.amount).toLocaleString()}</span>
+            </div>
+        `).join('');
+
+        document.getElementById('bulkConfirmOverlay').classList.add('active');
+    }
+
+    function closeBulkConfirm() {
+        document.getElementById('bulkConfirmOverlay').classList.remove('active');
+    }
+
+    // --- Execute Bulk Payment (call backend, show progress) ---
+    async function executeBulkPayment() {
+        const { valid, recipients } = collectBulkRecipients();
+        if (!valid || recipients.length === 0) return;
+
+        const label = document.getElementById('bulk-label').value || 'Payroll Run';
+        const cap = document.getElementById('bulk-cap').value;
+        const initiator = document.getElementById('bulk-initiator').value;
+
+        // Close confirm, open progress
+        closeBulkConfirm();
+        const progressOverlay = document.getElementById('bulkProgressOverlay');
+        progressOverlay.classList.add('active');
+
+        // Build progress list items
+        const bpmList = document.getElementById('bpm-list');
+        bpmList.innerHTML = '';
+        recipients.forEach((r, i) => {
+            bpmList.innerHTML += `
+                <div class="bpm-item" id="bpm-item-${i}">
+                    <span class="bpm-item-icon"><i class="fas fa-circle-notch fa-spin" style="color:#94a3b8;"></i></span>
+                    <span class="bpm-item-name">${sanitizeHTML(r.name)}</span>
+                    <span class="bpm-item-phone">${sanitizeHTML(r.phone)}</span>
+                    <span class="bpm-item-amount">KSh ${parseFloat(r.amount).toLocaleString()}</span>
+                    <span class="bpm-item-status bpm-status-queued">Queued</span>
+                </div>
+            `;
+        });
+
+        document.getElementById('bpm-overall-bar').style.width = '5%';
+        document.getElementById('bpm-sub-text').textContent = `Processing ${recipients.length} payment(s)...`;
+
+        try {
+            const payload = {
+                recipients,
+                batch_label: label,
+                initiated_by: initiator,
+                max_cap: cap ? parseInt(cap) : null
+            };
+
+            const res = await fetch('/admin/api/bulk-pay', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const result = await res.json();
+
+            if (result.success) {
+                // Animate progress bar to 100%
+                document.getElementById('bpm-overall-bar').style.width = '100%';
+
+                // Update per-row status based on results
+                result.results.forEach((r, i) => {
+                    const item = document.getElementById(`bpm-item-${i}`);
+                    if (!item) return;
+                    const icon = item.querySelector('.bpm-item-icon');
+                    const badge = item.querySelector('.bpm-item-status');
+                    if (r.status === 'Pending Verification') {
+                        icon.innerHTML = '<i class="fas fa-check-circle" style="color:var(--success);"></i>';
+                        badge.className = 'bpm-item-status bpm-status-success';
+                        badge.textContent = 'Sent';
+                    } else {
+                        icon.innerHTML = '<i class="fas fa-times-circle" style="color:var(--danger);"></i>';
+                        badge.className = 'bpm-item-status bpm-status-failed';
+                        badge.textContent = 'Failed';
+                    }
+                });
+
+                // Show summary
+                document.getElementById('bpm-r-total').textContent = result.total_recipients;
+                document.getElementById('bpm-r-success').textContent = result.successful;
+                document.getElementById('bpm-r-failed').textContent = result.failed;
+                document.getElementById('bpm-sub-text').textContent = `Batch ${result.batch_id} completed.`;
+                document.getElementById('bpm-finish-area').style.display = 'block';
+
+            } else {
+                document.getElementById('bpm-overall-bar').style.width = '0%';
+                document.getElementById('bpm-sub-text').textContent = `Error: ${result.error}`;
+                // Mark all as failed
+                recipients.forEach((_, i) => {
+                    const item = document.getElementById(`bpm-item-${i}`);
+                    if (item) {
+                        item.querySelector('.bpm-item-icon').innerHTML = '<i class="fas fa-times-circle" style="color:var(--danger);"></i>';
+                        item.querySelector('.bpm-item-status').className = 'bpm-item-status bpm-status-failed';
+                        item.querySelector('.bpm-item-status').textContent = 'Error';
+                    }
+                });
+                document.getElementById('bpm-finish-area').style.display = 'block';
+            }
+
+        } catch (err) {
+            document.getElementById('bpm-sub-text').textContent = 'Network error: ' + err.message;
+            document.getElementById('bpm-finish-area').style.display = 'block';
+        }
+    }
+
+    function closeBulkProgress() {
+        document.getElementById('bulkProgressOverlay').classList.remove('active');
+        document.getElementById('bpm-finish-area').style.display = 'none';
+        document.getElementById('bpm-overall-bar').style.width = '0%';
+        // Switch to Batch History tab
+        const histBtn = document.querySelector('.payroll-tab-btn:nth-child(4)');
+        if (histBtn) {
+            switchPayrollTab('history-tab', histBtn);
+            loadBatchHistory();
+        }
+    }
+
+    // --- Batch History Loader ---
+    async function loadBatchHistory(btnElement = null) {
+        toggleButtonLoading(btnElement, true);
+        const container = document.getElementById('batch-history-container');
+        try {
+            const res = await fetch('/admin/api/bulk-batch-history');
+            const result = await res.json();
+            container.innerHTML = '';
+
+            if (result.success && result.batches.length > 0) {
+                result.batches.forEach(batch => {
+                    const statusLower = (batch.status || '').toLowerCase();
+                    const iconClass = statusLower.includes('error') ? 'err' : (statusLower.includes('processing') ? 'proc' : 'ok');
+                    const iconFa = statusLower.includes('error') ? 'fa-exclamation-triangle' : (statusLower.includes('processing') ? 'fa-spinner fa-spin' : 'fa-check-circle');
+                    const dateStr = batch.created_at ? batch.created_at.substring(0, 16) : 'N/A';
+                    const div = document.createElement('div');
+                    div.className = 'batch-hist-card';
+                    div.innerHTML = `
+                        <div class="batch-hist-icon ${iconClass}"><i class="fas ${iconFa}"></i></div>
+                        <div class="batch-hist-info">
+                            <div class="batch-hist-label">${sanitizeHTML(batch.batch_label || 'Payroll Run')}</div>
+                            <div class="batch-hist-meta">
+                                <span style="font-family:monospace; color:var(--primary);">${sanitizeHTML(batch.batch_id)}</span>
+                                &nbsp;·&nbsp; ${sanitizeHTML(dateStr)}
+                                &nbsp;·&nbsp; By: ${sanitizeHTML(batch.initiated_by || 'Admin')}
+                            </div>
+                        </div>
+                        <div class="batch-hist-right">
+                            <div class="batch-hist-amount">KSh ${(batch.total_amount || 0).toLocaleString()}</div>
+                            <div class="batch-hist-recipients">${batch.total_recipients || 0} recipients · 
+                                <span style="color:var(--success);">${batch.successful_count || 0} ok</span> / 
+                                <span style="color:var(--danger);">${batch.failed_count || 0} failed</span>
+                            </div>
+                        </div>
+                    `;
+                    div.onclick = () => openBatchDetail(batch.batch_id, batch);
+                    container.appendChild(div);
+                });
+            } else {
+                container.innerHTML = `
+                    <div style="text-align:center; padding:50px; color:var(--text-muted);">
+                        <i class="fas fa-layer-group" style="font-size:2.5rem; opacity:0.3; margin-bottom:16px;"></i>
+                        <br>No bulk payment batches yet. Run your first bulk payroll above.
+                    </div>`;
+            }
+        } catch (e) {
+            container.innerHTML = `<div style="color:var(--danger); padding:20px;">Error loading batch history: ${e.message}</div>`;
+        } finally {
+            toggleButtonLoading(btnElement, false);
+        }
+    }
+
+    // --- Open Batch Detail Drawer ---
+    async function openBatchDetail(batchId, batchMeta) {
+        currentBatchIdForDetail = batchId;
+        document.getElementById('bdd-title').innerHTML = `<i class="fas fa-layer-group" style="color:var(--primary); margin-right:8px;"></i>${sanitizeHTML(batchMeta.batch_label || batchId)}`;
+
+        // Stats
+        document.getElementById('bdd-stats').innerHTML = `
+            <div class="bdd-stat"><div class="dsn" style="color:var(--primary);">${batchMeta.total_recipients || 0}</div><div class="dsl">Recipients</div></div>
+            <div class="bdd-stat"><div class="dsn" style="color:var(--success);">KSh ${(batchMeta.total_amount || 0).toLocaleString()}</div><div class="dsl">Total Sent</div></div>
+            <div class="bdd-stat"><div class="dsn" style="color:${(batchMeta.failed_count||0)>0?'var(--danger)':'var(--success)'};">${batchMeta.failed_count || 0}</div><div class="dsl">Failed</div></div>
+        `;
+
+        document.getElementById('bdd-records-list').innerHTML = '<div style="text-align:center; padding:20px;"><i class="fas fa-circle-notch fa-spin"></i> Loading records...</div>';
+        document.getElementById('batchDetailOverlay').classList.add('active');
+
+        try {
+            const res = await fetch(`/admin/api/bulk-batch-detail/${batchId}`);
+            const result = await res.json();
+            const listEl = document.getElementById('bdd-records-list');
+            listEl.innerHTML = '';
+            if (result.success && result.records.length > 0) {
+                result.records.forEach(rec => {
+                    const statusKey = (rec.status || '').toLowerCase();
+                    const cls = statusKey.includes('complet') || statusKey.includes('success') ? 's'
+                              : statusKey.includes('fail') ? 'f'
+                              : statusKey.includes('retri') ? 'r'
+                              : 'p';
+                    const statusBadge = statusKey.includes('complet') || statusKey.includes('pending') ? `<span class="badge success">${sanitizeHTML(rec.status)}</span>`
+                                      : statusKey.includes('fail') ? `<span class="badge high">${sanitizeHTML(rec.status)}</span>`
+                                      : `<span class="badge open">${sanitizeHTML(rec.status)}</span>`;
+                    listEl.innerHTML += `
+                        <div class="bdd-record ${cls}">
+                            <div>
+                                <div class="bdd-rec-name">${sanitizeHTML(rec.name)} <span style="color:var(--text-muted); font-weight:500; font-size:0.78rem;">(${sanitizeHTML(rec.employee_number || '')})</span></div>
+                                <div class="bdd-rec-dept">${sanitizeHTML(rec.phone)} &nbsp;·&nbsp; ${sanitizeHTML(rec.department || 'General')}</div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div class="bdd-rec-amt">KSh ${(parseFloat(rec.amount)||0).toLocaleString()}</div>
+                                <div style="margin-top:4px;">${statusBadge}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                listEl.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding:20px;">No individual records found for this batch.</p>';
+            }
+        } catch (e) {
+            document.getElementById('bdd-records-list').innerHTML = `<p style="color:var(--danger);">Error: ${e.message}</p>`;
+        }
+
+        // Wire footer buttons
+        document.getElementById('btn-bdd-csv').onclick = () => window.open(`/admin/api/bulk-batch-csv/${batchId}`, '_blank');
+        document.getElementById('btn-bdd-retry').onclick = () => retryFailedInBatch(batchId);
+    }
+
+    function closeBatchDetailDrawer(e) {
+        if (!e || e.target === e.currentTarget) {
+            document.getElementById('batchDetailOverlay').classList.remove('active');
+            currentBatchIdForDetail = null;
+        }
+    }
+
+    // --- Retry Failed Payments ---
+    async function retryFailedInBatch(batchId) {
+        if (!confirm(`Retry all FAILED payments in batch ${batchId}? New payment entries will be created.`)) return;
+        const btn = document.getElementById('btn-bdd-retry');
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Retrying...';
+        btn.disabled = true;
+
+        try {
+            const initiator = document.getElementById('bulk-initiator')?.value || 'System Admin';
+            const res = await fetch('/admin/api/retry-failed-batch', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ batch_id: batchId, initiated_by: initiator })
+            });
+            const result = await res.json();
+            if (result.success) {
+                alert(`✅ ${result.retried} payment(s) retried successfully.`);
+                openBatchDetail(batchId, {}); // Refresh drawer
+                loadBatchHistory(); // Refresh history
+            } else {
+                alert('Retry failed: ' + result.error);
+            }
+        } catch (err) {
+            alert('Network error: ' + err.message);
+        } finally {
+            btn.innerHTML = orig;
+            btn.disabled = false;
+        }
+    }
+
+    // --- CSV Import ---
+    function importBulkCSV() {
+        document.getElementById('csv-file-input').click();
+    }
+
+    function handleCSVImport(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const text = e.target.result;
+            const lines = text.split('\n').filter(l => l.trim());
+            if (lines.length < 2) { alert('CSV must have a header row and at least one data row.'); return; }
+
+            // Detect header row — skip it
+            const headers = lines[0].toLowerCase().split(',').map(h => h.trim());
+            const colMap = {};
+            ['employee_number','name','phone','amount','department','narration','email'].forEach(col => {
+                const idx = headers.findIndex(h => h.includes(col.replace('_', ' ')) || h === col || h.includes(col));
+                colMap[col] = idx >= 0 ? idx : -1;
+            });
+
+            let imported = 0;
+            for (let i = 1; i < lines.length; i++) {
+                const cols = lines[i].split(',').map(c => c.trim().replace(/^"|"$/g, ''));
+                if (cols.length < 2) continue;
+                const get = (key) => colMap[key] >= 0 ? (cols[colMap[key]] || '') : '';
+                addBulkRow({
+                    employee_number: get('employee_number'),
+                    name: get('name'),
+                    phone: get('phone'),
+                    amount: get('amount'),
+                    department: get('department'),
+                    narration: get('narration'),
+                    email: get('email')
+                });
+                imported++;
+            }
+            alert(`✅ Imported ${imported} recipient(s) from CSV.`);
+        };
+        reader.readAsText(file);
+        event.target.value = ''; // Reset so same file can be re-imported
+    }
+
+    // --- Download CSV Template ---
+    function downloadBulkTemplate() {
+        const csvContent = 'employee_number,name,phone,amount,department,narration,email\nEMP-001,John Doe,254712345678,15000,Engineering,October Salary,john@example.com\nEMP-002,Jane Smith,254798765432,12000,Marketing,October Salary,jane@example.com';
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'bulk_payroll_template.csv';
+        link.click();
+    }
+
+    // --- Initialize: Add 3 default rows on load ---
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add initial rows when payroll panel is accessed
+        const payrollBtn = document.querySelector('[onclick*="payroll-panel"]');
+        if (payrollBtn) {
+            const origClick = payrollBtn.getAttribute('onclick');
+            payrollBtn.setAttribute('onclick', origClick + '; initBulkTable();');
+        }
+    });
+
+    function initBulkTable() {
+        const tbody = document.getElementById('bulk-recipients-tbody');
+        if (tbody && tbody.children.length === 0) {
+            addBulkRow(); addBulkRow(); addBulkRow();
+        }
+    }
+
+    // Auto-init if payroll panel is already active (e.g. direct URL hash)
+    if (document.getElementById('payroll-panel') && document.getElementById('payroll-panel').classList.contains('active')) {
+        initBulkTable();
+    }
+
 </script>
 
 {% endblock %}

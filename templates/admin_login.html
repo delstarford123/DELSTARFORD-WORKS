@@ -7,15 +7,16 @@
     
     /* Clean Enterprise Theme */
     body { 
-        background: #f1f5f9 !important; 
+        background: #050811 !important; 
         overflow: hidden; 
         font-family: 'Plus Jakarta Sans', sans-serif;
+        color: #f1f5f9;
     }
     
     /* Subtle Grid Background */
     body::before {
         content: ""; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-        background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+        background-image: radial-gradient(rgba(124,58,237,0.18) 1px, transparent 1px);
         background-size: 30px 30px; opacity: 0.5; z-index: -1;
     }
 
@@ -28,13 +29,13 @@
     }
     
     .admin-auth-card { 
-        background: #ffffff; 
-        border: 1px solid #e2e8f0; 
+        background: #0d1424; 
+        border: 1px solid rgba(124,58,237,0.25); 
         padding: 50px 40px; 
         border-radius: 16px; 
         width: 100%; 
         max-width: 440px; 
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(59, 130, 246, 0.05); 
+        box-shadow: 0 25px 50px rgba(0,0,0,0.5), 0 0 0 1px rgba(124,58,237,0.2);
         position: relative; 
         overflow: hidden;
     }
@@ -42,9 +43,9 @@
     /* Soft Blue Scanline */
     .scanline {
         position: absolute; top: 0; left: 0; width: 100%; height: 3px;
-        background: linear-gradient(to right, transparent, rgba(59, 130, 246, 0.8), transparent); 
+        background: linear-gradient(to right, transparent, rgba(124, 58, 237, 0.9), rgba(6,182,212,0.8), transparent); 
         animation: scan 3s linear infinite; 
-        opacity: 0.5; 
+        opacity: 0.8; 
         pointer-events: none;
     }
     @keyframes scan { 0% { top: -10px; } 100% { top: 110%; } }

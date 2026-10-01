@@ -5,7 +5,7 @@
     /* --- CORE STYLING --- */
     .agreement-wrapper { 
         padding: 60px 20px; 
-        background: #f8fafc; 
+        background: #050811; 
         min-height: 100vh;
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
@@ -13,66 +13,66 @@
     .contract-container { 
         max-width: 900px; 
         margin: 0 auto; 
-        background: #ffffff; 
+        background: #0d1424; 
         padding: 60px; 
         border-radius: 16px; 
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.03); 
+        border: 1px solid rgba(124,58,237,0.2);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.4); 
     }
     
     .contract-header { 
         text-align: center; 
-        border-bottom: 2px solid #f1f5f9; 
+        border-bottom: 1px solid rgba(124,58,237,0.2); 
         padding-bottom: 30px; 
         margin-bottom: 40px; 
     }
     .contract-logo { width: 100px; margin-bottom: 20px; }
-    .contract-header h1 { color: #0f172a; margin: 0 0 10px; font-size: 2.2rem; font-weight: 800; letter-spacing: -0.5px;}
-    .contract-header p { color: #3b82f6; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin: 0; font-size: 0.85rem;}
+    .contract-header h1 { color: #ffffff; margin: 0 0 10px; font-size: 2.2rem; font-weight: 800; letter-spacing: -0.5px;}
+    .contract-header p { color: #a78bfa; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin: 0; font-size: 0.85rem;}
 
     .contract-section { margin-bottom: 50px; }
     .contract-section h3 { 
-        background: #f8fafc; 
+        background: #080d1a; 
         padding: 15px 20px; 
-        border-left: 4px solid #3b82f6; 
-        color: #0f172a; 
+        border-left: 4px solid #7c3aed; 
+        color: #ffffff; 
         margin-bottom: 25px; 
         font-size: 1.2rem;
         font-weight: 800;
         border-radius: 0 8px 8px 0;
     }
-    .section-desc { color: #64748b; font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px;}
+    .section-desc { color: #8b9cc4; font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px;}
 
     /* --- PAYMENT MILESTONES --- */
     .payment-structure-box { display: flex; gap: 15px; margin: 20px 0; flex-wrap: wrap;}
     .milestone { 
-        background: #ffffff; 
-        border: 1px solid #e2e8f0;
-        border-top: 4px solid #3b82f6;
+        background: #080d1a; 
+        border: 1px solid rgba(124,58,237,0.2);
+        border-top: 4px solid #7c3aed;
         padding: 20px; 
         flex: 1; 
         min-width: 200px;
         text-align: center; 
         border-radius: 8px; 
-        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         transition: transform 0.3s;
     }
-    .milestone:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+    .milestone:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(124,58,237,0.15); }
     .milestone:nth-child(2) { border-top-color: #f59e0b; }
-    .milestone:nth-child(3) { border-top-color: #10b981; }
+    .milestone:nth-child(3) { border-top-color: #06b6d4; }
     
-    .ms-percent { display: block; font-size: 1.8rem; font-weight: 800; color: #0f172a; margin-bottom: 5px;}
-    .ms-label { display: block; font-weight: 800; text-transform: uppercase; font-size: 0.8rem; margin-bottom: 5px; color: #64748b;}
-    .ms-desc { display: block; font-size: 0.8rem; color: #94a3b8; line-height: 1.4;}
+    .ms-percent { display: block; font-size: 1.8rem; font-weight: 800; color: #ffffff; margin-bottom: 5px;}
+    .ms-label { display: block; font-weight: 800; text-transform: uppercase; font-size: 0.8rem; margin-bottom: 5px; color: #8b9cc4;}
+    .ms-desc { display: block; font-size: 0.8rem; color: #4a5a7a; line-height: 1.4;}
 
     /* --- PRICING TABLE --- */
-    .table-responsive { overflow-x: auto; margin-bottom: 20px; border-radius: 8px; border: 1px solid #e2e8f0;}
+    .table-responsive { overflow-x: auto; margin-bottom: 20px; border-radius: 8px; border: 1px solid rgba(124,58,237,0.2);}
     .pricing-table { width: 100%; border-collapse: collapse; min-width: 600px; }
-    .pricing-table th { background: #f8fafc; padding: 15px; text-align: left; color: #475569; font-weight: 800; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e2e8f0;}
-    .pricing-table td { border-bottom: 1px solid #f1f5f9; padding: 15px; color: #334155; font-size: 0.95rem;}
+    .pricing-table th { background: #080d1a; padding: 15px; text-align: left; color: #8b9cc4; font-weight: 800; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(124,58,237,0.2);}
+    .pricing-table td { border-bottom: 1px solid rgba(124,58,237,0.1); padding: 15px; color: #f1f5f9; font-size: 0.95rem;}
     .pricing-table tr { transition: background 0.2s; cursor: pointer; }
-    .pricing-table tr:hover { background: #f8fafc; }
-    .pricing-table input[type="radio"] { cursor: pointer; transform: scale(1.2); accent-color: #3b82f6;}
+    .pricing-table tr:hover { background: rgba(124,58,237,0.05); }
+    .pricing-table input[type="radio"] { cursor: pointer; transform: scale(1.2); accent-color: #7c3aed;}
 
     /* --- CUSTOM BUDGET PANEL --- */
     .custom-budget-panel { display: none; background: #fffbeb; border: 1px solid #fcd34d; padding: 25px; margin-top: 20px; border-radius: 8px; }

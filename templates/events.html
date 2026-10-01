@@ -7,13 +7,13 @@
 
 <style>
     :root {
-        --evt-primary: #3b82f6;
-        --evt-dark: #0f172a;
-        --evt-bg: #f8fafc;
-        --evt-card: #ffffff;
-        --evt-border: #e2e8f0;
-        --evt-muted: #64748b;
-        --evt-success: #10b981;
+        --evt-primary: #7c3aed;
+        --evt-dark: #050811;
+        --evt-bg: #050811;
+        --evt-card: #0d1424;
+        --evt-border: rgba(124,58,237,0.2);
+        --evt-muted: #8b9cc4;
+        --evt-success: #06b6d4;
     }
 
     /* --- HERO SECTION --- */
@@ -27,7 +27,7 @@
     }
     .evt-hero::before {
         content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-        background-image: radial-gradient(circle at center, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+        background-image: radial-gradient(circle at center, rgba(124, 58, 237, 0.2) 0%, transparent 70%);
         pointer-events: none;
     }
     .evt-hero h1 { font-size: 3.5rem; font-weight: 800; margin: 0 0 15px; letter-spacing: -1px; position: relative; z-index: 1;}
@@ -37,11 +37,11 @@
     .evt-container { max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
     .evt-filters { display: flex; justify-content: center; gap: 15px; margin-bottom: 40px; flex-wrap: wrap;}
     .evt-filter-btn {
-        background: white; border: 1px solid var(--evt-border); padding: 10px 20px;
-        border-radius: 50px; font-weight: 700; color: var(--evt-muted); cursor: pointer;
+        background: rgba(124,58,237,0.08); border: 1px solid rgba(124,58,237,0.2); padding: 10px 20px;
+        border-radius: 50px; font-weight: 700; color: #8b9cc4; cursor: pointer;
         transition: all 0.3s; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 0.5px;
     }
-    .evt-filter-btn.active, .evt-filter-btn:hover { background: var(--evt-dark); color: white; border-color: var(--evt-dark);}
+    .evt-filter-btn.active, .evt-filter-btn:hover { background: #7c3aed; color: white; border-color: #7c3aed;}
 
     .evt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; }
     
